@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOSH — 3D showroom (демо)</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<style>
+:root{--bg:#ebe8e1;--ink:#121212;--muted:#76736b;--line:rgba(18,18,18,.12);--card:#f7f5f0}
+*{box-sizing:border-box;margin:0;padding:0}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+.gothic{font-family:'UnifrakturMaguntia',serif;font-weight:400}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+@media (hover:hover) and (pointer:fine){body,button,a{cursor:none}}
+
+/* LOADER */
+#loader{position:fixed;inset:0;z-index:200;background:#0e0e0e;color:#ebe8e1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#loader .gothic{font-size:clamp(64px,12vw,150px);line-height:1}
+#loader .count{font:500 13px 'Space Grotesk';letter-spacing:.3em}
+#loader .bar{width:180px;height:1px;background:rgba(255,255,255,.15);overflow:hidden}
+#loader .bar i{display:block;height:100%;width:0;background:#ebe8e1}
+
+/* CURSOR */
+.cursor,.cursor-ring{position:fixed;left:0;top:0;z-index:150;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor{width:7px;height:7px;background:var(--ink)}
+.cursor-ring{width:38px;height:38px;border:1px solid rgba(18,18,18,.45);display:grid;place-items:center;font:600 10px 'Space Grotesk';letter-spacing:.14em;text-transform:uppercase;color:#fff;transition:width .35s,height .35s,background .35s,border-color .35s}
+.cursor-ring.big{width:92px;height:92px;background:var(--ink);border-color:var(--ink)}
+.cursor-ring span{opacity:0;transition:opacity .2s}
+.cursor-ring.big span{opacity:1}
+@media (hover:none),(pointer:coarse){.cursor,.cursor-ring{display:none}}
+
+/* WEBGL */
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+
+/* HEADER */
+.demo{position:relative;z-index:20;background:var(--ink);color:#d9d6ce;font-size:12px;text-align:center;padding:7px 14px}
+.demo a{color:#fff;font-weight:700;text-decoration:underline}
+header{position:fixed;left:0;right:0;top:var(--strip,31px);z-index:40;transition:top .3s,background .3s}
+header.stuck{top:0;background:rgba(235,232,225,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav{height:66px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.logo{font-size:34px;line-height:1}
+.links{display:flex;gap:34px;font:500 13px 'Space Grotesk'}
+.links a{position:relative}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .4s}
+.links a:hover::after{transform:scaleX(1);transform-origin:left}
+.tools{display:flex;justify-content:flex-end;align-items:center;gap:10px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:rgba(255,255,255,.35)}
+.lang button{border:0;background:none;font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;color:var(--muted)}
+.lang button.on{background:var(--ink);color:#fff}
+.cart-btn{border:1px solid var(--line);background:rgba(255,255,255,.45);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600}
+.cart-btn em{font-style:normal;display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:999px;background:var(--ink);color:#fff;font-size:11px;margin-left:6px;padding:0 5px}
+@media (max-width:760px){.links{display:none}.nav{grid-template-columns:1fr auto}.wrap{padding:0 18px}}
+
+/* HERO OVERLAY */
+main{position:relative;z-index:1}
+.hero{position:relative;height:100vh;min-height:620px;pointer-events:none}
+.hero-copy{position:absolute;left:0;right:0;bottom:7vh}
+.hero-copy .wrap{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.kicker{font:600 11px 'Space Grotesk';letter-spacing:.32em;text-transform:uppercase;color:#4f4c46;margin-bottom:10px}
+h1.big{font:700 clamp(40px,7.4vw,112px)/.9 'Space Grotesk',sans-serif;letter-spacing:-.04em;text-transform:uppercase}
+h1.big .line{display:block;overflow:hidden}
+h1.big .ch{display:inline-block;will-change:transform}
+.hero-side{max-width:300px;font-size:14px;color:#3e3b36;pointer-events:auto}
+.hero-side .btn{margin-top:14px}
+.scroll-cue{position:absolute;left:50%;top:150px;transform:translateX(-50%);font:600 10px 'Space Grotesk';letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:14px 24px;font:600 13px 'Space Grotesk';border:1px solid var(--ink);background:var(--ink);color:#fff;transition:background .3s,color .3s}
+.btn:hover{background:transparent;color:var(--ink)}
+.btn.line{background:transparent;color:var(--ink)}
+.btn.line:hover{background:var(--ink);color:#fff}
+
+/* STORY (camera move happens here) */
+.story{position:relative;height:190vh;pointer-events:none}
+.story-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:flex-end}
+.story-text{max-width:560px;margin:0 0 9vh 6vw;text-align:left}
+.story-text p{font:600 clamp(26px,3.4vw,48px)/1.12 'Space Grotesk';letter-spacing:-.02em}
+.story-text p span{display:block;opacity:.12}
+@media (max-width:760px){.story-text{margin:auto 18px 14vh;align-self:flex-end;text-align:left}}
+
+/* SOLID SECTIONS */
+.solid{position:relative;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:110px 0 90px;border-bottom:1px solid var(--line)}
+.stat b{display:block;font:700 clamp(54px,7vw,104px)/1 'Space Grotesk';letter-spacing:-.04em}
+.stat span{display:block;margin-top:10px;font-size:14px;color:var(--muted);max-width:260px}
+@media (max-width:760px){.stats{grid-template-columns:1fr;padding:70px 0 50px}}
+.band{background:var(--ink);color:#ebe8e1;overflow:hidden}
+.band-track{display:flex;width:max-content}
+.band-track span{font-size:clamp(56px,9vw,130px);line-height:1.2;padding:16px 0;white-space:nowrap}
+.band-track span::after{content:"✦";font-family:'Inter';font-size:.3em;vertical-align:.5em;margin:0 40px;color:#8f8b82}
+.cta{padding:120px 0;text-align:center}
+.cta h2{font:700 clamp(38px,6vw,86px)/.95 'Space Grotesk';letter-spacing:-.04em;text-transform:uppercase;margin-bottom:28px}
+.cta h2 em{font-style:normal;font-family:'UnifrakturMaguntia';text-transform:none;font-weight:400;letter-spacing:0}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:0 0 70px}
+.info div{border-top:1px solid var(--ink);padding-top:16px}
+.info b{display:block;font:700 15px 'Space Grotesk';margin-bottom:4px}
+.info p{font-size:14px;color:var(--muted)}
+@media (max-width:760px){.info{grid-template-columns:1fr}}
+footer{border-top:1px solid var(--line);padding:24px 0 40px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+footer a{color:var(--ink);font-weight:700}
+.reveal-line{overflow:hidden}
+.reveal-line>*{display:block}
+
+/* PRODUCT PANEL (the 3D garment stays in the canvas on the left) */
+#pview{position:fixed;top:0;right:0;bottom:0;z-index:60;width:min(440px,100%);padding:96px 40px 40px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,rgba(235,232,225,0),rgba(235,232,225,.92) 18%);pointer-events:none;opacity:0}
+#pview.on{pointer-events:auto}
+#pview>*{max-width:340px}
+.pv-close{position:fixed;top:24px;left:28px;z-index:61;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 18px;font:600 13px 'Space Grotesk';opacity:0;pointer-events:none}
+.pv-close.on{opacity:1;pointer-events:auto}
+#pview small{font:600 11px 'Space Grotesk';letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+#pview h2{font:700 36px/1.05 'Space Grotesk';letter-spacing:-.02em;margin:8px 0 4px}
+.pv-price{font-size:18px;font-weight:600}
+.label{font-size:12px;color:var(--muted);margin:20px 0 8px}
+.swatches,.sizes{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:30px;height:30px;border-radius:50%;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line);transition:transform .2s}
+.swatches button:hover{transform:scale(1.12)}
+.swatches button.on{box-shadow:0 0 0 2px var(--ink)}
+.sizes button{min-width:48px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:13px}
+.sizes button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+#pvAdd{margin-top:24px;width:100%;justify-content:center;padding:16px}
+.drag-hint{margin-top:14px;font-size:12px;color:var(--muted)}
+.details{margin-top:18px;border-top:1px solid var(--line)}
+.details details{border-bottom:1px solid var(--line);padding:11px 0;font-size:14px}
+.details summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+.details summary::after{content:"+";color:var(--muted)}
+.details details[open] summary::after{content:"−"}
+.details p{color:var(--muted);margin-top:6px}
+@media (max-width:760px){
+  #pview{top:auto;width:100%;height:58vh;padding:22px 20px 26px;justify-content:flex-start;overflow-y:auto;background:rgba(247,245,240,.97);border-radius:24px 24px 0 0;box-shadow:0 -20px 40px rgba(0,0,0,.08)}
+  #pview h2{font-size:26px}
+  .pv-close{top:16px;left:16px}
+}
+
+/* CART */
+.overlay{position:fixed;inset:0;z-index:90;background:rgba(18,18,18,.35);opacity:0;visibility:hidden;transition:.3s}
+.overlay.on{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:95;width:min(400px,100%);background:var(--card);transform:translateX(100%);transition:transform .5s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.dr-head{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--line)}
+.dr-head b{font:700 20px 'Space Grotesk'}
+.dr-head button{border:1px solid var(--line);background:none;border-radius:999px;width:34px;height:34px}
+.dr-items{flex:1;overflow-y:auto;padding:8px 20px}
+.ci{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.ci i{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line)}
+.ci b{display:block;font-size:14px}
+.ci small{color:var(--muted);font-size:12px}
+.ci .rm{margin-left:auto;border:0;background:none;color:var(--muted);font-size:18px}
+.empty{color:var(--muted);text-align:center;padding:50px 0}
+.dr-foot{padding:20px;border-top:1px solid var(--line)}
+.total{display:flex;justify-content:space-between;font-weight:700;margin-bottom:12px}
+.dr-foot .btn{width:100%;justify-content:center}
+.dr-foot .btn:disabled{opacity:.35}
+.modal{position:fixed;inset:0;z-index:120;background:rgba(18,18,18,.5);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.on{display:flex}
+.mbox{background:var(--card);border-radius:22px;padding:24px;max-width:420px;width:100%}
+.mbox b{font:700 20px 'Space Grotesk';display:block;margin-bottom:6px}
+.mbox p{font-size:14px;color:var(--muted);margin-bottom:12px}
+.mbox pre{white-space:pre-wrap;font:13px/1.55 'Inter';background:var(--bg);border-radius:12px;padding:12px;margin-bottom:14px}
+.mbox .btn{width:100%;justify-content:center}
+.toast{position:fixed;left:50%;bottom:24px;z-index:130;transform:translate(-50%,120px);background:var(--ink);color:#fff;border-radius:999px;padding:11px 20px;font-size:13px;font-weight:600;transition:transform .3s}
+.toast.on{transform:translate(-50%,0)}
+.nogl{position:fixed;inset:0;z-index:5;display:none;align-items:center;justify-content:center;text-align:center;padding:30px}
+.nogl.on{display:flex}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="gothic">Tosh</div><div class="bar"><i id="loadBar"></i></div><div class="count" id="loadCount">0%</div></div>
+<div class="cursor" id="cDot"></div><div class="cursor-ring" id="cRing"><span data-i="view">Смотреть</span></div>
+
+<canvas id="gl"></canvas>
+<div class="nogl" id="nogl"><p data-i="nogl">Ваш браузер не поддерживает 3D. <a href="../rack-store/" style="text-decoration:underline">Открыть обычную версию</a></p></div>
+
+<div class="demo"><span data-i="demo">3D-демо сайта магазина одежды. Бренд TOSH вымышленный, товары и цены для примера.</span> <a href="https://hoshimov-dev.github.io/" target="_blank" rel="noopener" data-i="author">Сделал Ilhom Hoshimov</a></div>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="#top" class="logo gothic" data-scroll="0">Tosh</a>
+    <nav class="links"><a href="#top" data-scroll="0" data-i="nav_shop">Магазин</a><a href="#story" data-scroll="story" data-i="nav_story">История</a><a href="#contacts" data-scroll="contacts" data-i="nav_contact">Контакты</a></nav>
+    <div class="tools">
+      <div class="lang"><button data-l="ru" class="on">RU</button><button data-l="uz">UZ</button></div>
+      <button class="cart-btn" id="cartBtn"><span data-i="cart">Корзина</span><em id="cartCount">0</em></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="scroll-cue" data-i="cue">Наведите на вещь · листайте вниз</div>
+    <div class="hero-copy">
+      <div class="wrap">
+        <div>
+          <p class="kicker" data-i="kicker">Новая коллекция — осень 2026</p>
+          <h1 class="big" id="heroTitle"><span class="line">Tashkent</span><span class="line">Streetwear</span></h1>
+        </div>
+        <div class="hero-side">
+          <p data-i="heroText">Плотный хлопок, свободный крой, готический принт. Нажмите на любую вещь — она прилетит к вам в 3D.</p>
+          <button class="btn" id="heroBtn" data-i="heroBtn">Открыть футболку</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="story" id="story">
+    <div class="story-sticky"><div class="story-text" id="storyText">
+      <p><span data-i="s1">Каждая вещь</span><span data-i="s2">сшита в Ташкенте</span><span data-i="s3">из плотного хлопка</span><span data-i="s4">480 г/м²,</span><span data-i="s5">чтобы носить годами.</span></p>
+    </div></div>
+  </section>
+
+  <div class="solid">
+    <section class="wrap stats">
+      <div class="stat"><b><span class="num" data-to="480">0</span></b><span data-i="st1">граммов на квадратный метр — плотный футер, который держит форму</span></div>
+      <div class="stat"><b><span class="num" data-to="100">0</span>%</b><span data-i="st2">хлопок. Без синтетики, мягкий с первой носки</span></div>
+      <div class="stat"><b><span class="num" data-to="7">0</span></b><span data-i="st3">дней на обмен размера, если не подошло</span></div>
+    </section>
+    <div class="band" aria-hidden="true"><div class="band-track gothic" id="band"></div></div>
+    <section class="wrap cta">
+      <h2><span data-i="cta1">Твой стиль.</span><br><em data-i="cta2">Твой город.</em></h2>
+      <button class="btn" data-scroll="0" data-i="ctaBtn">Вернуться к вешалке</button>
+    </section>
+    <section class="wrap info" id="contacts">
+      <div><b data-i="i1">Доставка</b><p data-i="i1t">По Ташкенту — в день заказа, по Узбекистану — 1–3 дня.</p></div>
+      <div><b data-i="i2">Шоурум</b><p data-i="i2t">Центр Ташкента, примерка перед покупкой.</p></div>
+      <div><b data-i="i3">Заказ в Telegram</b><p data-i="i3t">Добавьте вещи в корзину — заказ придёт менеджеру.</p></div>
+    </section>
+    <footer class="wrap"><span>© TOSH · <span data-i="concept">3D-концепт</span></span><span><span data-i="made">Дизайн и разработка —</span> <a href="https://hoshimov-dev.github.io/" target="_blank" rel="noopener">Ilhom Hoshimov</a></span></footer>
+  </div>
+</main>
+
+<button class="pv-close" id="pvClose" data-i="back">← Назад к вешалке</button>
+<aside id="pview" aria-hidden="true">
+  <small id="pvCat"></small>
+  <h2 id="pvName"></h2>
+  <div class="pv-price" id="pvPrice"></div>
+  <div class="label" data-i="color">Цвет</div>
+  <div class="swatches" id="pvColors"></div>
+  <div class="label" data-i="size">Размер</div>
+  <div class="sizes" id="pvSizes"></div>
+  <button class="btn" id="pvAdd" data-i="add">Добавить в корзину</button>
+  <p class="drag-hint" data-i="drag">↔ Потяните вещь, чтобы покрутить её</p>
+  <div class="details">
+    <details><summary data-i="d1">Состав и посадка</summary><p data-i="d1t">100% хлопок, футер 480 г/м². Оверсайз: для посадки по фигуре берите на размер меньше.</p></details>
+    <details><summary data-i="d2">Доставка и обмен</summary><p data-i="d2t">По Ташкенту в день заказа. Обмен размера в течение 7 дней.</p></details>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <div class="dr-head"><b data-i="cart">Корзина</b><button id="drClose" aria-label="Close">✕</button></div>
+  <div class="dr-items" id="drItems"></div>
+  <div class="dr-foot"><div class="total"><span data-i="total">Итого</span><span id="drTotal">0</span></div><button class="btn" id="checkout" data-i="checkout">Заказать в Telegram</button></div>
+</aside>
+<div class="modal" id="modal"><div class="mbox"><b data-i="m_title">Так выглядит заказ</b><p data-i="m_text">На настоящем сайте это сообщение сразу уйдёт магазину в Telegram. В демо просто показываем его.</p><pre id="orderText"></pre><button class="btn" id="mOk" data-i="ok">Понятно</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const gsap = window.gsap, ScrollTrigger = window.ScrollTrigger;
+gsap.registerPlugin(ScrollTrigger);
+const $ = id => document.getElementById(id);
+const isTouch = matchMedia('(hover: none), (pointer: coarse)').matches;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= DATA ================= */
+const PRODUCTS = [
+  { type:'hoodie', ru:'Худи Classic', uz:'Classic xudi', price:490000, colors:['#9b9a96','#1b1b1b','#2e4a3b'] },
+  { type:'hoodie', ru:'Худи Sand', uz:'Sand xudi', price:490000, colors:['#d6c8ae','#efe9dc','#9b9a96'] },
+  { type:'hoodie', ru:'Худи Forest', uz:'Forest xudi', price:510000, colors:['#2e4a3b','#1b1b1b','#5b3b2a'] },
+  { type:'tee', ru:'Футболка Tosh', uz:'Tosh futbolkasi', price:250000, colors:['#151515','#f4f2ec','#7a1f24'], print:'Tosh', hero:true },
+  { type:'sweat', ru:'Свитшот Gothic', uz:'Gothic svitshot', price:420000, colors:['#1b1b1b','#9b9a96','#2e4a3b'], print:'Tosh' },
+  { type:'hoodie', ru:'Худи Fog', uz:'Fog xudi', price:490000, colors:['#c9c8c3','#1b1b1b','#d6c8ae'] },
+  { type:'tee', ru:'Футболка Basic', uz:'Basic futbolka', price:190000, colors:['#f4f2ec','#151515','#9b9a96'] }
+];
+const SIZES = ['S','M','L','XL'];
+const T = {
+  ru:{view:'Смотреть',nogl:'Ваш браузер не поддерживает 3D.',demo:'3D-демо сайта магазина одежды. Бренд TOSH вымышленный, товары и цены для примера.',author:'Сделал Ilhom Hoshimov',nav_shop:'Магазин',nav_story:'История',nav_contact:'Контакты',cart:'Корзина',cue:'Наведите на вещь · листайте вниз',kicker:'Новая коллекция — осень 2026',heroText:'Плотный хлопок, свободный крой, готический принт. Нажмите на любую вещь — она прилетит к вам в 3D.',heroBtn:'Открыть футболку',s1:'Каждая вещь',s2:'сшита в Ташкенте',s3:'из плотного хлопка',s4:'480 г/м²,',s5:'чтобы носить годами.',st1:'граммов на квадратный метр — плотный футер, который держит форму',st2:'хлопок. Без синтетики, мягкий с первой носки',st3:'дней на обмен размера, если не подошло',cta1:'Твой стиль.',cta2:'Твой город.',ctaBtn:'Вернуться к вешалке',i1:'Доставка',i1t:'По Ташкенту — в день заказа, по Узбекистану — 1–3 дня.',i2:'Шоурум',i2t:'Центр Ташкента, примерка перед покупкой.',i3:'Заказ в Telegram',i3t:'Добавьте вещи в корзину — заказ придёт менеджеру.',concept:'3D-концепт',made:'Дизайн и разработка —',back:'← Назад к вешалке',color:'Цвет',size:'Размер',add:'Добавить в корзину',drag:'↔ Потяните вещь, чтобы покрутить её',d1:'Состав и посадка',d1t:'100% хлопок, футер 480 г/м². Оверсайз: для посадки по фигуре берите на размер меньше.',d2:'Доставка и обмен',d2t:'По Ташкенту в день заказа. Обмен размера в течение 7 дней.',total:'Итого',checkout:'Заказать в Telegram',m_title:'Так выглядит заказ',m_text:'На настоящем сайте это сообщение сразу уйдёт магазину в Telegram. В демо просто показываем его.',ok:'Понятно',sum:'сум',added:'Добавлено в корзину',pick:'Выберите размер',empty:'Корзина пуста',hello:'Здравствуйте! Хочу заказать:',cats:{tee:'Футболка',hoodie:'Худи',sweat:'Свитшот'},band:'Tashkent streetwear'},
+  uz:{view:'Ko\'rish',nogl:'Brauzeringiz 3D ni qo\'llab-quvvatlamaydi.',demo:'Kiyim do\'koni saytining 3D-demosi. TOSH brendi o\'ylab topilgan, mahsulot va narxlar namuna uchun.',author:'Ilhom Hoshimov yaratgan',nav_shop:'Do\'kon',nav_story:'Tarix',nav_contact:'Aloqa',cart:'Savat',cue:'Kiyim ustiga olib boring · pastga suring',kicker:'Yangi kolleksiya — kuz 2026',heroText:'Zich paxta, erkin bichim, gotik print. Istalgan kiyimni bosing — u sizga 3D da uchib keladi.',heroBtn:'Futbolkani ochish',s1:'Har bir kiyim',s2:'Toshkentda tikilgan',s3:'zich paxtadan',s4:'480 g/m²,',s5:'yillar davomida kiyish uchun.',st1:'gramm bir kvadrat metrga — shaklini saqlaydigan zich futer',st2:'paxta. Sintetikasiz, birinchi kiyishdanoq yumshoq',st3:'kun ichida o\'lchamni almashtirish mumkin',cta1:'Sening uslubing.',cta2:'Sening shahring.',ctaBtn:'Ilgichga qaytish',i1:'Yetkazib berish',i1t:'Toshkent bo\'ylab — buyurtma kuni, O\'zbekiston bo\'ylab — 1–3 kun.',i2:'Shourum',i2t:'Toshkent markazi, sotib olishdan oldin kiyib ko\'rish.',i3:'Telegram orqali buyurtma',i3t:'Kiyimlarni savatga qo\'shing — buyurtma menejerga keladi.',concept:'3D-konsept',made:'Dizayn va dasturlash —',back:'← Ilgichga qaytish',color:'Rang',size:'O\'lcham',add:'Savatga qo\'shish',drag:'↔ Aylantirish uchun kiyimni torting',d1:'Tarkibi va bichimi',d1t:'100% paxta, futer 480 g/m². Oversayz: tanaga mos bo\'lishi uchun bir o\'lcham kichigini oling.',d2:'Yetkazish va almashtirish',d2t:'Toshkent bo\'ylab buyurtma kuni. O\'lchamni 7 kun ichida almashtirish mumkin.',total:'Jami',checkout:'Telegramda buyurtma berish',m_title:'Buyurtma shunday ko\'rinadi',m_text:'Haqiqiy saytda bu xabar darhol do\'kon Telegramiga ketadi. Demoda shunchaki ko\'rsatamiz.',ok:'Tushunarli',sum:'so\'m',added:'Savatga qo\'shildi',pick:'O\'lchamni tanlang',empty:'Savat bo\'sh',hello:'Assalomu alaykum! Buyurtma bermoqchiman:',cats:{tee:'Futbolka',hoodie:'Xudi',sweat:'Svitshot'},band:'Tashkent streetwear'}
+};
+let lang = 'ru';
+const fmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ') + ' ' + T[lang].sum;
+
+/* ================= FABRIC TEXTURES (drawn on canvas) ================= */
+const SHAPES = {
+  tee: 'M76 50 Q100 66 124 50 L160 62 L190 100 L164 116 L152 102 L152 236 Q100 243 48 236 L48 102 L36 116 L10 100 L40 62 Z',
+  hoodie: 'M74 52 Q100 68 126 52 L158 62 Q174 68 178 88 L190 206 L168 211 L154 118 L154 238 Q100 245 46 238 L46 118 L32 211 L10 206 L22 88 Q26 68 42 62 Z',
+  sweat: 'M76 52 Q100 66 124 52 L158 62 Q174 68 178 88 L190 206 L168 211 L154 118 L154 238 Q100 245 46 238 L46 118 L32 211 L10 206 L22 88 Q26 68 42 62 Z'
+};
+const HOOD_FRONT = 'M70 56 Q100 14 130 56 Q100 76 70 56 Z', HOOD_BACK = 'M66 60 Q100 6 134 60 Q100 92 66 60 Z';
+const TW = 512, TH = 640, S = TW / 200;
+const dark = hex => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114) < 110; };
+const grain = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const d = g.createImageData(128, 128);
+  for (let i = 0; i < d.data.length; i += 4){ const v = 128 + (Math.random() - .5) * 60; d.data[i] = d.data[i+1] = d.data[i+2] = v; d.data[i+3] = 22; } g.putImageData(d, 0, 0); return c; })();
+
+function paintGarment(canvas, p, color, side){
+  const g = canvas.getContext('2d');
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, TW, TH); g.setTransform(S, 0, 0, S, 0, 0);
+  const body = new Path2D(SHAPES[p.type]);
+  const line = dark(color) ? 'rgba(255,255,255,.13)' : 'rgba(0,0,0,.13)';
+  if (p.type === 'hoodie' && side === 'back'){ g.fillStyle = color; g.fill(new Path2D(HOOD_BACK)); }
+  g.fillStyle = color; g.fill(body);
+  g.save(); g.clip(body);
+  // soft folds + side shading
+  const sh = g.createLinearGradient(0, 0, 200, 0);
+  sh.addColorStop(0, 'rgba(0,0,0,.22)'); sh.addColorStop(.18, 'rgba(0,0,0,0)'); sh.addColorStop(.5, 'rgba(255,255,255,.06)'); sh.addColorStop(.82, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.25)');
+  g.fillStyle = sh; g.fillRect(0, 0, 200, 250);
+  for (const [x, w, a] of [[70, 10, .07], [118, 14, .06], [92, 8, .05]]){
+    const f = g.createLinearGradient(x - w, 0, x + w, 0); f.addColorStop(0, 'rgba(0,0,0,0)'); f.addColorStop(.5, `rgba(0,0,0,${a})`); f.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = f; g.fillRect(x - w, 120, w * 2, 125);
+  }
+  g.globalCompositeOperation = 'overlay'; g.fillStyle = g.createPattern(grain, 'repeat'); g.fillRect(0, 0, 200, 250); g.globalCompositeOperation = 'source-over';
+  g.restore();
+  g.strokeStyle = line; g.lineCap = 'round';
+  if (p.type === 'hoodie' && side === 'front'){
+    const hood = new Path2D(HOOD_FRONT); g.fillStyle = color; g.fill(hood); g.fillStyle = 'rgba(0,0,0,.18)'; g.fill(hood);
+    g.lineWidth = 2.2; g.beginPath(); g.moveTo(93, 66); g.lineTo(91, 112); g.moveTo(107, 66); g.lineTo(109, 112); g.stroke();
+    g.lineWidth = 1.6; g.stroke(new Path2D('M70 168 H130 L140 206 H60 Z'));
+  } else if (p.type !== 'hoodie' || side === 'back'){
+    g.lineWidth = 5; g.stroke(new Path2D(side === 'front' ? 'M76 51 Q100 70 124 51' : 'M78 51 Q100 58 122 51'));
+  }
+  if (p.type !== 'tee'){ g.lineWidth = 5; g.beginPath(); g.moveTo(32, 203); g.lineTo(10, 198); g.moveTo(168, 203); g.lineTo(190, 198); g.stroke(); }
+  g.lineWidth = 5; g.stroke(new Path2D('M48 227 Q100 234 152 227'));
+  if (p.print && side === 'front'){
+    const ink = dark(color) ? '#f1efe9' : '#151515';
+    g.fillStyle = ink; g.textAlign = 'center';
+    g.font = `${p.type === 'tee' ? 34 : 30}px UnifrakturMaguntia`; g.fillText(p.print, 100, p.type === 'tee' ? 134 : 128);
+    g.font = '600 6px Inter'; g.globalAlpha = .8;
+    if (g.letterSpacing !== undefined) g.letterSpacing = '2px';
+    g.fillText('TASHKENT', 100, p.type === 'tee' ? 148 : 141); g.globalAlpha = 1;
+    if (g.letterSpacing !== undefined) g.letterSpacing = '0px';
+  }
+}
+
+/* ================= THREE.JS SCENE ================= */
+const canvas = $('gl');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false }); }
+catch (e) { $('nogl').classList.add('on'); }
+
+const scene = new THREE.Scene();
+const BG = new THREE.Color('#ebe8e1');
+scene.background = BG;
+scene.fog = new THREE.Fog(BG, 9, 20);
+const camera = new THREE.PerspectiveCamera(34, innerWidth / innerHeight, .1, 60);
+const items = [];
+const clock = new THREE.Clock();
+const chrome = new THREE.MeshStandardMaterial({ color: '#c9c7c2', metalness: 1, roughness: .22 });
+const darkMetal = new THREE.MeshStandardMaterial({ color: '#2b2a28', metalness: .8, roughness: .35 });
+const RAIL_Y = 2.0, SPACING = 1.08;
+
+if (renderer){
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = .9;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), .04).texture;
+
+  scene.add(new THREE.HemisphereLight('#ffffff', '#cfc8ba', .35));
+  const key = new THREE.DirectionalLight('#fff7ea', 1.7);
+  key.position.set(3.5, 7, 5.5); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -.0004;
+  Object.assign(key.shadow.camera, { left: -6, right: 6, top: 5, bottom: -2, near: 1, far: 20 });
+  scene.add(key);
+  const rim = new THREE.DirectionalLight('#dfe6ff', .9); rim.position.set(-5, 3, -4); scene.add(rim);
+
+  // floor that only receives shadows
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: .16 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+  // clothing rack: rail + two stands
+  const railLen = PRODUCTS.length * SPACING + .9;
+  const rail = new THREE.Mesh(new THREE.CylinderGeometry(.028, .028, railLen, 24), chrome);
+  rail.rotation.z = Math.PI / 2; rail.position.y = RAIL_Y; rail.castShadow = true; scene.add(rail);
+  for (const s of [-1, 1]){
+    const x = s * railLen / 2;
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, RAIL_Y, 20), chrome);
+    post.position.set(x, RAIL_Y / 2, 0); post.castShadow = true; scene.add(post);
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(.045, 20, 16), chrome); cap.position.set(x, RAIL_Y, 0); scene.add(cap);
+    const foot = new THREE.Mesh(new THREE.BoxGeometry(.08, .04, .9), darkMetal); foot.position.set(x, .02, 0); foot.castShadow = true; scene.add(foot);
+  }
+
+  PRODUCTS.forEach((p, i) => items.push(makeItem(p, i)));
+}
+
+function hangerMesh(){
+  const grp = new THREE.Group();
+  const hook = new THREE.Mesh(new THREE.TorusGeometry(.055, .007, 8, 28, Math.PI * 1.35), chrome);
+  hook.rotation.z = -Math.PI * .2; hook.position.set(.02, .07, 0); grp.add(hook);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(.007, .007, .08, 8), chrome); neck.position.y = -.005; grp.add(neck);
+  const path = new THREE.CurvePath();
+  const pts = [[-.44, -.19], [0, -.045], [.44, -.19], [-.44, -.19]].map(([x, y]) => new THREE.Vector3(x, y, 0));
+  for (let k = 0; k < 3; k++) path.add(new THREE.LineCurve3(pts[k], pts[k + 1]));
+  const bar = new THREE.Mesh(new THREE.TubeGeometry(path, 90, .009, 8, false), chrome);
+  bar.castShadow = true; grp.add(bar);
+  return grp;
+}
+
+function clothGeometry(){
+  const geo = new THREE.PlaneGeometry(1, 1.25, 28, 34);
+  const pos = geo.attributes.position, base = new Float32Array(pos.count * 3);
+  for (let i = 0; i < pos.count; i++){
+    const x = pos.getX(i), y = pos.getY(i);
+    const yn = (y + .625) / 1.25; // 0 bottom, 1 top
+    const bulge = .085 * Math.max(0, 1 - (2 * x) ** 2) * (.55 + .45 * Math.sin(Math.PI * Math.min(1, (1 - yn) * 1.4)));
+    pos.setZ(i, bulge);
+    base[i * 3] = x; base[i * 3 + 1] = y; base[i * 3 + 2] = bulge;
+  }
+  geo.computeVertexNormals();
+  geo.userData.base = base;
+  return geo;
+}
+
+function makeItem(p, i){
+  const group = new THREE.Group();
+  const home = new THREE.Vector3((i - (PRODUCTS.length - 1) / 2) * SPACING, RAIL_Y, 0);
+  group.position.copy(home);
+  scene.add(group);
+  group.add(hangerMesh());
+  const cloth = new THREE.Group(); cloth.position.y = -.43; group.add(cloth);
+  const sides = {};
+  for (const side of ['front', 'back']){
+    const cv = document.createElement('canvas'); cv.width = TW; cv.height = TH;
+    paintGarment(cv, p, p.colors[0], side);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    const mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: .5, roughness: .95, metalness: 0, envMapIntensity: .35, side: THREE.FrontSide });
+    const geo = clothGeometry();
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = true;
+    mesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: .5 });
+    if (side === 'back') mesh.rotation.y = Math.PI;
+    mesh.userData.index = i;
+    cloth.add(mesh);
+    sides[side] = { cv, tex, mat, mesh };
+  }
+  return { p, i, group, cloth, sides, home, phase: Math.random() * 6.28, color: 0, hover: 0, fly: 0 };
+}
+
+function recolor(item, ci){
+  item.color = ci;
+  for (const side of ['front', 'back']){ paintGarment(item.sides[side].cv, item.p, item.p.colors[ci], side); item.sides[side].tex.needsUpdate = true; }
+}
+
+/* ================= CAMERA PATH (scroll) ================= */
+const camState = { p: 0, mx: 0, my: 0 };
+const camA = { pos: new THREE.Vector3(0, 1.6, 7.6), look: new THREE.Vector3(0, 1.42, 0) };   // hero: whole rack
+const camB = { pos: new THREE.Vector3(3.1, 1.8, 3.9), look: new THREE.Vector3(-.6, 1.3, 0) }; // story: dramatic side angle
+const lookTmp = new THREE.Vector3();
+function fitHero(){
+  const narrow = innerWidth < 760;
+  // keep the whole rack (≈9 units wide) in frame on desktop; phones show the middle and pan with the mouse/scroll
+  const fitZ = 9.2 / (2 * Math.tan(THREE.MathUtils.degToRad(17)) * (innerWidth / innerHeight));
+  camA.pos.set(0, narrow ? 1.25 : 1.6, narrow ? 8.6 : Math.min(13, Math.max(7.2, fitZ)));
+  camA.look.set(0, narrow ? 1.62 : 1.42, 0);
+  // the header sits right under the demo strip, which wraps to two lines on phones
+  const strip = document.querySelector('.demo');
+  if (strip) document.documentElement.style.setProperty('--strip', strip.offsetHeight + 'px');
+  camB.pos.set(narrow ? 2.2 : 3.1, 1.8, narrow ? 5.2 : 3.9);
+}
+fitHero();
+
+/* ================= INTERACTION ================= */
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(-9, -9);
+let hovered = null, opened = null, dragging = false, dragX = 0, spin = 0;
+const pick = () => { if (!renderer) return null; ray.setFromCamera(ptr, camera);
+  const hits = ray.intersectObjects(items.flatMap(it => [it.sides.front.mesh, it.sides.back.mesh]), false);
+  return hits.length ? items[hits[0].object.userData.index] : null; };
+
+function setHover(it){
+  if (hovered === it) return;
+  hovered = it;
+  $('cRing').classList.toggle('big', !!it && !opened);
+  items.forEach(o => {
+    gsap.to(o, { hover: o === it ? 1 : 0, duration: .7, ease: 'power3.out' });
+    const c = !it || o === it ? 1 : .72;
+    gsap.to([o.sides.front.mat.color, o.sides.back.mat.color], { r: c, g: c, b: c, duration: .5 });
+  });
+}
+
+let overCanvas = false;
+const setPtr = e => { ptr.x = e.clientX / innerWidth * 2 - 1; ptr.y = -(e.clientY / innerHeight) * 2 + 1; overCanvas = e.target === canvas; };
+addEventListener('pointermove', e => {
+  setPtr(e);
+  camState.mx = ptr.x; camState.my = ptr.y;
+  if (dragging && opened){ spin += (e.clientX - dragX) * .012; dragX = e.clientX; }
+});
+canvas.addEventListener('pointerdown', e => { setPtr(e); if (opened){ dragging = true; dragX = e.clientX; } });
+addEventListener('pointerup', () => dragging = false);
+canvas.addEventListener('click', () => { if (opened) return; const it = pick(); if (it) openItem(it); });
+
+/* product open: the garment leaves the rack and floats in front of the camera */
+// where the opened garment floats, in camera space (x: left of centre so the panel fits on the right)
+const flyLocal = () => innerWidth < 760 ? new THREE.Vector3(0, 1.45, -5.6) : new THREE.Vector3(-.72, .5, -3.05);
+const tmpV = new THREE.Vector3(), tmpQ = new THREE.Quaternion(), IDQ = new THREE.Quaternion();
+function openItem(it){
+  if (opened) return;
+  opened = it; spin = 0;
+  setHover(null); $('cRing').classList.remove('big');
+  lenis && lenis.stop();
+  gsap.to(it, { fly: 1, duration: 1.15, ease: 'expo.inOut' });
+  gsap.to('.hero-copy, .scroll-cue, header', { opacity: 0, duration: .4, overwrite: true });
+  items.forEach(o => { if (o !== it){ const c = .45; gsap.to([o.sides.front.mat.color, o.sides.back.mat.color], { r: c, g: c, b: c, duration: .6 }); } });
+  fillPanel();
+  $('pview').classList.add('on'); $('pview').setAttribute('aria-hidden', 'false'); $('pvClose').classList.add('on');
+  gsap.fromTo('#pview', { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: .8, delay: .35, ease: 'power3.out' });
+  gsap.fromTo('#pview > *', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .6, delay: .45, stagger: .05, ease: 'power3.out' });
+}
+function closeItem(){
+  const it = opened; if (!it) return;
+  opened = null; curSize = null;
+  gsap.to('#pview', { opacity: 0, x: 40, duration: .35, ease: 'power2.in' });
+  $('pview').classList.remove('on'); $('pview').setAttribute('aria-hidden', 'true'); $('pvClose').classList.remove('on');
+  gsap.to(it, { fly: 0, duration: 1, ease: 'expo.inOut' });
+  gsap.to(it.cloth.rotation, { y: 0, duration: .8 });
+  gsap.to('header', { opacity: 1, duration: .6, delay: .4 });
+  gsap.to('.hero-copy, .scroll-cue', { opacity: 1, duration: .6, delay: .4, onComplete: () => ScrollTrigger.refresh() });
+  items.forEach(o => gsap.to([o.sides.front.mat.color, o.sides.back.mat.color], { r: 1, g: 1, b: 1, duration: .6 }));
+  lenis && lenis.start();
+}
+
+/* ================= RENDER LOOP ================= */
+function tick(){
+  const t = clock.getElapsedTime();
+  // camera: blend hero -> story pose by scroll, plus mouse parallax
+  const k = gsap.parseEase('power2.inOut')(camState.p);
+  const mx = opened ? 0 : camState.mx * .35, my = opened ? 0 : camState.my * .18;
+  if (!opened){
+    camera.position.lerpVectors(camA.pos, camB.pos, k);
+    camera.position.x += mx; camera.position.y += my;
+    lookTmp.lerpVectors(camA.look, camB.look, k);
+    camera.lookAt(lookTmp);
+  }
+  camera.updateMatrixWorld();
+  if (!opened && !isTouch) setHover(overCanvas ? pick() : null);
+
+  for (const it of items){
+    const isOpen = it === opened;
+    // rack pose: gentle swing, pulled forward when hovered
+    it.group.position.set(it.home.x, it.home.y - it.hover * .03, it.home.z + it.hover * .55);
+    it.group.rotation.set(0, Math.sin(t * .6 + it.phase) * .06 + it.hover * camState.mx * .25, Math.sin(t * .9 + it.phase) * .025 * (1 - it.hover * .6));
+    // flying pose: blend towards a point in front of the camera
+    if (it.fly > 0){
+      tmpV.copy(flyLocal()).applyMatrix4(camera.matrixWorld);
+      it.group.position.lerp(tmpV, it.fly);
+      tmpQ.copy(it.group.quaternion).slerp(camera.quaternion, it.fly);
+      it.group.quaternion.copy(tmpQ);
+    }
+    if (isOpen){
+      it.cloth.rotation.y += ((spin + (dragging ? 0 : Math.sin(t * .7) * .25)) - it.cloth.rotation.y) * .08;
+    }
+    // cloth ripple: the hem moves more than the shoulders
+    for (const side of ['front', 'back']){
+      const geo = it.sides[side].mesh.geometry, pos = geo.attributes.position, b = geo.userData.base;
+      const amp = isOpen ? .018 : .012 + it.hover * .01;
+      for (let v = 0; v < pos.count; v++){
+        const x = b[v * 3], y = b[v * 3 + 1], yn = (y + .625) / 1.25;
+        pos.setZ(v, b[v * 3 + 2] + amp * (1 - yn) * Math.sin(t * 1.7 + y * 4.2 + x * 2.6 + it.phase));
+      }
+      pos.needsUpdate = true; geo.computeVertexNormals();
+    }
+  }
+  renderer.render(scene, camera);
+}
+
+/* ================= UI: panel, cart, i18n ================= */
+let curSize = null, cart = [];
+function fillPanel(){
+  const it = opened; if (!it) return;
+  $('pvCat').textContent = T[lang].cats[it.p.type];
+  $('pvName').textContent = it.p[lang];
+  $('pvPrice').textContent = fmt(it.p.price);
+  $('pvColors').innerHTML = it.p.colors.map((c, k) => `<button style="background:${c}" class="${k === it.color ? 'on' : ''}" data-c="${k}" aria-label="${c}"></button>`).join('');
+  $('pvSizes').innerHTML = SIZES.map(s => `<button class="${s === curSize ? 'on' : ''}" data-s="${s}">${s}</button>`).join('');
+}
+function renderCart(){
+  $('cartCount').textContent = cart.reduce((a, c) => a + c.q, 0);
+  $('drTotal').textContent = fmt(cart.reduce((a, c) => a + c.q * PRODUCTS[c.i].price, 0));
+  $('checkout').disabled = !cart.length;
+  $('drItems').innerHTML = cart.length ? cart.map((c, k) => { const p = PRODUCTS[c.i];
+    return `<div class="ci"><i style="background:${p.colors[c.c]}"></i><div><b>${p[lang]}</b><small>${c.s} · ${c.q} × ${fmt(p.price)}</small></div><button class="rm" data-rm="${k}">×</button></div>`; }).join('')
+    : `<div class="empty">${T[lang].empty}</div>`;
+}
+function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove('on'), 1600); }
+const openCart = on => { $('drawer').classList.toggle('on', on); $('overlay').classList.toggle('on', on); if (lenis) on ? lenis.stop() : (!opened && lenis.start()); };
+
+function splitTitle(){
+  document.querySelectorAll('#heroTitle .line').forEach(l => { l.innerHTML = [...l.textContent].map(ch => `<span class="ch">${ch === ' ' ? '&nbsp;' : ch}</span>`).join(''); });
+}
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i]').forEach(el => { const v = T[lang][el.dataset.i]; if (typeof v === 'string') el.textContent = v; });
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
+  const w = Array(6).fill(`<span>${T[lang].band}</span>`).join(''); $('band').innerHTML = w + w;
+  renderCart(); fillPanel();
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button,[data-scroll]'); if (!b) return;
+  if (b.dataset.l){ lang = b.dataset.l; applyLang(); }
+  else if (b.dataset.c !== undefined && opened){ recolor(opened, +b.dataset.c); fillPanel(); }
+  else if (b.dataset.s){ curSize = b.dataset.s; fillPanel(); }
+  else if (b.dataset.rm !== undefined){ cart.splice(+b.dataset.rm, 1); renderCart(); }
+  else if (b.dataset.scroll !== undefined){ e.preventDefault(); if (opened) closeItem(); const to = b.dataset.scroll === '0' ? 0 : '#' + b.dataset.scroll; lenis ? lenis.scrollTo(to, { duration: 1.6 }) : scrollTo(0, 0); }
+});
+$('pvClose').onclick = closeItem;
+addEventListener('keydown', e => { if (e.key === 'Escape') closeItem(); });
+$('heroBtn').onclick = () => { const it = items.find(o => o.p.hero); if (it) openItem(it); };
+$('pvAdd').onclick = () => {
+  if (!curSize){ toast(T[lang].pick); return; }
+  const it = opened, ex = cart.find(c => c.i === it.i && c.c === it.color && c.s === curSize);
+  ex ? ex.q++ : cart.push({ i: it.i, c: it.color, s: curSize, q: 1 });
+  renderCart(); toast(T[lang].added);
+  gsap.fromTo('#cartCount', { scale: 1.6 }, { scale: 1, duration: .5, ease: 'back.out(3)' });
+};
+$('cartBtn').onclick = () => openCart(true);
+$('drClose').onclick = $('overlay').onclick = () => openCart(false);
+$('checkout').onclick = () => {
+  const lines = cart.map(c => `• ${PRODUCTS[c.i][lang]} — ${c.s} × ${c.q}`).join('\n');
+  $('orderText').textContent = `${T[lang].hello}\n${lines}\n\n${T[lang].total}: ${$('drTotal').textContent}`;
+  openCart(false); $('modal').classList.add('on');
+};
+$('mOk').onclick = () => $('modal').classList.remove('on');
+
+/* custom cursor with lag */
+const cur = { x: innerWidth / 2, y: innerHeight / 2, rx: innerWidth / 2, ry: innerHeight / 2 };
+addEventListener('pointermove', e => { cur.x = e.clientX; cur.y = e.clientY; });
+gsap.ticker.add(() => {
+  cur.rx += (cur.x - cur.rx) * .16; cur.ry += (cur.y - cur.ry) * .16;
+  $('cDot').style.transform = `translate(${cur.x}px,${cur.y}px) translate(-50%,-50%)`;
+  $('cRing').style.transform = `translate(${cur.rx}px,${cur.ry}px) translate(-50%,-50%)`;
+});
+
+/* smooth scroll + scroll-driven scenes */
+const lenis = window.Lenis && !reduce ? new window.Lenis({ lerp: .085, wheelMultiplier: .9 }) : null;
+if (lenis){ lenis.on('scroll', ScrollTrigger.update); gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0); }
+
+ScrollTrigger.create({ trigger: '#story', start: 'top bottom', end: 'bottom bottom', scrub: true, onUpdate: s => camState.p = s.progress });
+ScrollTrigger.create({ start: 40, onToggle: s => $('hdr').classList.toggle('stuck', s.isActive) });
+gsap.to('#storyText span', { opacity: 1, stagger: .5, ease: 'none', scrollTrigger: { trigger: '#story', start: 'top 30%', end: 'bottom bottom', scrub: true } });
+gsap.to('.scroll-cue', { opacity: 0, scrollTrigger: { trigger: '.hero', start: 'top top', end: '20% top', scrub: true } });
+gsap.to('.hero-copy', { yPercent: -40, opacity: 0, scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+document.querySelectorAll('.num').forEach(n => gsap.to(n, { innerText: +n.dataset.to, duration: 1.6, ease: 'power2.out', snap: { innerText: 1 }, scrollTrigger: { trigger: n, start: 'top 85%' } }));
+gsap.to('#band', { xPercent: -50, ease: 'none', repeat: -1, duration: 28 });
+gsap.from('.cta h2', { y: 80, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: '.cta', start: 'top 75%' } });
+
+/* resize */
+addEventListener('resize', () => {
+  if (!renderer) return;
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight); fitHero(); ScrollTrigger.refresh();
+});
+
+window.__tosh = { items, scene, camera, camState, tick, openItem, closeItem };
+/* ================= BOOT: preloader -> intro ================= */
+splitTitle();
+applyLang();
+camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+(async () => {
+  const prog = { v: 0 };
+  const upd = () => { $('loadCount').textContent = Math.round(prog.v) + '%'; $('loadBar').style.width = prog.v + '%'; };
+  gsap.to(prog, { v: 70, duration: 1.2, ease: 'power1.out', onUpdate: upd });
+  try { await Promise.all([document.fonts.load('40px UnifrakturMaguntia'), document.fonts.load('600 6px Inter'), document.fonts.ready]); } catch (e) {}
+  items.forEach(it => recolor(it, 0)); // repaint now that the gothic font is ready
+  if (renderer){ renderer.setAnimationLoop(() => { try { tick(); } catch (e) { window.__err = window.__err || String(e.stack || e); } }); }
+  await gsap.to(prog, { v: 100, duration: .5, ease: 'power2.out', onUpdate: upd });
+  const tl = gsap.timeline();
+  tl.to('#loader', { yPercent: -100, duration: 1, ease: 'expo.inOut' })
+    .from(camA.pos, { z: camA.pos.z + 5, y: camA.pos.y + 1.2, duration: 2.2, ease: 'expo.out' }, '-=.6')
+    .from('#heroTitle .ch', { yPercent: 115, duration: 1, stagger: .025, ease: 'expo.out' }, '-=1.9')
+    .from('.kicker, .hero-side, .scroll-cue, header', { opacity: 0, y: 20, duration: .8, stagger: .08, ease: 'power3.out' }, '-=1.4')
+    .from(items.map(it => it.home), { y: RAIL_Y + 3, duration: 1.4, stagger: .07, ease: 'back.out(1.1)' }, '-=1.9')
+    .set('#loader', { display: 'none' });
+})();
+</script>
+</body>
+</html>
