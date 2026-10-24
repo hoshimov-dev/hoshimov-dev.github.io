@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cavalier — демо-макет сайта</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0e1726; --navy-2:#16223a; --ivory:#f6f2ea; --paper:#fffdf9; --brass:#b08d57; --brass-dk:#8a6b3c;
+  --ink:#1b1f27; --muted:#6b6f78; --line:#e4ddd0; --sale:#b23a3a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--ivory);color:var(--ink);line-height:1.55;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.serif{font-family:'Cormorant Garamond',serif}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--brass)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 28px;border:1px solid transparent;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;transition:.25s}
+.btn-dark{background:var(--navy);color:var(--ivory)}
+.btn-dark:hover{background:var(--brass)}
+.btn-light{background:var(--ivory);color:var(--navy)}
+.btn-light:hover{background:var(--brass);color:#fff}
+.btn-line{border-color:currentColor;background:transparent}
+.btn-line:hover{background:var(--ivory);color:var(--navy)}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* DEMO STRIP */
+.demo{background:var(--brass);color:#fff;font-size:12px;text-align:center;padding:8px 14px;line-height:1.4}
+.demo a{text-decoration:underline;font-weight:700}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:40;background:rgba(246,242,234,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{display:flex;flex-direction:column;line-height:1}
+.logo b{font:700 26px 'Cormorant Garamond',serif;letter-spacing:.32em;color:var(--navy)}
+.logo span{font-size:9px;letter-spacing:.42em;text-transform:uppercase;color:var(--brass);margin-top:4px}
+.links{display:flex;gap:30px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.links a{color:var(--navy);opacity:.8}
+.links a:hover{opacity:1;color:var(--brass)}
+.tools{display:flex;align-items:center;gap:8px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{border:0;background:none;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:700;color:var(--muted)}
+.lang button.on{background:var(--navy);color:var(--ivory)}
+.cart-btn{position:relative;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.cart-btn em{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--brass);color:#fff;font:700 10px/19px 'Manrope';font-style:normal;display:none}
+.cart-btn em.on{display:block}
+@media (max-width:860px){.links{display:none}}
+
+/* HERO */
+.hero{position:relative;min-height:min(88vh,820px);display:flex;align-items:flex-end;color:var(--ivory);overflow:hidden;background:var(--navy)}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:.72;transform:scale(1.04);animation:slow 18s ease-out forwards}
+@keyframes slow{to{transform:scale(1)}}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(14,23,38,.92) 0%,rgba(14,23,38,.35) 50%,rgba(14,23,38,.15) 100%)}
+.hero .wrap{position:relative;z-index:1;padding-bottom:70px;width:100%}
+.hero h1{font:600 clamp(46px,8vw,104px)/.95 'Cormorant Garamond',serif;margin:14px 0 18px;max-width:900px}
+.hero h1 i{color:#d8bd8a}
+.hero p{max-width:480px;font-size:17px;opacity:.88;margin-bottom:30px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:12px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:26px;margin-top:44px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.hero-meta span{display:flex;align-items:center;gap:8px}
+
+/* PERKS */
+.perks{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);background:var(--paper)}
+.perk{padding:26px 22px;border-right:1px solid var(--line);display:flex;gap:14px;align-items:flex-start}
+.perk:last-child{border-right:0}
+.perk svg{color:var(--brass);flex:none;margin-top:2px}
+.perk b{display:block;font-size:14px;color:var(--navy)}
+.perk small{color:var(--muted);font-size:13px}
+@media (max-width:860px){.perks{grid-template-columns:1fr 1fr}.perk:nth-child(2){border-right:0}.perk:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media (max-width:480px){.perks{grid-template-columns:1fr}.perk{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* SECTIONS */
+section.block{padding:96px 0}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:38px}
+.head h2{font:600 clamp(34px,4.6vw,54px)/1.05 'Cormorant Garamond',serif;color:var(--navy);margin-top:10px}
+.head p{color:var(--muted);max-width:380px;font-size:15px}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:30px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--paper);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;color:var(--navy);transition:.2s}
+.chip:hover{border-color:var(--navy)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:var(--ivory)}
+.chip.sale{color:var(--sale)}
+.chip.sale.on{background:var(--sale);border-color:var(--sale);color:#fff}
+
+/* PRODUCTS */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:28px 22px}
+.card{display:flex;flex-direction:column}
+.ph{position:relative;aspect-ratio:3/4;overflow:hidden;background:#e9e3d8}
+.ph img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.card:hover .ph img{transform:scale(1.06)}
+.badge{position:absolute;top:12px;left:12px;padding:5px 10px;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--ivory);color:var(--navy)}
+.badge.sale{background:var(--sale);color:#fff}
+.quick{position:absolute;left:12px;right:12px;bottom:12px;opacity:0;transform:translateY(10px);transition:.3s}
+.card:hover .quick,.card:focus-within .quick{opacity:1;transform:none}
+.quick .btn{width:100%;padding:13px}
+.info{padding:14px 2px 0}
+.info h3{font-size:15px;font-weight:600;color:var(--navy)}
+.price{margin-top:4px;font-size:15px;font-weight:700}
+.price s{color:var(--muted);font-weight:500;margin-left:8px;font-size:13px}
+.price.red{color:var(--sale)}
+.sizes{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.sizes button{min-width:36px;height:30px;border:1px solid var(--line);background:var(--paper);font-size:11px;font-weight:700;color:var(--navy)}
+.sizes button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+@media (max-width:560px){
+  .grid{grid-template-columns:1fr 1fr;gap:24px 12px}
+  .info h3{font-size:13px}.price{font-size:13px}.price s{display:block;margin:0}
+  .sizes button{min-width:30px;height:28px}
+}
+@media (hover:none){.quick{opacity:1;transform:none;left:8px;right:8px;bottom:8px}.quick .btn{background:rgba(14,23,38,.88);color:var(--ivory);padding:11px 8px;font-size:10px}}
+
+/* LOOKBOOK */
+.looks{background:var(--navy);color:var(--ivory)}
+.looks .head h2{color:var(--ivory)}
+.looks .head p{color:#a9b0bf}
+.look-grid{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:18px}
+.look{position:relative;overflow:hidden;min-height:440px}
+.look img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.look:hover img{transform:scale(1.05)}
+.look::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(14,23,38,.85),transparent 55%)}
+.look div{position:absolute;left:22px;right:22px;bottom:22px;z-index:1}
+.look h4{font:600 30px 'Cormorant Garamond',serif}
+.look small{font-size:13px;opacity:.8}
+@media (max-width:860px){.look-grid{grid-template-columns:1fr}.look{min-height:360px}}
+
+/* STORES */
+.stores{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:22px}
+.store{background:var(--paper);border:1px solid var(--line);padding:30px}
+.store h4{font:600 26px 'Cormorant Garamond',serif;color:var(--navy);margin:8px 0 12px}
+.store p{color:var(--muted);font-size:14px;margin-bottom:6px;display:flex;gap:10px;align-items:flex-start}
+.store p svg{color:var(--brass);flex:none;margin-top:2px}
+.store .btn{margin-top:18px;padding:12px 18px}
+.store-photo{min-height:300px;background:center/cover url('https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=900&q=70')}
+@media (max-width:860px){.stores{grid-template-columns:1fr}}
+
+/* DELIVERY */
+.deliv{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.dl{border-top:2px solid var(--navy);padding-top:22px}
+.dl b{font:600 28px 'Cormorant Garamond',serif;color:var(--navy);display:block;margin-bottom:6px}
+.dl p{color:var(--muted);font-size:14px}
+@media (max-width:760px){.deliv{grid-template-columns:1fr}}
+
+/* REVIEWS PLACEHOLDER */
+.rev{margin-top:56px;padding:34px;border:1px dashed var(--brass);text-align:center;color:var(--muted);font-size:14px;background:rgba(176,141,87,.06)}
+.rev b{color:var(--navy);display:block;font:600 24px 'Cormorant Garamond',serif;margin-bottom:6px}
+
+/* CTA */
+.cta{background:var(--navy-2);color:var(--ivory);text-align:center;padding:90px 20px}
+.cta h2{font:600 clamp(34px,5vw,60px)/1.05 'Cormorant Garamond',serif;margin:12px auto 16px;max-width:760px}
+.cta p{opacity:.8;margin:0 auto 30px;max-width:460px}
+
+footer{background:var(--navy);color:#a9b0bf;padding:44px 0;font-size:13px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;align-items:center}
+.foot .logo b{color:var(--ivory)}
+.credit{border-top:1px solid rgba(255,255,255,.1);margin-top:26px;padding-top:20px;text-align:center;font-size:12px}
+.credit a{color:#d8bd8a;font-weight:700}
+
+/* DRAWER */
+.overlay{position:fixed;inset:0;background:rgba(14,23,38,.55);z-index:60;opacity:0;visibility:hidden;transition:.3s}
+.overlay.on{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--paper);z-index:70;transform:translateX(100%);transition:transform .4s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.dr-head{display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border-bottom:1px solid var(--line)}
+.dr-head h3{font:600 26px 'Cormorant Garamond',serif;color:var(--navy)}
+.x{width:38px;height:38px;border:1px solid var(--line);background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.dr-items{flex:1;overflow-y:auto;padding:18px 24px}
+.ci{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.ci img{width:72px;height:92px;object-fit:cover}
+.ci h5{font-size:14px;color:var(--navy)}
+.ci small{color:var(--muted);font-size:12px}
+.qty{display:flex;align-items:center;gap:10px;margin-top:8px}
+.qty button{width:28px;height:28px;border:1px solid var(--line);background:none;color:var(--navy)}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+.dr-foot{padding:22px 24px;border-top:1px solid var(--line)}
+.total{display:flex;justify-content:space-between;font-weight:700;color:var(--navy);margin-bottom:14px;font-size:16px}
+.dr-foot .btn{width:100%}
+.dr-foot .btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* MODAL */
+.modal{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(14,23,38,.6)}
+.modal.on{display:flex}
+.mbox{background:var(--paper);max-width:440px;width:100%;padding:30px;position:relative}
+.mbox h3{font:600 28px 'Cormorant Garamond',serif;color:var(--navy);margin-bottom:8px}
+.mbox p{color:var(--muted);font-size:14px;margin-bottom:14px}
+.mbox pre{white-space:pre-wrap;background:var(--ivory);border-left:3px solid var(--brass);padding:14px;font:13px/1.55 'Manrope',sans-serif;color:var(--ink);margin-bottom:18px}
+.mbox .x{position:absolute;top:14px;right:14px}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--navy);color:var(--ivory);padding:13px 22px;font-size:13px;font-weight:600;z-index:90;transition:transform .3s}
+.toast.on{transform:translate(-50%,0)}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s,transform .8s}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="demo" data-i="demo">Это демо-макет сайта для Cavalier, сделанный Ilhom Hoshimov. Не официальный сайт магазина, цены и товары для примера. <a href="https://lamineyamaljan-glitch.github.io/xoshimov.github.io/" target="_blank" rel="noopener">Портфолио</a></div>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="logo"><b>CAVALIER</b><span data-i="logo_sub">Мужская одежда</span></a>
+    <nav class="links">
+      <a href="#catalog" data-i="nav_cat">Коллекция</a>
+      <a href="#looks" data-i="nav_looks">Образы</a>
+      <a href="#stores" data-i="nav_stores">Магазины</a>
+      <a href="#delivery" data-i="nav_deliv">Доставка</a>
+    </nav>
+    <div class="tools">
+      <div class="lang"><button data-l="ru" class="on">RU</button><button data-l="uz">UZ</button></div>
+      <button class="cart-btn" id="cartBtn" aria-label="Корзина">
+        <svg class="i" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        <em id="cartCount">0</em>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=1800&q=75" alt="">
+  <div class="wrap">
+    <span class="eyebrow" style="color:#d8bd8a" data-i="hero_eyebrow">Новая коллекция · Осень 2026</span>
+    <h1 data-i-html="hero_title">Соберём <i>элегантный</i> образ</h1>
+    <p data-i="hero_text">Костюмы, рубашки, верхняя одежда и обувь для мужчин, которые ценят детали. Два магазина в Ташкенте и доставка по всему миру.</p>
+    <div class="ctas">
+      <a href="#catalog" class="btn btn-light" data-i="hero_cta">Смотреть коллекцию</a>
+      <a href="https://t.me/cavalier_collection" target="_blank" rel="noopener" class="btn btn-line" data-i="hero_tg">Telegram-канал</a>
+    </div>
+    <div class="hero-meta">
+      <span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/></svg><span data-i="meta_stores">2 магазина в Ташкенте</span></span>
+      <span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>10:00 — 22:00</span>
+      <span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>World Delivery</span>
+    </div>
+  </div>
+</section>
+
+<div class="perks">
+  <div class="perk"><svg class="i" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4 8 4 8-4z"/><path d="M4 7v10l8 4 8-4V7"/></svg><div><b data-i="p1">Доставка по Ташкенту</b><small data-i="p1s">В день заказа</small></div></div>
+  <div class="perk"><svg class="i" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg><div><b data-i="p2">Примерка в магазине</b><small data-i="p2s">Подгоним по фигуре</small></div></div>
+  <div class="perk"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg><div><b data-i="p3">Обмен 14 дней</b><small data-i="p3s">Если не подошёл размер</small></div></div>
+  <div class="perk"><svg class="i" viewBox="0 0 24 24"><path d="M21 5L2 12l7 2 2 7 10-16z"/></svg><div><b data-i="p4">Заказ в Telegram</b><small data-i="p4s">Ответим за 5 минут</small></div></div>
+</div>
+
+<section class="block" id="catalog">
+  <div class="wrap">
+    <div class="head reveal">
+      <div><span class="eyebrow" data-i="cat_eyebrow">Каталог</span><h2 data-i="cat_title">Коллекция Cavalier</h2></div>
+      <p data-i="cat_text">Выберите размер и добавьте в корзину — заказ придёт менеджеру в Telegram с полным списком.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="block looks" id="looks">
+  <div class="wrap">
+    <div class="head reveal">
+      <div><span class="eyebrow" data-i="looks_eyebrow">Образы недели</span><h2 data-i="looks_title">Готовые образы от стилиста</h2></div>
+      <p data-i="looks_text">Не знаете, что с чем сочетать? Возьмите образ целиком — мы соберём его к вашему приходу.</p>
+    </div>
+    <div class="look-grid">
+      <div class="look reveal"><img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1000&q=70" alt=""><div><h4 data-i="l1">Деловой</h4><small data-i="l1s">Костюм · белая рубашка · туфли</small></div></div>
+      <div class="look reveal"><img src="https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?auto=format&fit=crop&w=800&q=70" alt=""><div><h4 data-i="l2">Вечерний</h4><small data-i="l2s">Тёмный пиджак · водолазка</small></div></div>
+      <div class="look reveal"><img src="https://images.unsplash.com/photo-1589310243389-96a5483213a8?auto=format&fit=crop&w=800&q=70" alt=""><div><h4 data-i="l3">На каждый день</h4><small data-i="l3s">Рубашка · джинсы · кеды</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="stores">
+  <div class="wrap">
+    <div class="head reveal">
+      <div><span class="eyebrow" data-i="st_eyebrow">Адреса</span><h2 data-i="st_title">Наши магазины</h2></div>
+      <p data-i="st_text">Приходите на примерку — поможем подобрать размер и соберём образ.</p>
+    </div>
+    <div class="stores">
+      <div class="store reveal">
+        <span class="eyebrow" data-i="st1_label">Магазин на Глинке</span>
+        <h4 data-i="st1_addr">ул. Братислава, 9А</h4>
+        <p><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i="hours">Ежедневно 10:00 — 22:00</span></p>
+        <p><svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>+998 77 444-96-96</p>
+        <a class="btn btn-dark" target="_blank" rel="noopener" href="https://yandex.uz/maps/?text=%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C%20%D1%83%D0%BB.%20%D0%91%D1%80%D0%B0%D1%82%D0%B8%D1%81%D0%BB%D0%B0%D0%B2%D0%B0%209%D0%90" data-i="route">Проложить маршрут</a>
+      </div>
+      <div class="store reveal">
+        <span class="eyebrow" data-i="st2_label">Магазин на Улугбека</span>
+        <h4 data-i="st2_addr">ул. Мирзо Улугбека, 109</h4>
+        <p><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i="hours">Ежедневно 10:00 — 22:00</span></p>
+        <p><svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>+998 77 444-96-96</p>
+        <a class="btn btn-dark" target="_blank" rel="noopener" href="https://yandex.uz/maps/?text=%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C%20%D1%83%D0%BB.%20%D0%9C%D0%B8%D1%80%D0%B7%D0%BE%20%D0%A3%D0%BB%D1%83%D0%B3%D0%B1%D0%B5%D0%BA%D0%B0%20109" data-i="route">Проложить маршрут</a>
+      </div>
+      <div class="store-photo reveal" role="img" aria-label=""></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="delivery" style="padding-top:0">
+  <div class="wrap">
+    <div class="head reveal">
+      <div><span class="eyebrow" data-i="dl_eyebrow">Доставка</span><h2 data-i="dl_title">Привезём куда угодно</h2></div>
+    </div>
+    <div class="deliv">
+      <div class="dl reveal"><b data-i="d1">Ташкент</b><p data-i="d1s">Курьером в день заказа. Можно примерить при курьере.</p></div>
+      <div class="dl reveal"><b data-i="d2">Узбекистан</b><p data-i="d2s">Во все регионы за 1–3 дня через почтовые службы.</p></div>
+      <div class="dl reveal"><b>World Delivery</b><p data-i="d3s">Отправляем в Россию, Казахстан, Европу и США.</p></div>
+    </div>
+    <div class="rev reveal"><b data-i="rev_t">Здесь будут ваши отзывы</b><span data-i="rev_s">В настоящем сайте сюда подтянутся реальные отзывы клиентов из вашего хайлайта «Отзывы» в Instagram.</span></div>
+  </div>
+</section>
+
+<section class="cta">
+  <span class="eyebrow" style="color:#d8bd8a" data-i="cta_eyebrow">Outlet −50%</span>
+  <h2 data-i="cta_title">Прошлые коллекции со скидкой до 50%</h2>
+  <p data-i="cta_text">Размеры заканчиваются быстро — смотрите, что осталось.</p>
+  <button class="btn btn-light" id="saleBtn" data-i="cta_btn">Смотреть Outlet</button>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="logo"><b>CAVALIER</b><span data-i="logo_sub">Мужская одежда</span></div>
+      <div>+998 77 444-96-96 · <a href="https://t.me/cavalier_collection" target="_blank" rel="noopener">Telegram</a> · <a href="https://www.instagram.com/cavalier.uz/" target="_blank" rel="noopener">Instagram</a></div>
+    </div>
+    <div class="credit"><span data-i="credit">Демо-макет. Дизайн и разработка —</span> <a href="https://lamineyamaljan-glitch.github.io/xoshimov.github.io/" target="_blank" rel="noopener">Ilhom Hoshimov</a> · <a href="https://t.me/XSH_11" target="_blank" rel="noopener">@XSH_11</a></div>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Корзина">
+  <div class="dr-head"><h3 data-i="cart_title">Корзина</h3><button class="x" id="closeCart" aria-label="Закрыть"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dr-items" id="items"></div>
+  <div class="dr-foot">
+    <div class="total"><span data-i="cart_total">Итого</span><span id="total">0</span></div>
+    <button class="btn btn-dark" id="checkout" disabled>
+      <svg class="i" viewBox="0 0 24 24"><path d="M21 5L2 12l7 2 2 7 10-16z"/></svg><span data-i="checkout">Заказать в Telegram</span>
+    </button>
+  </div>
+</aside>
+
+<div class="modal" id="modal">
+  <div class="mbox">
+    <button class="x" id="closeModal" aria-label="Закрыть"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h3 data-i="m_title">Так выглядит заказ</h3>
+    <p data-i="m_text">На настоящем сайте это сообщение сразу придёт менеджеру Cavalier в Telegram. В демо мы просто показываем его здесь.</p>
+    <pre id="orderText"></pre>
+    <button class="btn btn-dark" style="width:100%" id="modalOk" data-i="m_ok">Понятно</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const IMG = id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=700&q=70`;
+const PRODUCTS = [
+  { id:1,  cat:'suits',  img:'1594938298603-c8148c4dae35', name:{ru:'Костюм-тройка «Navy»',uz:'Uchlik kostyum «Navy»'}, price:2900000, old:0, tag:'new', sizes:['46','48','50','52','54'] },
+  { id:2,  cat:'suits',  img:'1507679799987-c73779587ccf', name:{ru:'Костюм классический графит',uz:'Klassik kostyum, grafit'}, price:2400000, old:0, tag:'', sizes:['46','48','50','52'] },
+  { id:3,  cat:'suits',  img:'1598808503746-f34c53b9323e', name:{ru:'Костюм вечерний чёрный',uz:'Kechki qora kostyum'}, price:1650000, old:3300000, tag:'sale', sizes:['48','50'] },
+  { id:4,  cat:'shirts', img:'1621072156002-e2fccdc0b176', name:{ru:'Рубашка белая slim fit',uz:'Oq ko\'ylak, slim fit'}, price:420000, old:0, tag:'', sizes:['S','M','L','XL'] },
+  { id:5,  cat:'shirts', img:'1596755094514-f87e34085b2c', name:{ru:'Рубашка джинсовая',uz:'Jinsi ko\'ylak'}, price:380000, old:0, tag:'new', sizes:['M','L','XL'] },
+  { id:6,  cat:'shirts', img:'1602810318383-e386cc2a3ccf', name:{ru:'Трикотаж, набор цветов',uz:'Trikotaj, turli ranglar'}, price:240000, old:480000, tag:'sale', sizes:['S','M','L'] },
+  { id:7,  cat:'pants',  img:'1624378439575-d8705ad7ae80', name:{ru:'Джинсы прямые индиго',uz:'To\'g\'ri jinsi shim, indigo'}, price:450000, old:0, tag:'', sizes:['30','32','34','36'] },
+  { id:8,  cat:'outer',  img:'1611312449408-fcece27cdbb7', name:{ru:'Джинсовая куртка',uz:'Jinsi kurtka'}, price:690000, old:0, tag:'new', sizes:['M','L','XL'] },
+  { id:9,  cat:'outer',  img:'1617127365659-c47fa864d8bc', name:{ru:'Пиджак тёмный casual',uz:'To\'q rangli casual pidjak'}, price:890000, old:1780000, tag:'sale', sizes:['48','50','52'] },
+  { id:10, cat:'shoes',  img:'1614252235316-8c857d38b5f4', name:{ru:'Туфли кожаные коричневые',uz:'Jigarrang charm tufli'}, price:780000, old:0, tag:'', sizes:['41','42','43','44'] },
+  { id:11, cat:'shirts', img:'1626497764746-6dc36546b388', name:{ru:'Рубашки льняные, 4 цвета',uz:'Zig\'ir ko\'ylaklar, 4 rang'}, price:350000, old:0, tag:'', sizes:['M','L','XL'] },
+  { id:12, cat:'outer',  img:'1520975954732-35dd22299614', name:{ru:'Пальто шерстяное',uz:'Jun palto'}, price:1450000, old:0, tag:'new', sizes:['48','50','52'] }
+];
+const CATS = [['all','Все','Barchasi'],['suits','Костюмы','Kostyumlar'],['shirts','Рубашки','Ko\'ylaklar'],['pants','Брюки и джинсы','Shimlar'],['outer','Верхняя одежда','Ustki kiyim'],['shoes','Обувь','Poyabzal'],['sale','Outlet −50%','Outlet −50%']];
+
+const T = {
+  ru:{demo:'Это демо-макет сайта для Cavalier, сделанный Ilhom Hoshimov. Не официальный сайт магазина, цены и товары для примера.',logo_sub:'Мужская одежда',nav_cat:'Коллекция',nav_looks:'Образы',nav_stores:'Магазины',nav_deliv:'Доставка',hero_eyebrow:'Новая коллекция · Осень 2026',hero_title:'Соберём <i>элегантный</i> образ',hero_text:'Костюмы, рубашки, верхняя одежда и обувь для мужчин, которые ценят детали. Два магазина в Ташкенте и доставка по всему миру.',hero_cta:'Смотреть коллекцию',hero_tg:'Telegram-канал',meta_stores:'2 магазина в Ташкенте',p1:'Доставка по Ташкенту',p1s:'В день заказа',p2:'Примерка в магазине',p2s:'Подгоним по фигуре',p3:'Обмен 14 дней',p3s:'Если не подошёл размер',p4:'Заказ в Telegram',p4s:'Ответим за 5 минут',cat_eyebrow:'Каталог',cat_title:'Коллекция Cavalier',cat_text:'Выберите размер и добавьте в корзину — заказ придёт менеджеру в Telegram с полным списком.',looks_eyebrow:'Образы недели',looks_title:'Готовые образы от стилиста',looks_text:'Не знаете, что с чем сочетать? Возьмите образ целиком — мы соберём его к вашему приходу.',l1:'Деловой',l1s:'Костюм · белая рубашка · туфли',l2:'Вечерний',l2s:'Тёмный пиджак · водолазка',l3:'На каждый день',l3s:'Рубашка · джинсы · кеды',st_eyebrow:'Адреса',st_title:'Наши магазины',st_text:'Приходите на примерку — поможем подобрать размер и соберём образ.',st1_label:'Магазин на Глинке',st2_label:'Магазин на Улугбека',st1_addr:'ул. Братислава, 9А',st2_addr:'ул. Мирзо Улугбека, 109',hours:'Ежедневно 10:00 — 22:00',route:'Проложить маршрут',dl_eyebrow:'Доставка',dl_title:'Привезём куда угодно',d1:'Ташкент',d1s:'Курьером в день заказа. Можно примерить при курьере.',d2:'Узбекистан',d2s:'Во все регионы за 1–3 дня через почтовые службы.',d3s:'Отправляем в Россию, Казахстан, Европу и США.',rev_t:'Здесь будут ваши отзывы',rev_s:'В настоящем сайте сюда подтянутся реальные отзывы клиентов из вашего хайлайта «Отзывы» в Instagram.',cta_eyebrow:'Outlet −50%',cta_title:'Прошлые коллекции со скидкой до 50%',cta_text:'Размеры заканчиваются быстро — смотрите, что осталось.',cta_btn:'Смотреть Outlet',credit:'Демо-макет. Дизайн и разработка —',cart_title:'Корзина',cart_total:'Итого',checkout:'Заказать в Telegram',m_title:'Так выглядит заказ',m_text:'На настоящем сайте это сообщение сразу придёт менеджеру Cavalier в Telegram. В демо мы просто показываем его здесь.',m_ok:'Понятно',add:'В корзину',size:'Размер',pick:'Сначала выберите размер',added:'Добавлено в корзину',empty:'Корзина пока пуста',sum:'сум',new:'New',sale:'Sale',order_hi:'Здравствуйте! Хочу заказать:',order_total:'Итого',order_end:'Имя и адрес доставки напишу в ответ.'},
+  uz:{demo:'Bu Cavalier uchun Ilhom Hoshimov tayyorlagan demo-sayt. Do\'konning rasmiy sayti emas, narx va mahsulotlar namuna uchun.',logo_sub:'Erkaklar kiyimi',nav_cat:'Kolleksiya',nav_looks:'Obrazlar',nav_stores:'Do\'konlar',nav_deliv:'Yetkazish',hero_eyebrow:'Yangi kolleksiya · Kuz 2026',hero_title:'<i>Nafis</i> obrazni birga yig\'amiz',hero_text:'Detallarni qadrlaydigan erkaklar uchun kostyumlar, ko\'ylaklar, ustki kiyim va poyabzal. Toshkentda ikki do\'kon va butun dunyo bo\'ylab yetkazib berish.',hero_cta:'Kolleksiyani ko\'rish',hero_tg:'Telegram-kanal',meta_stores:'Toshkentda 2 ta do\'kon',p1:'Toshkent bo\'ylab yetkazish',p1s:'Buyurtma kunida',p2:'Do\'konda kiyib ko\'rish',p2s:'Qomatingizga moslaymiz',p3:'14 kun ichida almashtirish',p3s:'O\'lcham to\'g\'ri kelmasa',p4:'Telegram orqali buyurtma',p4s:'5 daqiqada javob beramiz',cat_eyebrow:'Katalog',cat_title:'Cavalier kolleksiyasi',cat_text:'O\'lchamni tanlang va savatga qo\'shing — buyurtma to\'liq ro\'yxat bilan menejerga Telegramda keladi.',looks_eyebrow:'Hafta obrazlari',looks_title:'Stilistdan tayyor obrazlar',looks_text:'Nimani nima bilan kiyishni bilmaysizmi? Obrazni to\'liq oling — kelishingizga tayyorlab qo\'yamiz.',l1:'Ishbilarmon',l1s:'Kostyum · oq ko\'ylak · tufli',l2:'Kechki',l2s:'To\'q pidjak · bo\'yinli kofta',l3:'Har kungi',l3s:'Ko\'ylak · jinsi · kedlar',st_eyebrow:'Manzillar',st_title:'Bizning do\'konlar',st_text:'Kiyib ko\'rishga keling — o\'lcham tanlashga yordam beramiz va obraz yig\'amiz.',st1_label:'Glinkadagi do\'kon',st2_label:'Ulug\'bekdagi do\'kon',st1_addr:'Bratislava ko\'chasi, 9A',st2_addr:'Mirzo Ulug\'bek ko\'chasi, 109',hours:'Har kuni 10:00 — 22:00',route:'Yo\'nalish olish',dl_eyebrow:'Yetkazib berish',dl_title:'Istalgan joyga yetkazamiz',d1:'Toshkent',d1s:'Buyurtma kuni kuryer orqali. Kuryer oldida kiyib ko\'rish mumkin.',d2:'O\'zbekiston',d2s:'Barcha viloyatlarga 1–3 kunda pochta xizmatlari orqali.',d3s:'Rossiya, Qozog\'iston, Yevropa va AQShga jo\'natamiz.',rev_t:'Bu yerda sizning sharhlaringiz bo\'ladi',rev_s:'Haqiqiy saytda bu yerga Instagramdagi «Отзывы» bo\'limidan mijozlar sharhlari qo\'yiladi.',cta_eyebrow:'Outlet −50%',cta_title:'O\'tgan kolleksiyalar 50% gacha chegirmada',cta_text:'O\'lchamlar tez tugaydi — qolganlarini ko\'ring.',cta_btn:'Outletni ko\'rish',credit:'Demo-sayt. Dizayn va dasturlash —',cart_title:'Savat',cart_total:'Jami',checkout:'Telegramda buyurtma berish',m_title:'Buyurtma shunday ko\'rinadi',m_text:'Haqiqiy saytda bu xabar darhol Cavalier menejeriga Telegramda keladi. Demoda shunchaki shu yerda ko\'rsatamiz.',m_ok:'Tushunarli',add:'Savatga',size:'O\'lcham',pick:'Avval o\'lchamni tanlang',added:'Savatga qo\'shildi',empty:'Savat hozircha bo\'sh',sum:'so\'m',new:'New',sale:'Sale',order_hi:'Assalomu alaykum! Buyurtma bermoqchiman:',order_total:'Jami',order_end:'Ismim va manzilimni javobda yozaman.'}
+};
+
+let lang = 'ru', cat = 'all', cart = [];
+const chosen = {};
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString('ru-RU').replace(/,/g,' ') + ' ' + T[lang].sum;
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i]').forEach(el => { const v = T[lang][el.dataset.i]; if (v) el.textContent = v; });
+  document.querySelectorAll('[data-i-html]').forEach(el => { const v = T[lang][el.dataset.iHtml]; if (v) el.innerHTML = v; });
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
+  renderFilters(); renderGrid(); renderCart();
+}
+
+function renderFilters(){
+  $('filters').innerHTML = CATS.map(([k,ru,uz]) =>
+    `<button class="chip${k==='sale'?' sale':''}${cat===k?' on':''}" data-c="${k}">${lang==='ru'?ru:uz}</button>`).join('');
+}
+
+function renderGrid(){
+  const list = PRODUCTS.filter(p => cat==='all' || (cat==='sale' ? p.old : p.cat===cat));
+  $('grid').innerHTML = list.map(p => `
+    <article class="card">
+      <div class="ph">
+        <img src="${IMG(p.img)}" alt="${p.name[lang]}" loading="lazy">
+        ${p.tag ? `<span class="badge ${p.tag}">${p.tag==='sale' ? '−' + Math.round(100 - p.price/p.old*100) + '%' : T[lang].new}</span>` : ''}
+        <div class="quick"><button class="btn btn-light" data-add="${p.id}">${T[lang].add}</button></div>
+      </div>
+      <div class="info">
+        <h3>${p.name[lang]}</h3>
+        <div class="price${p.old?' red':''}">${fmt(p.price)}${p.old ? `<s>${fmt(p.old)}</s>` : ''}</div>
+        <div class="sizes">${p.sizes.map(s => `<button data-p="${p.id}" data-s="${s}" class="${chosen[p.id]===s?'on':''}">${s}</button>`).join('')}</div>
+      </div>
+    </article>`).join('');
+}
+
+function renderCart(){
+  const count = cart.reduce((a,c) => a + c.q, 0);
+  $('cartCount').textContent = count;
+  $('cartCount').classList.toggle('on', count > 0);
+  $('checkout').disabled = !cart.length;
+  $('total').textContent = fmt(cart.reduce((a,c) => a + c.q * PRODUCTS.find(p => p.id===c.id).price, 0));
+  $('items').innerHTML = cart.length ? cart.map((c,i) => {
+    const p = PRODUCTS.find(x => x.id===c.id);
+    return `<div class="ci"><img src="${IMG(p.img)}" alt=""><div style="flex:1"><h5>${p.name[lang]}</h5><small>${T[lang].size}: ${c.s} · ${fmt(p.price)}</small>
+      <div class="qty"><button data-q="${i}" data-d="-1">−</button><b>${c.q}</b><button data-q="${i}" data-d="1">+</button></div></div></div>`;
+  }).join('') : `<div class="empty">${T[lang].empty}</div>`;
+}
+
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1800); }
+function openCart(on){ $('drawer').classList.toggle('on', on); $('overlay').classList.toggle('on', on); }
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.l){ lang = b.dataset.l; applyLang(); }
+  else if (b.dataset.c){ cat = b.dataset.c; renderFilters(); renderGrid(); }
+  else if (b.dataset.s){ chosen[b.dataset.p] = b.dataset.s; renderGrid(); }
+  else if (b.dataset.add){
+    const id = +b.dataset.add, s = chosen[id];
+    if (!s){ toast(T[lang].pick); return; }
+    const ex = cart.find(c => c.id===id && c.s===s);
+    ex ? ex.q++ : cart.push({ id, s, q:1 });
+    renderCart(); toast(T[lang].added);
+  }
+  else if (b.dataset.q){ const c = cart[+b.dataset.q]; c.q += +b.dataset.d; if (c.q <= 0) cart.splice(+b.dataset.q, 1); renderCart(); }
+});
+$('cartBtn').onclick = () => openCart(true);
+$('closeCart').onclick = $('overlay').onclick = () => openCart(false);
+$('saleBtn').onclick = () => { cat = 'sale'; renderFilters(); renderGrid(); $('catalog').scrollIntoView(); };
+$('checkout').onclick = () => {
+  const lines = cart.map(c => { const p = PRODUCTS.find(x => x.id===c.id); return `• ${p.name[lang]} — ${T[lang].size} ${c.s} × ${c.q}`; });
+  $('orderText').textContent = `${T[lang].order_hi}\n${lines.join('\n')}\n\n${T[lang].order_total}: ${$('total').textContent}\n${T[lang].order_end}`;
+  openCart(false); $('modal').classList.add('on');
+};
+$('closeModal').onclick = $('modalOk').onclick = () => $('modal').classList.remove('on');
+
+const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } }), { threshold:.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+applyLang();
+</script>
+</body>
+</html>
