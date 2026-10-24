@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Aziz Karimov — визитка</title>
+<meta name="theme-color" content="#7c5cff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../fa/all.min.css">
+<style>
+:root{--a:#7c5cff;--b:#5ec8ff;--bg:#f6f5fb;--ink:#14121f;--muted:#6f6a85;--card:#fff}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.wrap{max-width:460px;margin:0 auto;padding:0 18px 40px;position:relative}
+.cover{height:190px;background:linear-gradient(135deg,var(--a),var(--b));position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(255,255,255,.35),transparent 50%)}
+.ava{width:132px;height:132px;margin:-66px auto 14px;border-radius:50%;border:6px solid var(--bg);position:relative;
+background:linear-gradient(135deg,#ffb36b,#ff6b9a) center/cover;display:grid;place-items:center;font:800 46px 'Unbounded',sans-serif;color:#fff}
+h1{text-align:center;font-size:28px;font-weight:700;line-height:1.2}
+.role{text-align:center;color:var(--muted);font-size:16px;margin-top:4px}
+.bio{text-align:center;font-size:15px;margin:14px auto 0;max-width:360px}
+.links{margin-top:24px;display:grid;gap:12px}
+.lnk{display:flex;align-items:center;gap:14px;padding:15px 18px;border-radius:18px;background:var(--card);box-shadow:0 4px 18px rgba(20,18,31,.06);font-weight:600;transition:transform .15s}
+.lnk:active{transform:scale(.98)}
+.lnk i.ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:21px;flex:none}
+.lnk span{flex:1}
+.lnk small{display:block;color:var(--muted);font-weight:500;font-size:13px}
+.lnk .go{color:#c4c0d4}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.save{padding:16px;border-radius:18px;background:var(--ink);color:#fff;font-weight:700;display:flex;gap:10px;align-items:center;justify-content:center}
+.share{padding:16px;border-radius:18px;border:1.5px solid #dcd9e8;font-weight:700;display:flex;gap:10px;align-items:center;justify-content:center}
+.brand{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:34px;color:var(--muted);font-size:13px}
+.brand b{font:800 13px 'Unbounded',sans-serif;background:linear-gradient(135deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,150%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;transition:transform .3s,opacity .3s;white-space:nowrap;opacity:0}
+.toast.on{transform:translate(-50%,0);opacity:1}
+</style>
+</head>
+<body>
+<div class="cover"></div>
+<div class="wrap">
+  <div class="ava" id="ava"></div>
+  <h1 id="name"></h1>
+  <div class="role" id="role"></div>
+  <p class="bio" id="bio"></p>
+  <div class="links" id="links"></div>
+  <div class="row">
+    <button class="save" id="save"><i class="fa-solid fa-user-plus"></i><span id="saveT"></span></button>
+    <button class="share" id="share"><i class="fa-solid fa-share-nodes"></i><span id="shareT"></span></button>
+  </div>
+  <a class="brand" id="brand" target="_blank" rel="noopener"><span id="brandT"></span> <b>NEXUS CARD</b></a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== EDIT FOR EACH CLIENT: copy this folder, rename it, change only this block ===== */
+const CARD = {
+  lang: "ru",                       // "ru" or "uz"
+  name: "Aziz Karimov",
+  role: "Фотограф · Чирчик",
+  bio: "Свадьбы, love story и портреты. Снимаю по Чирчику и Ташкенту.",
+  photo: "",                        // e.g. "photo.jpg" next to this file; empty = initials
+  colors: ["#7c5cff", "#5ec8ff"],   // cover gradient in the client's colours
+  phone: "+998901234567",
+  email: "",
+  links: [                          // remove the ones the client doesn't need
+    { type: "telegram",  value: "username" },
+    { type: "instagram", value: "username" },
+    { type: "phone" },
+    { type: "whatsapp",  value: "998901234567" },
+    { type: "map",       value: "https://maps.google.com/?q=Chirchiq", label: "Чирчик, ул. Амира Темура" },
+    { type: "site",      value: "https://example.com" }
+  ],
+  brandUrl: "https://instagram.com/"  // link to the Nexus Card Instagram
+};
+/* ===================================================================================== */
+
+const UI = {
+  ru:{telegram:"Написать в Telegram",instagram:"Instagram",phone:"Позвонить",whatsapp:"WhatsApp",map:"Как добраться",site:"Сайт",email:"Почта",save:"Сохранить",share:"Поделиться",copied:"Ссылка скопирована ✓",brand:"Сделано на"},
+  uz:{telegram:"Telegramda yozish",instagram:"Instagram",phone:"Qo'ng'iroq qilish",whatsapp:"WhatsApp",map:"Qanday borish",site:"Sayt",email:"Pochta",save:"Saqlash",share:"Ulashish",copied:"Havola nusxalandi ✓",brand:"Yaratildi:"}
+};
+const KINDS = {
+  telegram: { icon:"fa-brands fa-telegram",  bg:"#2aabee", href:v=>`https://t.me/${v}`,               sub:v=>"@"+v },
+  instagram:{ icon:"fa-brands fa-instagram", bg:"linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)", href:v=>`https://instagram.com/${v}`, sub:v=>"@"+v },
+  phone:    { icon:"fa-solid fa-phone",      bg:"#34c759", href:()=>`tel:${CARD.phone}`,             sub:()=>CARD.phone },
+  whatsapp: { icon:"fa-brands fa-whatsapp",  bg:"#25d366", href:v=>`https://wa.me/${v}`,             sub:v=>"+"+v },
+  map:      { icon:"fa-solid fa-location-dot", bg:"#ff5a4f", href:v=>v,                              sub:(v,l)=>l||"" },
+  site:     { icon:"fa-solid fa-globe",      bg:"#14121f", href:v=>v,                                sub:v=>v.replace(/^https?:\/\//,"") },
+  email:    { icon:"fa-solid fa-envelope",   bg:"#7c5cff", href:v=>`mailto:${v}`,                    sub:v=>v }
+};
+
+const t = UI[CARD.lang] || UI.ru;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+document.documentElement.lang = CARD.lang;
+document.title = CARD.name;
+document.documentElement.style.setProperty('--a', CARD.colors[0]);
+document.documentElement.style.setProperty('--b', CARD.colors[1]);
+$('name').textContent = CARD.name;
+$('role').textContent = CARD.role;
+$('bio').textContent = CARD.bio;
+if (CARD.photo) $('ava').style.backgroundImage = `url("${CARD.photo}")`;
+else $('ava').textContent = CARD.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+$('links').innerHTML = CARD.links.map(l => {
+  const k = KINDS[l.type]; if (!k) return '';
+  const ext = /^https?:/.test(k.href(l.value)) ? ' target="_blank" rel="noopener"' : '';
+  return `<a class="lnk" href="${esc(k.href(l.value))}"${ext}><i class="ic ${k.icon}" style="background:${k.bg}"></i>
+    <span>${t[l.type]}<small>${esc(k.sub(l.value, l.label))}</small></span><i class="fa-solid fa-chevron-right go"></i></a>`;
+}).join('');
+$('saveT').textContent = t.save;
+$('shareT').textContent = t.share;
+$('brandT').textContent = t.brand;
+$('brand').href = CARD.brandUrl;
+
+function toast(text){ $('toast').textContent = text; $('toast').classList.add('on'); setTimeout(() => $('toast').classList.remove('on'), 2000); }
+
+// "Save" downloads a vCard so the contact lands straight in the phone book
+$('save').onclick = () => {
+  const [first, ...rest] = CARD.name.split(' ');
+  const urls = CARD.links.filter(l => l.type !== 'phone').map(l => `URL:${KINDS[l.type].href(l.value)}`);
+  const vcf = ['BEGIN:VCARD','VERSION:3.0',`N:${rest.join(' ')};${first};;;`,`FN:${CARD.name}`,`TITLE:${CARD.role}`,
+    CARD.phone && `TEL;TYPE=CELL:${CARD.phone}`, CARD.email && `EMAIL:${CARD.email}`, ...urls, `URL:${location.href}`, 'END:VCARD']
+    .filter(Boolean).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([vcf], { type: 'text/vcard' }));
+  a.download = CARD.name.replace(/\s+/g, '_') + '.vcf';
+  a.click();
+};
+
+$('share').onclick = async () => {
+  if (navigator.share) { try { await navigator.share({ title: CARD.name, url: location.href }); } catch(e){} return; }
+  try { await navigator.clipboard.writeText(location.href); toast(t.copied); } catch(e){}
+};
+</script>
+</body>
+</html>
