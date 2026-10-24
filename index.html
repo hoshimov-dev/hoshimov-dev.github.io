@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ilhom Hoshimov — Портфолио</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Grotesk:wght@300;400;600;700;800;900&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="fa/all.min.css">
 <style>
 :root{
@@ -196,8 +196,23 @@ section.block{padding:110px 0;position:relative}
 .glare{position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);transform:skewX(-25deg);transition:.7s;pointer-events:none;z-index:3}
 .card:hover .glare{left:150%}
 .cover{height:220px;position:relative;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d}
-.cover .num{font:italic 400 110px/1 'Playfair Display',serif;transform:translateZ(60px);transition:transform .5s;filter:drop-shadow(0 20px 20px rgba(0,0,0,.6))}
-.card:hover .cover .num{transform:translateZ(80px) scale(1.08)}
+.cover .num{position:absolute;right:18px;top:14px;font:italic 400 22px/1 'Playfair Display',serif;color:rgba(243,229,171,.55);transform:translateZ(30px)}
+.logo3d{transform:translateZ(60px);transition:transform .5s;filter:drop-shadow(0 18px 18px rgba(0,0,0,.55))}
+.card:hover .logo3d{transform:translateZ(85px) scale(1.07)}
+/* project logos */
+.lg{display:flex;flex-direction:column;align-items:center;color:#fff;text-align:center;line-height:1}
+.lg small{display:block;margin-top:10px;font:600 9px 'Space Grotesk',sans-serif;letter-spacing:.32em;text-transform:uppercase;opacity:.7}
+.lg-tosh{font:400 76px/1 'UnifrakturMaguntia',serif;color:#f1efe9}
+.lg-stars{flex-direction:row;gap:12px}
+.lg-stars svg{width:62px;height:62px;filter:drop-shadow(0 0 18px rgba(255,200,61,.7))}
+.lg-stars b{font:900 24px/.95 'Space Grotesk',sans-serif;text-transform:uppercase;text-align:left;background:linear-gradient(100deg,#ffe08a,#ffc83d 40%,#ff5fb0 85%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lg-cav{font:700 30px/1 'Playfair Display',serif;letter-spacing:.32em;padding-left:.32em}
+.lg-cav i{display:block;width:34px;height:34px;margin-bottom:14px;border:1.5px solid #d8bd8a;transform:rotate(45deg);position:relative}
+.lg-cav i::after{content:"";position:absolute;inset:7px;background:#d8bd8a}
+.lg-cav small{letter-spacing:.26em;padding-left:0;color:#d8bd8a;opacity:1}
+.lg-demo{flex-direction:row;gap:12px;font:800 24px 'Space Grotesk',sans-serif}
+.lg-demo span{width:52px;height:52px;border-radius:15px;background:#ff5a1f;display:grid;place-items:center;font:800 26px 'Space Grotesk';box-shadow:0 10px 26px -8px #ff5a1f}
+.lg-next span{width:84px;height:84px;border-radius:50%;border:2px dashed rgba(243,229,171,.6);display:grid;place-items:center;font:300 46px 'Space Grotesk';color:#f3e5ab}
 .cover .tag{position:absolute;top:16px;left:16px;padding:6px 14px;border-radius:999px;background:rgba(8,12,10,.9);border:1px solid rgba(212,175,55,.3);color:var(--gold);font:400 10px 'Space Grotesk',sans-serif;letter-spacing:.2em;text-transform:uppercase;transform:translateZ(30px)}
 .card-body{padding:26px;background:rgba(16,23,19,.6);flex:1;display:flex;flex-direction:column;transform:translateZ(20px)}
 .card-body h3{font:700 21px 'Playfair Display',serif;margin-bottom:6px;transition:color .3s}
@@ -415,28 +430,36 @@ const SKILLS = [
   { icon: "fa-brands fa-git-alt",name: "Git",        level: 65 }
 ];
 
+/* each project gets its own logo on the card cover */
+const LOGOS = {
+  tosh: `<div class="lg lg-tosh">Tosh<small>Tashkent streetwear</small></div>`,
+  stars: `<div class="lg lg-stars"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lgStar" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".55" stop-color="#ffc83d"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient></defs><polygon fill="url(#lgStar)" points="50,6 61.8,36.5 94.5,38.6 69.2,59.3 77.6,91 50,73.5 22.4,91 30.8,59.3 5.5,38.6 38.2,36.5"/></svg><b>Stars<br>Shop</b></div>`,
+  cavalier: `<div class="lg lg-cav"><i></i>CAVALIER<small>Men's wear · Tashkent</small></div>`,
+  demo: `<div class="lg lg-demo"><span>D</span>Demo Store</div>`,
+  next: `<div class="lg lg-next"><span>+</span></div>`
+};
 const PROJECTS = [
-  { tag: "Telegram", title: { ru: "Stars Shop", uz: "Stars Shop", en: "Stars Shop" },
-    desc: { ru: "Магазин Telegram Stars: от 50 до 50.000 звёзд подарком, калькулятор цены с ползунком, заказ в один клик через Telegram, анимированное звёздное небо. UZ/RU.",
-            uz: "Telegram Stars do'koni: 50 dan 50.000 gacha yulduz sovg'a sifatida, slayderli narx kalkulyatori, Telegram orqali bir bosishda buyurtma, animatsiyali yulduzli osmon. UZ/RU.",
-            en: "Telegram Stars shop: 50 to 50,000 stars sent as gifts, slider price calculator, one-tap ordering via Telegram, animated starfield. UZ/RU." },
-    stack: ["HTML", "CSS", "JavaScript", "Canvas"], url: "stars-shop.html", hue: "#3b1d8f" },
-  { tag: "3D · WebGL", title: { ru: "TOSH — 3D-шоурум", uz: "TOSH — 3D shourum", en: "TOSH — 3D Showroom" },
+  { tag: "3D · WebGL", logo: "tosh", title: { ru: "TOSH — 3D-шоурум", uz: "TOSH — 3D shourum", en: "TOSH — 3D Showroom" },
     desc: { ru: "Магазин одежды в настоящем 3D: вещи из ткани колышутся на хромированной вешалке, отбрасывают тени, по клику прилетают к вам — их можно крутить и перекрашивать. Камера летит по скроллу, плавная прокрутка, прелоадер. Корзина и заказ в Telegram. RU/UZ.",
             uz: "Haqiqiy 3D dagi kiyim do'koni: matoli kiyimlar xrom ilgichda tebranadi, soya tashlaydi, bosilganda sizga uchib keladi — ularni aylantirish va rangini o'zgartirish mumkin. Kamera skroll bo'yicha uchadi, ravon aylantirish, preloader. Savat va Telegram orqali buyurtma. RU/UZ.",
             en: "A clothing store in real 3D: fabric garments sway on a chrome rack and cast shadows, fly to you on click, and can be rotated and recoloured. Scroll-driven camera, smooth scrolling, preloader. Cart and Telegram ordering. RU/UZ." },
     stack: ["Three.js", "WebGL", "GSAP", "Lenis"], url: "tosh-3d/", hue: "#3a3a36" },
-  { tag: "Concept", title: { ru: "Cavalier — сайт магазина", uz: "Cavalier — do'kon sayti", en: "Cavalier — Store Website" },
+  { tag: "Telegram", logo: "stars", title: { ru: "Stars Shop", uz: "Stars Shop", en: "Stars Shop" },
+    desc: { ru: "Магазин Telegram Stars: от 50 до 50.000 звёзд подарком, калькулятор цены с ползунком, заказ в один клик через Telegram, анимированное звёздное небо. UZ/RU.",
+            uz: "Telegram Stars do'koni: 50 dan 50.000 gacha yulduz sovg'a sifatida, slayderli narx kalkulyatori, Telegram orqali bir bosishda buyurtma, animatsiyali yulduzli osmon. UZ/RU.",
+            en: "Telegram Stars shop: 50 to 50,000 stars sent as gifts, slider price calculator, one-tap ordering via Telegram, animated starfield. UZ/RU." },
+    stack: ["HTML", "CSS", "JavaScript", "Canvas"], url: "stars-shop.html", hue: "#3b1d8f" },
+  { tag: "Concept", logo: "cavalier", title: { ru: "Cavalier — сайт магазина", uz: "Cavalier — do'kon sayti", en: "Cavalier — Store Website" },
     desc: { ru: "Концепт сайта для магазина мужской одежды в Ташкенте: каталог с фильтрами и размерами, корзина, заказ в Telegram, образы, два магазина на карте. RU/UZ.",
             uz: "Toshkentdagi erkaklar kiyimi do'koni uchun sayt konsepti: filtr va o'lchamli katalog, savat, Telegram orqali buyurtma, obrazlar, xaritada ikki do'kon. RU/UZ.",
             en: "Concept site for a Tashkent menswear store: filterable catalog with sizes, cart, ordering via Telegram, lookbook, two stores on the map. RU/UZ." },
     stack: ["HTML", "CSS", "JavaScript"], url: "cavalier-demo/", hue: "#16223a" },
-  { tag: "Template", title: { ru: "Сайт для небольшого магазина", uz: "Kichik do'kon uchun sayt", en: "Small Shop Website" },
+  { tag: "Template", logo: "demo", title: { ru: "Сайт для небольшого магазина", uz: "Kichik do'kon uchun sayt", en: "Small Shop Website" },
     desc: { ru: "Готовый шаблон: каталог с размерами и фильтрами, заказ товара в Telegram в один клик, часы работы, адрес на карте. Под нового клиента настраивается за 1–2 дня. RU/UZ.",
             uz: "Tayyor shablon: o'lcham va filtrlar bilan katalog, Telegram orqali bir bosishda buyurtma, ish vaqti, xaritada manzil. Yangi mijozga 1–2 kunda moslanadi. RU/UZ.",
             en: "Ready-made template: catalog with sizes and filters, one-tap ordering via Telegram, opening hours, address on the map. Set up for a new client in 1–2 days. RU/UZ." },
     stack: ["HTML", "CSS", "JavaScript"], url: "shop-template/", hue: "#c2410c" },
-  { tag: "Landing", title: { ru: "Ваш следующий проект", uz: "Keyingi loyihangiz", en: "Your Next Project" },
+  { tag: "Landing", logo: "next", title: { ru: "Ваш следующий проект", uz: "Keyingi loyihangiz", en: "Your Next Project" },
     desc: { ru: "Здесь может быть ваш проект. Напишите мне!", uz: "Bu yerda sizning loyihangiz bo'lishi mumkin. Menga yozing!", en: "Your project could be here. Get in touch!" },
     stack: ["Idea", "Design", "Code"], url: "#contact", hue: "#7a5a10" }
 ];
@@ -486,7 +509,8 @@ function renderProjects(){
         <div class="glare"></div>
         <div class="cover" style="background:radial-gradient(circle at 50% 30%,${p.hue},#050806 75%)">
           <span class="tag">${p.tag}</span>
-          <span class="num gold-text">${String(i+1).padStart(2,'0')}</span>
+          <span class="num">${String(i+1).padStart(2,'0')}</span>
+          <div class="logo3d">${LOGOS[p.logo] || ''}</div>
         </div>
         <div class="card-body">
           <h3>${p.title[lang]}</h3>
