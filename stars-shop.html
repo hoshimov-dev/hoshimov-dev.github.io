@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stars Shop — Telegram Stars</title>
+<meta name="description" content="Telegram Stars sotib oling: 50 dan 50.000 gacha. Profilga kirmasdan sovg'a sifatida yuboriladi.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Unbounded:wght@700;900&display=swap">
+<style>
+:root{
+  --bg:#f2f0ff;--surface:#fff;--text:#17133a;--muted:#625d8c;--line:#dcd7f5;
+  --gold:#ffc83d;--pink:#ff5fb0;--cyan:#38d5ff;--violet:#7a5cff;
+  --star:rgba(122,92,255,.55);
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0b1e;--surface:#14163a;--text:#f1f0ff;--muted:#a3a6d6;--line:#272a5c;--star:rgba(255,255,255,.8);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a0b1e;--surface:#14163a;--text:#f1f0ff;--muted:#a3a6d6;--line:#272a5c;--star:rgba(255,255,255,.8);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Manrope","Segoe UI",system-ui,sans-serif;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+.cosmos{position:relative;overflow:hidden;color:#f1f0ff;background:radial-gradient(120% 90% at 80% 0%,#3b1d8f 0%,#161449 45%,#080919 100%)}
+.cosmos canvas{position:absolute;inset:0;width:100%;height:100%}
+.cosmos>.wrap{position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;padding-top:18px}
+.logo{font:900 16px "Unbounded",system-ui,sans-serif}
+.lang{display:flex;background:rgba(255,255,255,.14);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;color:#fff;font:800 13px "Manrope",sans-serif;padding:6px 13px;border-radius:999px;cursor:pointer}
+.lang button.on{background:#fff;color:#2a1a7a}
+.hero{padding-bottom:70px;border-radius:0 0 44px 44px}
+.hero h1{font:900 clamp(44px,12vw,104px)/.95 "Unbounded",system-ui,sans-serif;margin:56px 0 18px;letter-spacing:-.03em;background:linear-gradient(100deg,#ffe08a,#ffc83d 35%,#ff5fb0 75%,#7a5cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{font-size:clamp(17px,3.8vw,22px);max-width:30ch;margin:0 0 28px;color:#d9d7ff}
+.btn{display:inline-block;border:0;cursor:pointer;text-decoration:none;font:800 16px "Manrope",sans-serif;padding:15px 26px;border-radius:16px;background:var(--gold);color:#2b1c00;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:inherit;border:2px solid rgba(255,255,255,.35)}
+.btn:focus-visible,button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:700}
+.forge{margin-top:-34px;border-radius:36px;padding:34px 0 40px}
+.forge .grid{display:grid;gap:26px;grid-template-columns:1fr}
+@media (min-width:760px){.forge .grid{grid-template-columns:1fr 1fr;align-items:center}}
+.orb{position:relative;display:grid;place-items:center;height:260px}
+.orb svg{width:150px;height:150px;transition:transform .35s cubic-bezier(.3,1.6,.5,1),filter .35s;transform:scale(var(--k,1));filter:drop-shadow(0 0 var(--g,20px) rgba(255,200,61,.85))}
+.ring{position:absolute;inset:0;animation:spin 24s linear infinite}
+.ring i{position:absolute;left:50%;top:50%;font-style:normal;font-size:16px;margin:-8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lvl{font:900 15px "Unbounded",sans-serif;color:var(--gold);margin:0 0 6px}
+.big{font:900 clamp(34px,8vw,52px)/1.05 "Unbounded",sans-serif;margin:0}
+.price{font-size:22px;font-weight:800;margin:6px 0 18px;color:#ffe9a8}
+input[type=range]{width:100%;accent-color:var(--gold);height:34px}
+.ends{display:flex;justify-content:space-between;font-size:13px;color:#b9b7ef;margin-bottom:14px}
+label{display:block;font-weight:800;font-size:14px;margin:6px 0}
+input[type=text]{width:100%;font:700 16px "Manrope",sans-serif;padding:13px 15px;border-radius:14px;border:2px solid rgba(255,255,255,.25);background:rgba(8,9,25,.55);color:#fff}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.hint{font-size:13px;color:#b9b7ef;margin:10px 0 0}
+section.blk{padding:50px 0 0}
+h2{font:900 clamp(24px,5vw,36px)/1.1 "Unbounded",sans-serif;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 22px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pk{border:2px solid var(--line);background:var(--surface);color:var(--text);border-radius:18px;padding:14px;text-align:left;cursor:pointer;font-family:inherit;transition:transform .15s,border-color .15s}
+.pk:hover{transform:translateY(-3px)}
+.pk.on{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold)}
+.pk b{display:block;font:900 20px "Unbounded",sans-serif}
+.pk span{color:var(--muted);font-weight:700;font-size:14px}
+.pk.t1 b{color:var(--cyan)}.pk.t2 b{color:var(--violet)}.pk.t3 b{color:var(--pink)}.pk.t4 b{color:#e9a400}
+.steps{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:20px;counter-increment:s}
+.step::before{content:counter(s);display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--pink));color:#2b1c00;font:900 15px "Unbounded",sans-serif;margin-bottom:12px}
+.step b{display:block;margin-bottom:4px}.step span{color:var(--muted);font-size:15px}
+details{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:15px 18px;margin-bottom:10px}
+summary{font-weight:800;cursor:pointer}
+details p{margin:10px 0 0;color:var(--muted)}
+footer{margin-top:56px;padding:44px 18px calc(48px + env(safe-area-inset-bottom,0px));text-align:center;border-radius:44px 44px 0 0}
+footer h2{color:#fff}
+footer p{color:#cfcdf8;margin:0 0 18px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(160%);background:var(--gold);color:#2b1c00;padding:11px 20px;border-radius:14px;font-weight:800;transition:transform .25s;z-index:5}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.ring{animation:none}html{scroll-behavior:auto}.orb svg{transition:none}}
+</style>
+</head>
+<body>
+<header class="cosmos hero">
+  <canvas class="sky" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="top">
+      <div class="logo">⭐ STARS SHOP</div>
+      <div class="lang" role="group" aria-label="Til / Язык"><button data-l="uz" class="on">UZ</button><button data-l="ru">RU</button></div>
+    </div>
+    <h1>Telegram<br>Stars</h1>
+    <p data-i="h1p"></p>
+    <a class="btn" href="#forge" data-i="cta"></a>
+    <div class="chips"><span class="chip" data-i="b1"></span><span class="chip" data-i="b2"></span><span class="chip" data-i="b3"></span></div>
+  </div>
+</header>
+
+<section class="cosmos forge" id="forge">
+  <canvas class="sky" aria-hidden="true"></canvas>
+  <div class="wrap grid">
+    <div class="orb" aria-hidden="true">
+      <div class="ring" id="ring"></div>
+      <svg viewBox="0 0 100 100" id="bigstar"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".55" stop-color="#ffc83d"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient></defs><polygon fill="url(#gg)" stroke="#fff3c4" stroke-width="1.5" stroke-linejoin="round" points="50,6 61.8,36.5 94.5,38.6 69.2,59.3 77.6,91 50,73.5 22.4,91 30.8,59.3 5.5,38.6 38.2,36.5"/></svg>
+    </div>
+    <div>
+      <p class="lvl" id="lvl"></p>
+      <h2 class="big" id="stars"></h2>
+      <div class="price" id="price"></div>
+      <input type="range" id="rng" min="0" max="14" step="1" value="2" aria-label="Stars">
+      <div class="ends"><span>50</span><span>50.000</span></div>
+      <label for="usr" data-i="usr"></label>
+      <input type="text" id="usr" placeholder="@username" autocomplete="off">
+      <div class="acts">
+        <a class="btn" id="send" target="_blank" rel="noopener" data-i="send"></a>
+        <button class="btn ghost" id="copy" data-i="copy"></button>
+      </div>
+      <p class="hint" data-i="orderh"></p>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="blk" id="prices">
+    <h2 data-i="t_prices"></h2>
+    <p class="sub" data-i="s_prices"></p>
+    <div class="list" id="list"></div>
+  </section>
+  <section class="blk">
+    <h2 data-i="t_how"></h2>
+    <div class="steps">
+      <div class="step"><b data-i="st1"></b><span data-i="st1d"></span></div>
+      <div class="step"><b data-i="st2"></b><span data-i="st2d"></span></div>
+      <div class="step"><b data-i="st3"></b><span data-i="st3d"></span></div>
+      <div class="step"><b data-i="st4"></b><span data-i="st4d"></span></div>
+    </div>
+  </section>
+  <section class="blk">
+    <h2 data-i="t_faq"></h2>
+    <details><summary data-i="q1"></summary><p data-i="a1"></p></details>
+    <details><summary data-i="q2"></summary><p data-i="a2"></p></details>
+    <details><summary data-i="q3"></summary><p data-i="a3"></p></details>
+  </section>
+</main>
+
+<footer class="cosmos">
+  <canvas class="sky" aria-hidden="true"></canvas>
+  <div style="position:relative">
+    <h2 data-i="foot"></h2>
+    <p data-i="footp"></p>
+    <a class="btn" href="https://t.me/XSH_11" target="_blank" rel="noopener">@XSH_11</a>
+    <button class="btn ghost" id="share" data-i="share"></button>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+var P=[[50,"12.000"],[75,"17.000"],[100,"24.000"],[150,"32.000"],[250,"52.000"],[350,"71.000"],[500,"100.000"],[750,"148.000"],[1000,"196.000"],[1500,"292.000"],[2500,"488.000"],[5000,"971.000"],[10000,"1.940.000"],[25000,"4.851.000"],[50000,"9.700.000"]];
+var LV=["Spark ✨","Nova 🌟","Galaxy 🌌","Universe 🪐"];
+var T={
+uz:{h1p:"Yulduzlar sovg'a sifatida yuboriladi. 50 dan 50.000 gacha.",cta:"Yulduz tanlash",b1:"🎁 Sovg'a sifatida",b2:"🔒 Profilga kirmasdan",b3:"💬 Admin bilan to'g'ridan-to'g'ri",usr:"Kimga yuborilsin? (o'zingizga yoki do'stingizga)",send:"Telegramda yuborish",copy:"Nusxa olish",orderh:"Tugma adminga tayyor xabar bilan chat ochadi.",t_prices:"Hamma narxlar",s_prices:"Paketni bossangiz, yuqoridagi hisoblagich o'zgaradi.",som:"so'm",pk:"yulduz",
+t_how:"Qanday ishlaydi",st1:"Paket tanlang",st1d:"Slayderni suring yoki narxlardan bosing.",st2:"Adminga yozing",st2d:"«Telegramda yuborish» tugmasini bosing.",st3:"To'lovni qiling",st3d:"Admin to'lov usulini aytadi.",st4:"Sovg'ani oling",st4d:"Yulduzlar sovg'a sifatida yuboriladi.",
+t_faq:"Savollar",q1:"Profilimga kirishingiz kerakmi?",a1:"Yo'q. Yulduzlar profilga kirmasdan, sovg'a sifatida yuboriladi.",q2:"Do'stimga yuborsa bo'ladimi?",a2:"Ha. Username maydoniga do'stingizning username'ini yozing.",q3:"Paketda yo'q miqdor kerak bo'lsa?",a3:"Adminga yozing, u narxni aytadi.",
+foot:"Yulduzlaringizni oling",footp:"Savollar bormi? Adminga yozing:",share:"Do'stlarga ulashish",ok:"Nusxa olindi",shared:"Havola nusxalandi",
+msg:function(s,p,u){return "Salom! "+s+" stars olmoqchiman ("+p+" so'm)."+(u?" Kimga: "+u:"")}},
+ru:{h1p:"Звёзды отправляются подарком. От 50 до 50.000.",cta:"Выбрать звёзды",b1:"🎁 В виде подарка",b2:"🔒 Без входа в профиль",b3:"💬 Напрямую с админом",usr:"Кому отправить? (себе или другу)",send:"Отправить в Telegram",copy:"Скопировать",orderh:"Кнопка откроет чат с админом с готовым сообщением.",t_prices:"Все цены",s_prices:"Нажмите на пакет, и калькулятор выше изменится.",som:"сум",pk:"звёзд",
+t_how:"Как это работает",st1:"Выберите пакет",st1d:"Двигайте ползунок или нажмите на цену.",st2:"Напишите админу",st2d:"Нажмите «Отправить в Telegram».",st3:"Оплатите",st3d:"Админ подскажет способ оплаты.",st4:"Получите подарок",st4d:"Звёзды отправляются в виде подарка.",
+t_faq:"Вопросы",q1:"Нужно ли заходить в мой профиль?",a1:"Нет. Звёзды отправляются подарком, без входа в профиль.",q2:"Можно отправить другу?",a2:"Да. Впишите username друга в поле выше.",q3:"Нужно количество вне пакетов?",a3:"Напишите админу, он назовёт цену.",
+foot:"Получите свои звёзды",footp:"Остались вопросы? Напишите админу:",share:"Поделиться с друзьями",ok:"Скопировано",shared:"Ссылка скопирована",
+msg:function(s,p,u){return "Здравствуйте! Хочу купить "+s+" stars ("+p+" сум)."+(u?" Кому: "+u:"")}}
+};
+var lang="uz",idx=2,shown=0,raf=0;
+var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+function $(i){return document.getElementById(i)}
+function fmt(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,".")}
+function num(s){return +s.replace(/\./g,"")}
+function tierOf(i){return i<4?1:i<8?2:i<11?3:4}
+function user(){var u=$("usr").value.trim();return u&&u[0]!=="@"?"@"+u:u}
+function msg(){return T[lang].msg(fmt(P[idx][0]),P[idx][1],user())}
+function toast(t){var e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(function(){e.classList.remove("show")},1800)}
+function ring(){
+  var n=Math.min(3+idx,14),h="";
+  for(var i=0;i<n;i++){var a=i/n*6.283,r=95+(i%3)*14;h+='<i style="transform:translate('+(Math.cos(a)*r).toFixed(1)+'px,'+(Math.sin(a)*r).toFixed(1)+'px)">'+(i%2?"✨":"⭐")+'</i>'}
+  $("ring").innerHTML=h;
+}
+function countTo(target){
+  cancelAnimationFrame(raf);
+  if(RM){shown=target;$("price").textContent=fmt(shown)+" "+T[lang].som;return}
+  var from=shown,t0=performance.now();
+  (function step(t){var k=Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);shown=from+(target-from)*e;$("price").textContent=fmt(shown)+" "+T[lang].som;if(k<1)raf=requestAnimationFrame(step)})(t0);
+}
+function update(){
+  var p=P[idx];
+  $("stars").textContent="⭐ "+fmt(p[0]);
+  $("lvl").textContent=LV[tierOf(idx)-1];
+  $("bigstar").style.setProperty("--k",(.6+idx*.075).toFixed(2));
+  $("bigstar").style.setProperty("--g",(14+idx*3)+"px");
+  $("rng").value=idx;
+  ring();countTo(num(p[1]));
+  $("send").href="https://t.me/XSH_11?text="+encodeURIComponent(msg());
+  document.querySelectorAll(".pk").forEach(function(b){b.classList.toggle("on",+b.dataset.i===idx)});
+}
+function list(){
+  $("list").innerHTML=P.map(function(p,i){return '<button class="pk t'+tierOf(i)+'" data-i="'+i+'"><b>⭐ '+fmt(p[0])+'</b><span>'+p[1]+' '+T[lang].som+'</span></button>'}).join("");
+}
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i]").forEach(function(e){var v=T[lang][e.getAttribute("data-i")];if(v)e.textContent=v});
+  document.querySelectorAll(".lang button").forEach(function(b){b.classList.toggle("on",b.dataset.l===lang)});
+  list();update();
+}
+document.querySelector(".lang").addEventListener("click",function(e){if(e.target.dataset.l){lang=e.target.dataset.l;applyLang()}});
+$("rng").addEventListener("input",function(e){idx=+e.target.value;update()});
+$("list").addEventListener("click",function(e){var b=e.target.closest(".pk");if(!b)return;idx=+b.dataset.i;update();$("forge").scrollIntoView()});
+$("usr").addEventListener("input",update);
+$("copy").addEventListener("click",function(){try{navigator.clipboard.writeText(msg()).then(function(){toast(T[lang].ok)},function(){toast(T[lang].ok)})}catch(x){toast(T[lang].ok)}});
+$("share").addEventListener("click",function(){
+  var d={title:"Stars Shop",text:"Telegram Stars",url:location.href};
+  if(navigator.share){navigator.share(d).catch(function(){})}
+  else{try{navigator.clipboard.writeText(location.href)}catch(x){}toast(T[lang].shared)}
+});
+/* starfield */
+document.querySelectorAll("canvas.sky").forEach(function(cv){
+  var c=cv.getContext("2d"),S=[],W=0,H=0,mx=0,my=0,sh=null,host=cv.parentElement;
+  function size(){var r=host.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;c.setTransform(d,0,0,d,0,0);
+    S=[];var n=Math.round(W*H/7000);for(var i=0;i<n;i++)S.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+.3,p:Math.random()*6.28,v:.4+Math.random()*1.6,z:Math.random()})}
+  host.addEventListener("pointermove",function(e){var r=host.getBoundingClientRect();mx=(e.clientX-r.left)/W-.5;my=(e.clientY-r.top)/H-.5});
+  function draw(t){
+    c.clearRect(0,0,W,H);
+    S.forEach(function(s){var a=.35+.65*Math.abs(Math.sin(t/1000*s.v+s.p));c.globalAlpha=a;c.fillStyle="#fff";c.beginPath();c.arc(s.x+mx*s.z*22,s.y+my*s.z*22,s.r,0,6.283);c.fill()});
+    if(!sh&&Math.random()<.004)sh={x:Math.random()*W*.8,y:Math.random()*H*.4,l:0};
+    if(sh){sh.l+=.03;var x=sh.x+sh.l*260,y=sh.y+sh.l*120;c.globalAlpha=1-sh.l;var g=c.createLinearGradient(x,y,x-90,y-42);g.addColorStop(0,"#fff");g.addColorStop(1,"rgba(255,255,255,0)");c.strokeStyle=g;c.lineWidth=2;c.beginPath();c.moveTo(x,y);c.lineTo(x-90,y-42);c.stroke();if(sh.l>=1)sh=null}
+    c.globalAlpha=1;
+    if(!RM)requestAnimationFrame(draw);
+  }
+  size();draw(0);
+  if(window.ResizeObserver)new ResizeObserver(function(){size();if(RM)draw(0)}).observe(host);
+});
+applyLang();
+</script>
+</body>
+</html>
