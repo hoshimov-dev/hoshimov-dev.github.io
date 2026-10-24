@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шаблон сайта магазина — демо</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#ff5a1f; --accent-ink:#ffffff;
+  --bg:#f7f6f3; --card:#ffffff; --ink:#15161a; --muted:#6c6f78; --line:#e7e4dd;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.demo{background:var(--ink);color:#fff;font-size:12px;text-align:center;padding:8px 14px;line-height:1.4}
+.demo a{color:var(--accent);font-weight:700;text-decoration:underline}
+
+header{position:sticky;top:0;z-index:30;background:rgba(247,246,243,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;font:800 18px 'Unbounded',sans-serif;letter-spacing:-.01em}
+.logo-mark{width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:15px}
+.tools{display:flex;align-items:center;gap:8px}
+.lang{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{border:0;background:none;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:800;color:var(--muted)}
+.lang button.on{background:var(--ink);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:13px 20px;font-weight:800;font-size:14px;transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn-accent{background:var(--accent);color:var(--accent-ink);box-shadow:0 8px 24px -10px var(--accent)}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.nav .btn{padding:10px 14px;font-size:13px}
+@media (max-width:520px){.nav .btn span{display:none}}
+
+.hero{padding:56px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700}
+.pill i{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18)}
+.hero h1{font:800 clamp(34px,6vw,62px)/1.02 'Unbounded',sans-serif;letter-spacing:-.03em;margin:18px 0 16px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{color:var(--muted);font-size:17px;max-width:480px;margin-bottom:26px}
+.ctas{display:flex;flex-wrap:wrap;gap:10px}
+.perks{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.perks span{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.perks svg{color:var(--accent)}
+.hero-photo{position:relative;border-radius:28px;overflow:hidden;aspect-ratio:4/5;background:#ddd}
+.hero-photo img{width:100%;height:100%;object-fit:cover}
+.hero-card{position:absolute;left:16px;right:16px;bottom:16px;background:rgba(255,255,255,.95);border-radius:18px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hero-card b{display:block;font-size:15px}
+.hero-card small{color:var(--muted);font-size:12px}
+.hero-card .price{font:800 16px 'Unbounded',sans-serif;color:var(--accent);white-space:nowrap}
+@media (max-width:820px){.hero-grid{grid-template-columns:1fr}.hero-photo{aspect-ratio:4/3}.hero{padding-top:34px}}
+
+section.block{padding:56px 0}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:22px}
+.head h2{font:800 clamp(26px,4vw,38px)/1.1 'Unbounded',sans-serif;letter-spacing:-.02em}
+.head p{color:var(--muted);max-width:380px}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:22px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;font-size:14px;font-weight:700;color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .25s,transform .25s}
+.card:hover{box-shadow:0 18px 40px -22px rgba(0,0,0,.35);transform:translateY(-3px)}
+.ph{position:relative;aspect-ratio:1/1;background:#eee;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;top:10px;left:10px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px}
+.body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.body h3{font-size:15px;font-weight:800;line-height:1.3}
+.price-row{display:flex;align-items:baseline;gap:8px}
+.price-row b{font:800 16px 'Unbounded',sans-serif}
+.price-row s{color:var(--muted);font-size:13px}
+.sizes{display:flex;gap:6px;flex-wrap:wrap}
+.sizes button{min-width:36px;height:32px;padding:0 8px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:12px;font-weight:800}
+.sizes button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card .btn{margin-top:auto;width:100%;padding:12px}
+@media (max-width:540px){
+  .grid{grid-template-columns:1fr 1fr;gap:10px}
+  .body{padding:10px;gap:6px}.body h3{font-size:13px}.price-row b{font-size:14px}.price-row{flex-wrap:wrap;gap:2px 6px}
+  .sizes button{min-width:30px;height:28px;font-size:11px}
+  .card .btn{font-size:13px;padding:10px}
+}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px}
+.step b{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font:800 15px 'Unbounded',sans-serif;margin-bottom:12px}
+.step h4{font-size:16px;margin-bottom:4px}
+.step p{color:var(--muted);font-size:14px}
+@media (max-width:720px){.steps{grid-template-columns:1fr}}
+
+.info{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.box{background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px}
+.box h3{font:800 20px 'Unbounded',sans-serif;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:15px}
+.row svg{color:var(--accent);margin-top:3px}
+.box .btn{margin-top:8px}
+.photo-box{border-radius:22px;overflow:hidden;min-height:260px;background:#ddd center/cover}
+@media (max-width:720px){.info{grid-template-columns:1fr}}
+
+.cta{margin:20px 0 60px;background:var(--ink);color:#fff;border-radius:28px;padding:40px 24px;text-align:center}
+.cta h2{font:800 clamp(24px,4vw,36px)/1.15 'Unbounded',sans-serif;margin-bottom:10px}
+.cta p{opacity:.75;margin-bottom:22px}
+
+footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:13px;text-align:center}
+footer a{color:var(--ink);font-weight:800}
+
+.modal{position:fixed;inset:0;z-index:60;background:rgba(21,22,26,.55);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:24px;max-width:420px;width:100%;padding:24px}
+.mbox h3{font:800 20px 'Unbounded',sans-serif;margin-bottom:8px}
+.mbox p{color:var(--muted);font-size:14px;margin-bottom:12px}
+.mbox pre{white-space:pre-wrap;background:var(--bg);border-radius:14px;padding:14px;font:14px/1.55 'Manrope',sans-serif;margin-bottom:16px}
+.mbox .btn{width:100%}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,120px);background:var(--ink);color:#fff;border-radius:12px;padding:12px 18px;font-weight:700;font-size:14px;z-index:70;transition:transform .25s}
+.toast.on{transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="demo" id="demoStrip"><span data-i="demo">Это шаблон сайта для небольшого магазина. Название, товары, цены и цвета меняются под ваш магазин за 1–2 дня.</span> <a id="creditLink" href="#" target="_blank" rel="noopener" data-i="author">Автор — Ilhom Hoshimov</a></div>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="logo"><span class="logo-mark" id="logoMark">D</span><span id="logoName">Demo Store</span></a>
+    <div class="tools">
+      <div class="lang"><button data-l="ru" class="on">RU</button><button data-l="uz">UZ</button></div>
+      <a class="btn btn-accent" id="tgTop" href="#" target="_blank" rel="noopener">
+        <svg class="i" viewBox="0 0 24 24"><path d="M21 5L2 12l7 2 2 7 10-16z"/></svg><span>Telegram</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill"><i></i><span id="openNow"></span></span>
+      <h1 id="heroTitle"></h1>
+      <p id="heroText"></p>
+      <div class="ctas">
+        <a href="#catalog" class="btn btn-accent" data-i="see_catalog">Смотреть товары</a>
+        <a href="#contacts" class="btn btn-ghost" data-i="how_find">Как нас найти</a>
+      </div>
+      <div class="perks" id="perks"></div>
+    </div>
+    <div class="hero-photo">
+      <img id="heroImg" alt="">
+      <div class="hero-card" id="heroCard"></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="catalog" style="padding-top:20px">
+  <div class="wrap">
+    <div class="head">
+      <h2 data-i="catalog">Каталог</h2>
+      <p data-i="catalog_text">Выберите размер и нажмите «Заказать» — заказ сразу придёт нам в Telegram.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="block" style="padding-top:10px">
+  <div class="wrap">
+    <div class="head"><h2 data-i="how_title">Как заказать</h2></div>
+    <div class="steps">
+      <div class="step"><b>1</b><h4 data-i="s1">Выберите товар</h4><p data-i="s1t">Найдите нужную вещь в каталоге и отметьте размер.</p></div>
+      <div class="step"><b>2</b><h4 data-i="s2">Нажмите «Заказать»</h4><p data-i="s2t">Откроется Telegram с готовым сообщением — просто отправьте его.</p></div>
+      <div class="step"><b>3</b><h4 data-i="s3">Получите заказ</h4><p data-i="s3t">Привезём курьером или заберите сами в магазине.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="contacts" style="padding-top:10px">
+  <div class="wrap">
+    <div class="head"><h2 data-i="contacts">Контакты и доставка</h2></div>
+    <div class="info">
+      <div class="box">
+        <h3 data-i="where">Где мы</h3>
+        <div class="row"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/></svg><span id="address"></span></div>
+        <div class="row"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="hours"></span></div>
+        <div class="row"><svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><a id="phone"></a></div>
+        <div class="row"><svg class="i" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4 8 4 8-4z"/><path d="M4 7v10l8 4 8-4V7"/></svg><span id="delivery"></span></div>
+        <a class="btn btn-ghost" id="mapBtn" target="_blank" rel="noopener" data-i="route">Открыть на карте</a>
+      </div>
+      <div class="photo-box" id="storePhoto"></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="cta">
+    <h2 data-i="cta_title">Остались вопросы?</h2>
+    <p data-i="cta_text">Напишите нам в Telegram — ответим быстро и поможем с размером.</p>
+    <a class="btn btn-accent" id="tgBottom" target="_blank" rel="noopener" data-i="cta_btn">Написать в Telegram</a>
+  </div>
+</div>
+
+<footer><span id="footName"></span> · <span data-i="made">Сайт сделал</span> <a id="footCredit" target="_blank" rel="noopener">Ilhom Hoshimov</a></footer>
+
+<div class="modal" id="modal"><div class="mbox">
+  <h3 data-i="m_title">Так выглядит заказ</h3>
+  <p data-i="m_text">На вашем сайте это сообщение сразу откроется в Telegram магазина. В демо просто показываем его здесь.</p>
+  <pre id="orderText"></pre>
+  <button class="btn btn-accent" id="mOk" data-i="m_ok">Понятно</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   НАСТРОЙКИ МАГАЗИНА — меняй только этот блок под нового клиента
+   ===================================================================== */
+const SHOP = {
+  demo: true,                         // true — заказ показывается в окне; false — открывается Telegram магазина
+  name: 'Demo Store',
+  accent: '#ff5a1f',                  // главный цвет магазина
+  telegram: 'your_shop_username',     // ник магазина в Telegram, без @
+  phone: '+998 90 000-00-00',
+  address: { ru: 'Ташкент, ул. Примерная, 1 (ориентир: метро)', uz: 'Toshkent, Namuna ko\'chasi, 1 (mo\'ljal: metro)' },
+  mapQuery: 'Ташкент',                // что искать в Яндекс Картах
+  hours: { open: 10, close: 21, ru: 'Ежедневно 10:00 — 21:00', uz: 'Har kuni 10:00 — 21:00' },
+  delivery: { ru: 'Доставка по Ташкенту — 15 000 сум, по Узбекистану — 1–3 дня', uz: 'Toshkent bo\'ylab — 15 000 so\'m, O\'zbekiston bo\'ylab — 1–3 kun' },
+  title: { ru: 'Одежда на каждый <em>день</em>', uz: 'Har kun uchun <em>kiyimlar</em>' },
+  text: { ru: 'Новые поступления каждую неделю. Примерка в магазине, доставка по всему Узбекистану.', uz: 'Har hafta yangi mahsulotlar. Do\'konda kiyib ko\'rish, O\'zbekiston bo\'ylab yetkazib berish.' },
+  perks: { ru: ['Примерка перед покупкой', 'Доставка в день заказа', 'Обмен 7 дней'], uz: ['Sotib olishdan oldin kiyib ko\'rish', 'Buyurtma kuni yetkazish', '7 kun ichida almashtirish'] },
+  heroImg: '1589310243389-96a5483213a8',
+  storeImg: '1441984904996-e0b6ba687e04',
+  categories: [ ['all', 'Все', 'Barchasi'], ['shirts', 'Рубашки', 'Ko\'ylaklar'], ['pants', 'Джинсы', 'Jinsilar'], ['outer', 'Куртки', 'Kurtkalar'], ['shoes', 'Обувь', 'Poyabzal'] ],
+  products: [
+    { cat:'shirts', img:'1621072156002-e2fccdc0b176', ru:'Белая рубашка', uz:'Oq ko\'ylak', price:320000, old:0, sizes:['S','M','L','XL'], hit:true },
+    { cat:'shirts', img:'1596755094514-f87e34085b2c', ru:'Джинсовая рубашка', uz:'Jinsi ko\'ylak', price:290000, old:0, sizes:['M','L','XL'] },
+    { cat:'shirts', img:'1626497764746-6dc36546b388', ru:'Льняная рубашка', uz:'Zig\'ir ko\'ylak', price:260000, old:340000, sizes:['M','L'] },
+    { cat:'shirts', img:'1602810318383-e386cc2a3ccf', ru:'Свитшот базовый', uz:'Oddiy svitshot', price:220000, old:0, sizes:['S','M','L'] },
+    { cat:'pants',  img:'1624378439575-d8705ad7ae80', ru:'Джинсы прямые', uz:'To\'g\'ri jinsi shim', price:350000, old:0, sizes:['30','32','34','36'], hit:true },
+    { cat:'outer',  img:'1611312449408-fcece27cdbb7', ru:'Джинсовая куртка', uz:'Jinsi kurtka', price:490000, old:0, sizes:['M','L','XL'] },
+    { cat:'outer',  img:'1520975954732-35dd22299614', ru:'Кожаная куртка', uz:'Charm kurtka', price:890000, old:1100000, sizes:['M','L'] },
+    { cat:'shoes',  img:'1614252235316-8c857d38b5f4', ru:'Кожаные туфли', uz:'Charm tufli', price:560000, old:0, sizes:['41','42','43','44'] }
+  ]
+};
+const AUTHOR = { name: 'Ilhom Hoshimov', url: 'https://hoshimov-dev.github.io' };
+/* ===================================================================== */
+
+const T = {
+  ru:{demo:'Это шаблон сайта для небольшого магазина. Название, товары, цены и цвета меняются под ваш магазин за 1–2 дня.',author:'Автор — Ilhom Hoshimov',see_catalog:'Смотреть товары',how_find:'Как нас найти',catalog:'Каталог',catalog_text:'Выберите размер и нажмите «Заказать» — заказ сразу придёт нам в Telegram.',how_title:'Как заказать',s1:'Выберите товар',s1t:'Найдите нужную вещь в каталоге и отметьте размер.',s2:'Нажмите «Заказать»',s2t:'Откроется Telegram с готовым сообщением — просто отправьте его.',s3:'Получите заказ',s3t:'Привезём курьером или заберите сами в магазине.',contacts:'Контакты и доставка',where:'Где мы',route:'Открыть на карте',cta_title:'Остались вопросы?',cta_text:'Напишите нам в Telegram — ответим быстро и поможем с размером.',cta_btn:'Написать в Telegram',made:'Сайт сделал',m_title:'Так выглядит заказ',m_text:'На вашем сайте это сообщение сразу откроется в Telegram магазина. В демо просто показываем его здесь.',m_ok:'Понятно',order:'Заказать',pick:'Сначала выберите размер',open:'Сейчас открыто',closed:'Сейчас закрыто — заказ можно оставить',sum:'сум',hit:'Хит',size:'размер',hi:'Здравствуйте! Хочу заказать:',bye:'Подскажите, есть в наличии?',from:'Хит продаж'},
+  uz:{demo:'Bu kichik do\'kon uchun sayt shabloni. Nomi, mahsulotlar, narxlar va ranglar 1–2 kunda do\'koningizga moslanadi.',author:'Muallif — Ilhom Hoshimov',see_catalog:'Mahsulotlarni ko\'rish',how_find:'Bizni qanday topish',catalog:'Katalog',catalog_text:'O\'lchamni tanlang va «Buyurtma» tugmasini bosing — buyurtma darhol Telegramimizga keladi.',how_title:'Qanday buyurtma berish',s1:'Mahsulotni tanlang',s1t:'Katalogdan kerakli narsani toping va o\'lchamni belgilang.',s2:'«Buyurtma»ni bosing',s2t:'Tayyor xabar bilan Telegram ochiladi — shunchaki yuboring.',s3:'Buyurtmani oling',s3t:'Kuryer orqali yetkazamiz yoki do\'kondan o\'zingiz olib keting.',contacts:'Aloqa va yetkazish',where:'Biz qayerdamiz',route:'Xaritada ochish',cta_title:'Savollaringiz bormi?',cta_text:'Telegramda yozing — tez javob beramiz va o\'lcham tanlashga yordam beramiz.',cta_btn:'Telegramda yozish',made:'Saytni yaratgan',m_title:'Buyurtma shunday ko\'rinadi',m_text:'Saytingizda bu xabar darhol do\'kon Telegramida ochiladi. Demoda shunchaki shu yerda ko\'rsatamiz.',m_ok:'Tushunarli',order:'Buyurtma',pick:'Avval o\'lchamni tanlang',open:'Hozir ochiq',closed:'Hozir yopiq — buyurtma qoldirish mumkin',sum:'so\'m',hit:'Xit',size:'o\'lcham',hi:'Assalomu alaykum! Buyurtma bermoqchiman:',bye:'Mavjudmi?',from:'Xit mahsulot'}
+};
+
+let lang = 'ru', cat = 'all';
+const chosen = {};
+const $ = id => document.getElementById(id);
+const img = (id, w) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
+const fmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ') + ' ' + T[lang].sum;
+const tgLink = text => `https://t.me/${SHOP.telegram}` + (text ? `?text=${encodeURIComponent(text)}` : '');
+
+function applyShop(){
+  document.documentElement.style.setProperty('--accent', SHOP.accent);
+  document.title = SHOP.demo ? `${SHOP.name} — шаблон сайта` : SHOP.name;
+  $('logoName').textContent = $('footName').textContent = SHOP.name;
+  $('logoMark').textContent = SHOP.name.trim().charAt(0).toUpperCase();
+  $('heroImg').src = img(SHOP.heroImg, 1000);
+  $('storePhoto').style.backgroundImage = `url('${img(SHOP.storeImg, 900)}')`;
+  $('phone').textContent = SHOP.phone;
+  $('phone').href = 'tel:' + SHOP.phone.replace(/[^\d+]/g, '');
+  $('mapBtn').href = 'https://yandex.uz/maps/?text=' + encodeURIComponent(SHOP.mapQuery);
+  ['tgTop', 'tgBottom'].forEach(id => $(id).href = tgLink(''));
+  $('creditLink').href = $('footCredit').href = AUTHOR.url;
+  $('demoStrip').style.display = SHOP.demo ? '' : 'none';
+}
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i]').forEach(el => { const v = T[lang][el.dataset.i]; if (v) el.textContent = v; });
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
+  $('heroTitle').innerHTML = SHOP.title[lang];
+  $('heroText').textContent = SHOP.text[lang];
+  $('address').textContent = SHOP.address[lang];
+  $('hours').textContent = SHOP.hours[lang];
+  $('delivery').textContent = SHOP.delivery[lang];
+  const h = new Date().getHours();
+  $('openNow').textContent = h >= SHOP.hours.open && h < SHOP.hours.close ? T[lang].open : T[lang].closed;
+  $('perks').innerHTML = SHOP.perks[lang].map(p => `<span><svg class="i" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>${p}</span>`).join('');
+  const hit = SHOP.products.find(p => p.hit) || SHOP.products[0];
+  $('heroCard').innerHTML = `<div><small>${T[lang].from}</small><b>${hit[lang]}</b></div><span class="price">${fmt(hit.price)}</span>`;
+  renderFilters(); renderGrid();
+}
+
+function renderFilters(){
+  $('filters').innerHTML = SHOP.categories.map(([k, ru, uz]) => `<button class="chip${cat === k ? ' on' : ''}" data-c="${k}">${lang === 'ru' ? ru : uz}</button>`).join('');
+}
+
+function renderGrid(){
+  $('grid').innerHTML = SHOP.products.map((p, i) => ({ p, i })).filter(({ p }) => cat === 'all' || p.cat === cat).map(({ p, i }) => `
+    <article class="card">
+      <div class="ph"><img src="${img(p.img, 600)}" alt="${p[lang]}" loading="lazy">
+        ${p.old ? `<span class="badge">−${Math.round(100 - p.price / p.old * 100)}%</span>` : p.hit ? `<span class="badge">${T[lang].hit}</span>` : ''}</div>
+      <div class="body">
+        <h3>${p[lang]}</h3>
+        <div class="price-row"><b>${fmt(p.price)}</b>${p.old ? `<s>${fmt(p.old)}</s>` : ''}</div>
+        <div class="sizes">${p.sizes.map(s => `<button data-p="${i}" data-s="${s}" class="${chosen[i] === s ? 'on' : ''}">${s}</button>`).join('')}</div>
+        <button class="btn btn-accent" data-order="${i}">${T[lang].order}</button>
+      </div>
+    </article>`).join('');
+}
+
+function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._h); el._h = setTimeout(() => el.classList.remove('on'), 1600); }
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.l){ lang = b.dataset.l; applyLang(); }
+  else if (b.dataset.c){ cat = b.dataset.c; renderFilters(); renderGrid(); }
+  else if (b.dataset.s){ chosen[b.dataset.p] = b.dataset.s; renderGrid(); }
+  else if (b.dataset.order !== undefined){
+    const i = +b.dataset.order, p = SHOP.products[i], s = chosen[i];
+    if (!s){ toast(T[lang].pick); return; }
+    const text = `${T[lang].hi}\n• ${p[lang]} — ${T[lang].size} ${s} — ${fmt(p.price)}\n${T[lang].bye}`;
+    if (SHOP.demo){ $('orderText').textContent = text; $('modal').classList.add('on'); }
+    else window.open(tgLink(text), '_blank', 'noopener');
+  }
+});
+$('mOk').onclick = () => $('modal').classList.remove('on');
+$('modal').onclick = e => { if (e.target.id === 'modal') $('modal').classList.remove('on'); };
+
+applyShop();
+applyLang();
+</script>
+</body>
+</html>
