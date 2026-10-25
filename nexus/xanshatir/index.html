@@ -77,6 +77,14 @@ background:radial-gradient(circle at 85% 20%,rgba(212,175,55,.25),transparent 55
 background:radial-gradient(circle at 35% 30%,#16704a,#062a1a 80%);border:1px solid var(--line)}
 .ph b{position:absolute;top:-6px;left:-6px;font:700 9px 'Space Grotesk';letter-spacing:.08em;padding:3px 7px;border-radius:999px;background:var(--gold);color:#0b0b0b}
 .ph b.new{background:#3ddc84}
+.ph img{width:100%;height:100%;object-fit:cover;border-radius:15px;display:block}
+.ph[data-img]{cursor:zoom-in;width:92px;height:92px}
+.lb{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;background:rgba(2,10,6,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lb.on{display:flex}
+.lb img{max-width:100%;max-height:70vh;border-radius:22px;border:1px solid var(--line);box-shadow:0 30px 60px -20px #000;animation:pop .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{transform:scale(.9);opacity:0}}
+.lb b{font:700 22px 'Playfair Display',serif}
+.lb span{font:700 17px 'Space Grotesk';color:var(--gold-lt)}
 .dish .bd{flex:1;min-width:0}
 .dish h4{font-size:15px;font-weight:600;line-height:1.25}
 .dish p{font-size:12px;color:var(--muted);margin-top:2px}
@@ -163,7 +171,7 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
     <em data-i="sigTag"></em>
     <h3 data-i="sigName"></h3>
     <p data-i="sigDesc"></p>
-    <div class="pr"><b id="sigPrice"></b><button class="add" data-add="sig-0" aria-label="+"><i class="fa-solid fa-plus"></i></button></div>
+    <div class="pr"><b id="sigPrice"></b><button class="add" data-add="milliy-0" aria-label="+"><i class="fa-solid fa-plus"></i></button></div>
   </div>
 
   <div class="tabs" id="tabs"></div>
@@ -204,8 +212,10 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
   <div class="hint" data-i="hint"></div>
   <button class="x" id="sheetClear" data-i="clear"></button>
 </div></div>
+<div class="lb" id="lb"><img id="lbImg" alt=""><b id="lbName"></b><span id="lbPrice"></span></div>
 <div class="toast" id="toast"></div>
 
+<script src="menu.js"></script>
 <script>
 /* ===== RESTAURANT DATA (change here) ===== */
 const R = {
@@ -217,75 +227,37 @@ const R = {
   wifi: "xanshatir2026",
   hours: [10, 23]             // open from 10:00 to 23:00
 };
-/* DEMO prices and dishes: replace with the real menu */
-const MENU = [
-  { id:"sig", icon:"fa-crown", n:{uz:"Maxsus taomlar",ru:"Фирменные",en:"Signature"}, items:[
-    { n:{uz:"Beshbarmoq",ru:"Бешбармак",en:"Beshbarmak"}, d:{uz:"Qo'lda yoyilgan xamir, yumshoq go'sht, piyozli tuzluq va issiq sorpa",ru:"Тесто ручной раскатки, нежное мясо, луковый тузлук и горячая сорпа",en:"Hand-rolled dough, tender meat, onion sauce and hot broth"}, p:95000, w:"1 kishi / 1 чел.", tag:"hit", ic:"fa-bowl-food" },
-    { n:{uz:"Beshbarmoq — oilaviy",ru:"Бешбармак — семейный",en:"Beshbarmak — family size"}, d:{uz:"4–5 kishilik katta tovoq",ru:"Большое блюдо на 4–5 человек",en:"Large platter for 4–5 people"}, p:390000, w:"4–5", ic:"fa-users" },
-    { n:{uz:"Qazi va qarta",ru:"Казы и карта",en:"Kazy & karta"}, d:{uz:"Uyda tayyorlangan ot go'shti kolbasasi",ru:"Домашняя конская колбаса",en:"Homemade horse-meat sausage"}, p:120000, w:"300 g", ic:"fa-drumstick-bite" }
-  ]},
-  { id:"milliy", icon:"fa-bowl-rice", n:{uz:"Milliy taomlar",ru:"Национальные блюда",en:"National dishes"}, items:[
-    { n:{uz:"Toshkent oshi",ru:"Ташкентский плов",en:"Tashkent plov"}, d:{uz:"Qozonda, qazi va bedana tuxumi bilan",ru:"Из казана, с казы и перепелиным яйцом",en:"From the kazan, with kazy and quail egg"}, p:45000, w:"350 g", tag:"hit", ic:"fa-bowl-rice" },
-    { n:{uz:"Manti",ru:"Манты",en:"Manti"}, d:{uz:"Bug'da pishgan, qo'y go'shti va piyoz",ru:"На пару, баранина с луком",en:"Steamed, lamb and onion"}, p:40000, w:"4 dona / шт", ic:"fa-cloud" },
-    { n:{uz:"Lag'mon",ru:"Лагман",en:"Lagman"}, d:{uz:"Qo'lda cho'zilgan ugra",ru:"Тянутая вручную лапша",en:"Hand-pulled noodles"}, p:38000, w:"400 g", ic:"fa-bowl-food" },
-    { n:{uz:"Qozon kabob",ru:"Казан-кабоб",en:"Kazan kabob"}, d:{uz:"Kartoshka bilan qovurilgan go'sht",ru:"Мясо, жаренное с картофелем",en:"Meat fried with potatoes"}, p:85000, w:"450 g", tag:"new", ic:"fa-fire-flame-curved" }
-  ]},
-  { id:"shorva", icon:"fa-mug-hot", n:{uz:"Sho'rvalar",ru:"Супы",en:"Soups"}, items:[
-    { n:{uz:"Sho'rva",ru:"Шурпа",en:"Shurpa"}, d:{uz:"Qo'y go'shti va sabzavotlar",ru:"Баранина и овощи",en:"Lamb and vegetables"}, p:35000, w:"400 ml", ic:"fa-mug-hot" },
-    { n:{uz:"Mastava",ru:"Мастава",en:"Mastava"}, d:{uz:"Guruchli sho'rva",ru:"Рисовый суп",en:"Rice soup"}, p:30000, w:"400 ml", ic:"fa-mug-hot" },
-    { n:{uz:"Chuchvara sho'rva",ru:"Чучвара в бульоне",en:"Chuchvara soup"}, d:{uz:"Mayda chuchvara, qatiq bilan",ru:"Мелкие пельмени, с катыком",en:"Small dumplings, with yogurt"}, p:32000, w:"350 ml", ic:"fa-mug-hot" }
-  ]},
-  { id:"shashlik", icon:"fa-fire-flame-curved", n:{uz:"Shashlik",ru:"Шашлык",en:"Kebabs"}, items:[
-    { n:{uz:"Qo'y go'shti",ru:"Из баранины",en:"Lamb"}, d:{uz:"Ko'mirda, 1 six",ru:"На углях, 1 шампур",en:"Charcoal grilled, 1 skewer"}, p:28000, w:"1 six", ic:"fa-fire-flame-curved" },
-    { n:{uz:"Mol go'shti",ru:"Из говядины",en:"Beef"}, d:{uz:"Ko'mirda, 1 six",ru:"На углях, 1 шампур",en:"Charcoal grilled, 1 skewer"}, p:26000, w:"1 six", ic:"fa-fire-flame-curved" },
-    { n:{uz:"Lyulya kabob",ru:"Люля-кебаб",en:"Lyulya kebab"}, d:{uz:"Qiymali, ziravorlar bilan",ru:"Из фарша, со специями",en:"Minced meat with spices"}, p:22000, w:"1 six", ic:"fa-fire-flame-curved" }
-  ]},
-  { id:"salat", icon:"fa-leaf", n:{uz:"Salatlar",ru:"Салаты",en:"Salads"}, items:[
-    { n:{uz:"Achchiq-chuchuk",ru:"Аччик-чучук",en:"Achchik-chuchuk"}, d:{uz:"Pomidor, piyoz, achchiq qalampir",ru:"Помидоры, лук, острый перец",en:"Tomato, onion, hot pepper"}, p:15000, w:"250 g", ic:"fa-leaf" },
-    { n:{uz:"Olivye",ru:"Оливье",en:"Olivier"}, d:{uz:"Klassik retsept",ru:"Классический рецепт",en:"Classic recipe"}, p:25000, w:"250 g", ic:"fa-leaf" }
-  ]},
-  { id:"ichimlik", icon:"fa-glass-water", n:{uz:"Ichimliklar",ru:"Напитки",en:"Drinks"}, items:[
-    { n:{uz:"Ko'k choy",ru:"Зелёный чай",en:"Green tea"}, d:{uz:"Choynakda",ru:"Чайник",en:"Teapot"}, p:8000, w:"0.8 L", ic:"fa-mug-saucer" },
-    { n:{uz:"Kompot",ru:"Компот",en:"Kompot"}, d:{uz:"Uyda tayyorlangan",ru:"Домашний",en:"Homemade"}, p:20000, w:"1 L", ic:"fa-glass-water" },
-    { n:{uz:"Limonad",ru:"Лимонад",en:"Lemonade"}, d:{uz:"Yalpiz va limon",ru:"Мята и лимон",en:"Mint and lemon"}, p:30000, w:"1 L", ic:"fa-lemon" }
-  ]},
-  { id:"yarim", icon:"fa-snowflake", n:{uz:"Yarim tayyor",ru:"Полуфабрикаты",en:"Take-home frozen"}, note:{uz:"Uyga olib ketish uchun. Buyurtma: telefon orqali.",ru:"Можно забрать домой. Заказ по телефону.",en:"To take home. Order by phone."}, items:[
-    { n:{uz:"Manti",ru:"Манты",en:"Manti"}, d:{uz:"Muzlatilgan, 1 kg",ru:"Замороженные, 1 кг",en:"Frozen, 1 kg"}, p:75000, w:"1 kg", ic:"fa-snowflake" },
-    { n:{uz:"Chuchvara",ru:"Чучвара",en:"Chuchvara"}, d:{uz:"Muzlatilgan, 1 kg",ru:"Замороженная, 1 кг",en:"Frozen, 1 kg"}, p:60000, w:"1 kg", ic:"fa-snowflake" },
-    { n:{uz:"Somsa",ru:"Самса",en:"Samsa"}, d:{uz:"Pishirishga tayyor, 10 dona",ru:"Готова к выпечке, 10 шт",en:"Ready to bake, 10 pcs"}, p:70000, w:"10 dona", ic:"fa-snowflake" }
-  ]}
-];
 /* ========================================= */
 
 const T = {
   uz:{open:"Ochiq",closed:"Yopiq",sub:"Chirchiqdagi eng mazali beshbarmoq",loc:"Chirchiq shahri",
       q:["Qo'ng'iroq","Telegram","Instagram","Xarita"],table:"STOL №",
-      sigTag:"Oshpaz tavsiyasi",sigName:"Beshbarmoq",sigDesc:"Restoranimizning faxri: qo'lda yoyilgan xamir va yumshoq go'sht.",
+      sigTag:"Oshpaz tavsiyasi",sigName:"Beshbarmoq",sigDesc:"Restoranimizning faxri. Chirchiqdagi eng mazali beshbarmoq.",
       wifi:"Wi-Fi paroli",copy:"Nusxalash",copied:"Nusxalandi ✓",
       bookT:"Stol bron qilish",bookS:"Bir daqiqada, navbatsiz.",name:"Ismingiz",people:"kishi",bookBtn:"Bron qilish",
       bookMsg:"Assalomu alaykum! Stol bron qilmoqchiman.",bookNeed:"Ism va telefonni kiriting",
       revT:"Sizga yoqdimi?",revS:"Baholang, bu bizga juda muhim.",thanks:"Rahmat! ❤️",
-      made:"Elektron menyu:",demo:"Demo versiya · narxlar taxminiy",
+      made:"Elektron menyu:",demo:"Prototip · narxlar Instagram menyusidan",ask:"Narxini so'rang",
       items:"ta taom",show:"Ko'rsatish",myOrder:"Mening buyurtmam",total:"Jami",clear:"Tozalash",
       hint:"Ushbu ekranni ofitsiantga ko'rsating",sum:"so'm"},
   ru:{open:"Открыто",closed:"Закрыто",sub:"Самый вкусный бешбармак в Чирчике",loc:"город Чирчик",
       q:["Позвонить","Telegram","Instagram","Карта"],table:"СТОЛ №",
-      sigTag:"Выбор шефа",sigName:"Бешбармак",sigDesc:"Гордость ресторана: тесто ручной раскатки и нежное мясо.",
+      sigTag:"Выбор шефа",sigName:"Бешбармак",sigDesc:"Гордость ресторана. Самый вкусный бешбармак в Чирчике.",
       wifi:"Пароль Wi-Fi",copy:"Скопировать",copied:"Скопировано ✓",
       bookT:"Забронировать стол",bookS:"За минуту, без звонков и ожидания.",name:"Ваше имя",people:"чел.",bookBtn:"Забронировать",
       bookMsg:"Здравствуйте! Хочу забронировать стол.",bookNeed:"Введите имя и телефон",
       revT:"Вам понравилось?",revS:"Оцените нас, это очень важно.",thanks:"Спасибо! ❤️",
-      made:"Электронное меню:",demo:"Демо-версия · цены примерные",
+      made:"Электронное меню:",demo:"Прототип · цены из меню в Instagram",ask:"Цену уточняйте",
       items:"блюд",show:"Показать",myOrder:"Мой заказ",total:"Итого",clear:"Очистить",
       hint:"Покажите этот экран официанту",sum:"сум"},
   en:{open:"Open",closed:"Closed",sub:"The best beshbarmak in Chirchiq",loc:"Chirchiq",
       q:["Call","Telegram","Instagram","Map"],table:"TABLE #",
-      sigTag:"Chef's choice",sigName:"Beshbarmak",sigDesc:"Our pride: hand-rolled dough and tender meat.",
+      sigTag:"Chef's choice",sigName:"Beshbarmak",sigDesc:"Our pride. The best beshbarmak in Chirchiq.",
       wifi:"Wi-Fi password",copy:"Copy",copied:"Copied ✓",
       bookT:"Book a table",bookS:"In one minute, no calls, no waiting.",name:"Your name",people:"people",bookBtn:"Book now",
       bookMsg:"Hello! I'd like to book a table.",bookNeed:"Enter your name and phone",
       revT:"Did you enjoy it?",revS:"Rate us, it means a lot.",thanks:"Thank you! ❤️",
-      made:"Digital menu by",demo:"Demo version · prices are approximate",
+      made:"Digital menu by",demo:"Prototype · prices from the Instagram menu",ask:"Ask for price",
       items:"items",show:"Show",myOrder:"My order",total:"Total",clear:"Clear",
       hint:"Show this screen to your waiter",sum:"UZS"}
 };
@@ -296,7 +268,7 @@ let lang = store('xs_lang') || 'uz';
 const table = new URLSearchParams(location.search).get('table');   // each NFC card on a table opens ?table=N
 const cart = {};
 const dish = key => { const [c, i] = key.split('-'); return MENU.find(m => m.id === c).items[+i]; };
-const fmt = p => p.toLocaleString('ru-RU').replace(/,/g, ' ') + ' ' + T[lang].sum;
+const fmt = p => p == null ? T[lang].ask : p.toLocaleString('ru-RU').replace(/,/g, ' ') + ' ' + T[lang].sum;
 
 // their logo: green medallion, beaded gold rim, yurt dome
 function logo(){
@@ -335,9 +307,9 @@ function render(){
   $('tabs').innerHTML = MENU.map((c, i) => `<button data-go="${c.id}" class="${i ? '' : 'on'}"><i class="fa-solid ${c.icon}"></i>${c.n[lang]}</button>`).join('');
   $('menu').innerHTML = MENU.map(c => `<section class="cat" id="c-${c.id}"><h2>${c.n[lang]}</h2>${c.note ? `<p class="note">${c.note[lang]}</p>` : ''}
     ${c.items.map((d, i) => `<div class="dish">
-      <div class="ph"><i class="fa-solid ${d.ic}"></i>${d.tag ? `<b class="${d.tag}">${d.tag === 'hit' ? 'HIT' : 'NEW'}</b>` : ''}</div>
-      <div class="bd"><h4>${d.n[lang]}</h4><p>${d.d[lang]}</p>
-      <div class="ft"><span>${fmt(d.p)}<small>${d.w}</small></span><div data-q="${c.id}-${i}"></div></div></div></div>`).join('')}</section>`).join('');
+      <div class="ph"${d.img ? ` data-img="${d.img}"` : ''}>${d.img ? `<img src="img/${d.img}.webp" alt="${d.n[lang]}" loading="lazy">` : `<i class="fa-solid ${d.ic}"></i>`}${d.tag ? `<b class="${d.tag}">${d.tag === 'hit' ? 'HIT' : 'NEW'}</b>` : ''}</div>
+      <div class="bd"><h4>${d.n[lang]}</h4>${d.d[lang] ? `<p>${d.d[lang]}</p>` : ''}
+      <div class="ft"><span>${fmt(d.p)}${d.w ? `<small>${d.w[lang]}</small>` : ''}</span>${d.p == null ? '' : `<div data-q="${c.id}-${i}"></div>`}</div></div></div>`).join('')}</section>`).join('');
 
   $('bPeople').innerHTML = [1,2,3,4,5,6,8,10,15,20].map(n => `<option value="${n}"${n === 4 ? ' selected' : ''}>${n} ${t.people}</option>`).join('');
   $('stars').innerHTML = [1,2,3,4,5].map(n => `<button data-s="${n}" aria-label="${n}"><i class="fa-solid fa-star"></i></button>`).join('');
@@ -381,6 +353,13 @@ const io = new IntersectionObserver(es => es.forEach(e => {
   document.querySelectorAll('#tabs button').forEach(b => { const on = 'c-' + b.dataset.go === e.target.id; b.classList.toggle('on', on); if (on) b.scrollIntoView({ inline:'center', block:'nearest' }); });
 }), { rootMargin:'-45% 0px -50% 0px' });
 
+document.addEventListener('click', e => {
+  const ph = e.target.closest('.ph[data-img]'); if (!ph) return;
+  const d = dish(ph.nextElementSibling.querySelector('[data-q]').dataset.q);
+  $('lbImg').src = `img/${d.img}.webp`; $('lbName').textContent = d.n[lang]; $('lbPrice').textContent = fmt(d.p);
+  $('lb').classList.add('on');
+});
+$('lb').onclick = () => $('lb').classList.remove('on');
 $('barOpen').onclick = () => $('sheet').classList.add('on');
 $('sheet').onclick = e => { if (e.target === $('sheet')) $('sheet').classList.remove('on'); };
 $('sheetClear').onclick = () => { for (const k in cart) delete cart[k]; drawCart(); };
