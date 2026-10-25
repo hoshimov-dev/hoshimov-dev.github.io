@@ -77,7 +77,8 @@ background:radial-gradient(circle at 85% 20%,rgba(212,175,55,.25),transparent 55
 background:radial-gradient(circle at 35% 30%,#16704a,#062a1a 80%);border:1px solid var(--line)}
 .ph b{position:absolute;top:-6px;left:-6px;font:700 9px 'Space Grotesk';letter-spacing:.08em;padding:3px 7px;border-radius:999px;background:var(--gold);color:#0b0b0b}
 .ph b.new{background:#3ddc84}
-.ph img{width:100%;height:100%;object-fit:cover;border-radius:15px;display:block}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:15px;display:block}
+.ph b{z-index:1}
 .ph[data-img]{cursor:zoom-in;width:92px;height:92px}
 .lb{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;background:rgba(2,10,6,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .lb.on{display:flex}
