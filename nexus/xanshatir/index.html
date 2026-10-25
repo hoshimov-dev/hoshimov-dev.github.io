@@ -56,9 +56,12 @@ h1{font:700 34px/1.1 'Cinzel',serif;letter-spacing:.06em}
 background:radial-gradient(circle at 85% 20%,rgba(212,175,55,.25),transparent 55%),linear-gradient(135deg,#0d6a40,#05301d)}
 .sig em{font:600 10px 'Space Grotesk';letter-spacing:.25em;text-transform:uppercase;font-style:normal;color:var(--gold)}
 .sig h3{font:700 26px/1.15 'Playfair Display',serif;margin:6px 0 4px}
-.sig p{font-size:13px;color:#cfe0d6;max-width:75%}
+.sig p{font-size:13px;color:#cfe0d6;max-width:58%}
 .sig .pr{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
 .sig .pr b{font:700 20px 'Space Grotesk'}
+.sig .sigimg{position:absolute;right:-26px;top:50%;width:150px;height:150px;transform:translateY(-50%);border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.sig h3,.sig em{position:relative;max-width:62%}
+.sig .pr{justify-content:flex-start;gap:14px;position:relative;z-index:1}
 .sig .big{position:absolute;right:-14px;top:12px;font-size:92px;color:rgba(212,175,55,.18);transform:rotate(-12deg)}
 
 .tabs{position:sticky;top:0;z-index:4;display:flex;gap:8px;overflow-x:auto;margin:22px -16px 0;padding:12px 16px;background:linear-gradient(var(--bg) 75%,transparent);scrollbar-width:none}
@@ -168,7 +171,7 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
   <div class="orn"></div>
 
   <div class="sig in" style="animation-delay:.34s">
-    <i class="fa-solid fa-crown big"></i>
+    <img class="sigimg" src="img/beshbarmak.webp" alt="Beshbarmoq">
     <em data-i="sigTag"></em>
     <h3 data-i="sigName"></h3>
     <p data-i="sigDesc"></p>

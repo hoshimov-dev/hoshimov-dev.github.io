@@ -2,8 +2,8 @@
 const S = (uz, ru, en) => ({ uz, ru, en });
 const MENU = [
   { id:"milliy", icon:"fa-crown", n:S("Milliy taomlar","Национальные блюда","National dishes"), items:[
-    { n:S("Beshbarmoq","Бешбармак","Beshbarmak"), d:S("Go'sht, xamir va piyoz, sorpa bilan","Мясо, тесто и лук, с сорпой","Meat, noodles and onion, with broth"), p:115000, tag:"hit", ic:"fa-bowl-food" },
-    { n:S("Manti","Манты","Manti"), d:S("Qaymoqli sous bilan","Со сметанным соусом","With sour cream sauce"), p:60000, ic:"fa-cloud" },
+    { n:S("Beshbarmoq","Бешбармак","Beshbarmak"), d:S("Go'sht, xamir va piyoz, sorpa bilan","Мясо, тесто и лук, с сорпой","Meat, noodles and onion, with broth"), p:115000, tag:"hit", img:"beshbarmak" },
+    { n:S("Manti","Манты","Manti"), d:S("Qaymoqli sous bilan","Со сметанным соусом","With sour cream sauce"), p:60000, img:"manty" },
     { n:S("Bo'yin","Буйин","Buyin"), d:S("Kartoshka va sabzavotlar bilan, katta tovoq","С картофелем и овощами, большое блюдо","With potatoes and vegetables, large platter"), p:200000, w:S("1 kg","1 кг","1 kg"), img:"buyin" },
     { n:S("Jiz","Жиз","Jiz"), d:S("Qovurilgan go'sht, sabzavotlar va sous","Жареное мясо, овощи и соус","Fried meat, vegetables and sauce"), p:80000, img:"jiz" },
     { n:S("Qozon kabob","Казан-кебаб","Kazan kebab"), d:S("Go'sht va kartoshka, piyoz bilan","Мясо и картофель, с луком","Meat and potatoes, with onion"), p:80000, img:"kazan-kebab" },
@@ -27,9 +27,9 @@ const MENU = [
     { n:S("Qiyma shashlik","Молотый шашлык","Minced meat kebab"), d:S("Ko'mirda, piyoz bilan","На углях, с луком","Charcoal grilled, with onion"), p:23000, img:"shashlyk-molotyy" }
   ]},
   { id:"shorva", icon:"fa-mug-hot", n:S("Sho'rvalar","Супы","Soups"), items:[
-    { n:S("Sho'rva","Шурпа","Shurpa"), d:S("Go'sht va kartoshka","Мясо и картофель","Meat and potatoes"), p:45000, ic:"fa-mug-hot" },
-    { n:S("Norin","Нарын","Naryn"), d:S("Sorpa bilan","С бульоном","With broth"), p:35000, w:S("kichik","малый","small"), ic:"fa-bowl-food" },
-    { n:S("Norin","Нарын","Naryn"), d:S("Sorpa bilan","С бульоном","With broth"), p:40000, w:S("katta","большой","large"), ic:"fa-bowl-food" },
+    { n:S("Sho'rva","Шурпа","Shurpa"), d:S("Go'sht va kartoshka","Мясо и картофель","Meat and potatoes"), p:45000, img:"shurpa" },
+    { n:S("Norin","Нарын","Naryn"), d:S("Sorpa bilan","С бульоном","With broth"), p:35000, w:S("kichik","малый","small"), img:"naryn" },
+    { n:S("Norin","Нарын","Naryn"), d:S("Sorpa bilan","С бульоном","With broth"), p:40000, w:S("katta","большой","large"), img:"naryn" },
     { n:S("Chuchvara","Пельмени","Pelmeni"), d:S("Ko'katlar bilan","С зеленью","With herbs"), p:35000, img:"pelmeni" },
     { n:S("Frikadelkali sho'rva","Суп с фрикадельками","Meatball soup"), d:S("Ugra va sabzavotlar","Лапша и овощи","Noodles and vegetables"), p:40000, img:"frikadelki" },
     { n:S("Okroshka","Окрошка","Okroshka"), d:S("Sovuq sho'rva","Холодный суп","Cold soup"), p:null, img:"okroshka" }
