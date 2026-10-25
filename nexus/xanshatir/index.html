@@ -144,7 +144,11 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
 .sheet .tot{display:flex;justify-content:space-between;margin-top:14px;font:700 20px 'Space Grotesk';color:var(--gold-lt)}
 .sheet .hint{margin-top:12px;text-align:center;font-size:12px;color:var(--muted)}
 .sheet .x{display:block;margin:14px auto 0;padding:10px 18px;border-radius:12px;border:1px solid var(--line);font-size:13px;color:var(--muted)}
-.toast{position:fixed;left:50%;top:18px;z-index:9;transform:translate(-50%,-160%);opacity:0;background:var(--gold);color:#0b0b0b;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:700;transition:.3s;white-space:nowrap}
+.call{display:none;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:10px;padding:14px;border-radius:16px;border:1px solid var(--gold);background:rgba(212,175,55,.1);color:var(--gold-lt);font-weight:600;font-size:15px}
+.call.on{display:flex}
+.call:disabled{opacity:.5}
+.btn:disabled{opacity:.6;animation:none}
+.toast{position:fixed;left:50%;top:18px;z-index:9;transform:translate(-50%,-160%);opacity:0;background:var(--gold);color:#0b0b0b;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:700;transition:.3s;width:max-content;max-width:calc(100% - 32px);text-align:center}
 .toast.on{transform:translate(-50%,0);opacity:1}
 .in{opacity:0;transform:translateY(14px);animation:up .7s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes up{to{opacity:1;transform:none}}
@@ -167,6 +171,7 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
   </div>
 
   <div class="quick in" style="animation-delay:.28s" id="quick"></div>
+  <button class="call" id="callWaiter"><i class="fa-solid fa-bell-concierge"></i><span data-i="call"></span></button>
 
   <div class="orn"></div>
 
@@ -213,6 +218,7 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
   <h3 data-i="myOrder"></h3><div class="tb" id="sheetTable"></div>
   <ul id="sheetList"></ul>
   <div class="tot"><span data-i="total"></span><span id="sheetSum"></span></div>
+  <button class="btn" id="sendOrder"><i class="fa-solid fa-paper-plane"></i><span data-i="send"></span></button>
   <div class="hint" data-i="hint"></div>
   <button class="x" id="sheetClear" data-i="clear"></button>
 </div></div>
@@ -220,6 +226,7 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
 <div class="toast" id="toast"></div>
 
 <script src="menu.js"></script>
+<script src="live.js"></script>
 <script>
 /* ===== RESTAURANT DATA (change here) ===== */
 const R = {
@@ -243,7 +250,7 @@ const T = {
       revT:"Sizga yoqdimi?",revS:"Baholang, bu bizga juda muhim.",thanks:"Rahmat! ❤️",
       made:"Elektron menyu:",demo:"Prototip · narxlar Instagram menyusidan",ask:"Narxini so'rang",
       items:"ta taom",show:"Ko'rsatish",myOrder:"Mening buyurtmam",total:"Jami",clear:"Tozalash",
-      hint:"Ushbu ekranni ofitsiantga ko'rsating",sum:"so'm"},
+      hint:"Buyurtma darhol ofitsiant paneliga boradi",sum:"so'm",send:"Buyurtma berish",sent:"Buyurtma yuborildi ✓",sendErr:"Yuborilmadi. Ekranni ofitsiantga ko'rsating",call:"Ofitsiantni chaqirish",called:"Ofitsiant chaqirildi ✓"},
   ru:{open:"Открыто",closed:"Закрыто",sub:"Самый вкусный бешбармак в Чирчике",loc:"город Чирчик",
       q:["Позвонить","Telegram","Instagram","Карта"],table:"СТОЛ №",
       sigTag:"Выбор шефа",sigName:"Бешбармак",sigDesc:"Гордость ресторана. Самый вкусный бешбармак в Чирчике.",
@@ -253,7 +260,7 @@ const T = {
       revT:"Вам понравилось?",revS:"Оцените нас, это очень важно.",thanks:"Спасибо! ❤️",
       made:"Электронное меню:",demo:"Прототип · цены из меню в Instagram",ask:"Цену уточняйте",
       items:"блюд",show:"Показать",myOrder:"Мой заказ",total:"Итого",clear:"Очистить",
-      hint:"Покажите этот экран официанту",sum:"сум"},
+      hint:"Заказ сразу уходит в панель официанта",sum:"сум",send:"Отправить заказ",sent:"Заказ отправлен ✓",sendErr:"Не отправилось. Покажите экран официанту",call:"Позвать официанта",called:"Официант вызван ✓"},
   en:{open:"Open",closed:"Closed",sub:"The best beshbarmak in Chirchiq",loc:"Chirchiq",
       q:["Call","Telegram","Instagram","Map"],table:"TABLE #",
       sigTag:"Chef's choice",sigName:"Beshbarmak",sigDesc:"Our pride. The best beshbarmak in Chirchiq.",
@@ -263,7 +270,7 @@ const T = {
       revT:"Did you enjoy it?",revS:"Rate us, it means a lot.",thanks:"Thank you! ❤️",
       made:"Digital menu by",demo:"Prototype · prices from the Instagram menu",ask:"Ask for price",
       items:"items",show:"Show",myOrder:"My order",total:"Total",clear:"Clear",
-      hint:"Show this screen to your waiter",sum:"UZS"}
+      hint:"Your order goes straight to the waiter's panel",sum:"UZS",send:"Place order",sent:"Order sent ✓",sendErr:"Not sent. Show this screen to your waiter",call:"Call the waiter",called:"Waiter called ✓"}
 };
 
 const $ = id => document.getElementById(id);
@@ -301,7 +308,7 @@ function render(){
   document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
   $('openBox').querySelector('span').textContent = isOpen() ? t.open : t.closed;
   $('openBox').querySelector('i').style.background = isOpen() ? '#3ddc84' : '#e5484d';
-  if (table){ $('table').classList.add('on'); $('tableTxt').textContent = t.table + table; $('openBox').style.display = 'none'; }
+  if (table){ $('callWaiter').classList.add('on'); $('table').classList.add('on'); $('tableTxt').textContent = t.table + table; $('openBox').style.display = 'none'; }
   $('sigPrice').textContent = fmt(MENU[0].items[0].p);
   $('wifiPass').textContent = R.wifi;
 
@@ -367,6 +374,23 @@ $('lb').onclick = () => $('lb').classList.remove('on');
 $('barOpen').onclick = () => $('sheet').classList.add('on');
 $('sheet').onclick = e => { if (e.target === $('sheet')) $('sheet').classList.remove('on'); };
 $('sheetClear').onclick = () => { for (const k in cart) delete cart[k]; drawCart(); };
+// live orders to the admin panel (see live.js)
+$('sendOrder').onclick = async () => {
+  const keys = Object.keys(cart).filter(k => cart[k] > 0); if (!keys.length) return;
+  const items = keys.map(k => [dish(k).n.ru + (dish(k).w ? ` (${dish(k).w.ru})` : ''), cart[k], dish(k).p]);
+  const btn = $('sendOrder'); btn.disabled = true;
+  try {
+    await LIVE.send({ k:'order', id:LIVE.id(), table:table || '?', items, sum:items.reduce((s, [, q, p]) => s + q * p, 0) });
+    for (const k in cart) delete cart[k];
+    drawCart(); toast(T[lang].sent);
+  } catch(e){ toast(T[lang].sendErr); }
+  btn.disabled = false;
+};
+$('callWaiter').onclick = async () => {
+  const btn = $('callWaiter'); btn.disabled = true;
+  try { await LIVE.send({ k:'waiter', id:LIVE.id(), table }); toast(T[lang].called); } catch(e){ toast(T[lang].sendErr); }
+  setTimeout(() => btn.disabled = false, 30000);   // one call per 30 s
+};
 $('copyWifi').onclick = async () => { try { await navigator.clipboard.writeText(R.wifi); toast(T[lang].copied); } catch(e){} };
 
 $('bDate').valueAsDate = new Date();

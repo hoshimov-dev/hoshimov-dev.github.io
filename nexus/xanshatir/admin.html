@@ -68,6 +68,34 @@ th.s{text-align:right}
 .tw{overflow-x:auto}
 .brand{display:block;text-align:center;margin-top:28px;font-size:12px;color:var(--muted);text-decoration:none}
 .brand b{font:700 12px 'Space Grotesk';letter-spacing:.2em;color:var(--gold);margin-left:4px}
+.live{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:12px;color:var(--muted)}
+.live i{width:8px;height:8px;border-radius:50%;background:#e5484d}
+.live.on i{background:var(--good);box-shadow:0 0 0 4px rgba(61,220,132,.15);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(61,220,132,0)}}
+.lbox{margin-top:16px;padding:16px;border-radius:18px;background:var(--panel);border:1px solid rgba(212,175,55,.45)}
+.lbox .lt{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lbox h2{flex:1;font:600 15px 'Inter'}
+.lbox h2 b{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:8px;padding:0 6px;border-radius:99px;background:var(--gold);color:#0b0b0b;font:700 12px 'Space Grotesk'}
+.tg{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:10px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+.tg.on{color:var(--gold-lt);border-color:var(--gold)}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));align-items:start;gap:10px;margin-top:12px}
+.lv{padding:13px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);animation:pop .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{transform:scale(.94);opacity:0}}
+.lv.new{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.12)}
+.lv.call{border-color:#ff8a80;background:rgba(255,138,128,.08)}
+.lvh{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px}
+.lvh b{font:700 16px 'Space Grotesk';white-space:nowrap}
+.lvh span{order:3;flex-basis:100%;font-size:12px;color:var(--muted)}
+.lvh em{margin-left:auto;font-style:normal;font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;background:rgba(212,175,55,.15);color:var(--gold-lt)}
+.lv.call .lvh em{background:rgba(255,138,128,.15);color:#ffb4ab}
+.lvi{margin:8px 0 10px;font-size:13px;color:#d7e2dc;line-height:1.5}
+.lvf{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.lvf b{flex-basis:100%;font:700 17px 'Space Grotesk';color:var(--gold-lt);margin-bottom:4px}
+.lvf b:empty{display:none}
+.lvf button{white-space:nowrap;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid var(--line)}
+.lvf button.p{flex:1;background:var(--gold);border-color:var(--gold);color:#0b0b0b}
+.empty{margin-top:12px;padding:16px;border-radius:14px;border:1px dashed var(--line);font-size:13px;color:var(--muted);text-align:center}
+.empty a{color:var(--gold-lt)}
 @media (max-width:860px){.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.kpi b{font-size:22px}}
 </style>
 </head>
@@ -76,9 +104,17 @@ th.s{text-align:right}
   <div class="head">
     <div class="t"><h1>XAN SHATIR</h1><p data-i="title"></p></div>
     <div class="seg" id="period"><button data-p="day"></button><button data-p="week"></button><button data-p="month"></button></div>
+    <div class="live" id="live"><i></i><span></span></div>
     <div class="seg" id="lang"><button data-l="uz">UZ</button><button data-l="ru">RU</button></div>
   </div>
   <div class="demo"><i class="fa-solid fa-flask"></i><span data-i="demo"></span></div>
+
+  <div class="lbox">
+    <div class="lt"><h2><span data-i="liveT"></span><b id="liveCount">0</b></h2>
+      <button class="tg" id="sound"><i class="fa-solid fa-volume-xmark"></i><span data-i="sound"></span></button>
+      <button class="tg on" id="demoTg"><i class="fa-solid fa-flask"></i><span data-i="demoTg"></span></button></div>
+    <div class="lgrid" id="liveList"></div>
+  </div>
 
   <div class="kpis" id="kpis"></div>
 
@@ -96,15 +132,16 @@ th.s{text-align:right}
 </div>
 
 <script src="menu.js"></script>
+<script src="live.js"></script>
 <script>
 const T = {
-  uz:{title:"Savdo paneli · egasi uchun",demo:"Demo ma'lumotlar. Ulanganidan so'ng bu yerda ofitsiant tasdiqlagan haqiqiy to'langan buyurtmalar ko'rinadi.",
+  uz:{title:"Savdo paneli · egasi uchun",demo:"Statistikada demo tarix ham bor. Stollardan kelgan buyurtmalar yuqorida jonli ko'rinadi; «To'landi» bosilgach statistikaga qo'shiladi.",liveT:"Jonli buyurtmalar",sound:"Ovoz",demoTg:"Demo tarix",on:"Jonli · ulangan",off:"Ulanmoqda…",st_new:"Yangi",st_accepted:"Qabul qilindi",accept:"Qabul qilish",pay:"To'landi",cancel:"Bekor",done:"Bajarildi",callTxt:"Ofitsiantni chaqiryapti",empty:"Hozircha yangi buyurtma yo'q. Telefonda menyuni oching va buyurtma bering:",ago:"daq. oldin",now:"hozir",dishes:"Sotilgan taomlar",
       day:"Bugun",week:"Hafta",month:"Oy",rev:"Tushum",orders:"Buyurtmalar",avg:"O'rtacha chek",guests:"Mehmonlar",vs:"oldingi davrga nisbatan",
       revT:"Tushum dinamikasi",revDay:"Soatlar bo'yicha, bugun",revWeek:"Kunlar bo'yicha, oxirgi 7 kun",revMonth:"Kunlar bo'yicha, oxirgi 30 kun",
       topT:"Eng ko'p sotilgan taomlar",topS:"Soni va tushum",ordT:"Oxirgi buyurtmalar",ordS:"Stol orqali kelgan",tblT:"Stollar bandligi",tblS:"Davr ichidagi tushum, stol bo'yicha",
       thTime:"Vaqt",thTable:"Stol",thItems:"Taomlar",thSum:"Summa",thSt:"Holat",paid:"To'landi",less:"Kam",more:"Ko'p",sum:"so'm",pcs:"ta",tbl:"Stol",
       wd:["Ya","Du","Se","Ch","Pa","Ju","Sh"]},
-  ru:{title:"Панель продаж · для владельца",demo:"Демо-данные. После подключения здесь будут реальные оплаченные заказы, подтверждённые официантом.",
+  ru:{title:"Панель продаж · для владельца",demo:"В статистике есть демо-история. Заказы со столов видны вверху вживую; после «Оплачен» они попадают в статистику.",liveT:"Заказы вживую",sound:"Звук",demoTg:"Демо-история",on:"Онлайн · подключено",off:"Подключение…",st_new:"Новый",st_accepted:"Принят",accept:"Принять",pay:"Оплачен",cancel:"Отмена",done:"Готово",callTxt:"Зовёт официанта",empty:"Новых заказов пока нет. Откройте меню на телефоне и сделайте заказ:",ago:"мин. назад",now:"сейчас",dishes:"Продано блюд",
       day:"Сегодня",week:"Неделя",month:"Месяц",rev:"Выручка",orders:"Заказы",avg:"Средний чек",guests:"Гости",vs:"к прошлому периоду",
       revT:"Динамика выручки",revDay:"По часам, сегодня",revWeek:"По дням, последние 7 дней",revMonth:"По дням, последние 30 дней",
       topT:"Топ блюд",topS:"Количество и выручка",ordT:"Последние заказы",ordS:"Пришли со столов",tblT:"Загрузка столов",tblS:"Выручка за период по столам",
@@ -123,8 +160,8 @@ const pick = () => { let r = rnd() * WSUM; for (let i = 0; i < DISHES.length; i+
 const HOUR_W = [0,0,0,0,0,0,0,0,0,0,1,2,4,7,6,3,2,3,5,8,9,7,4,2];   // lunch and dinner peaks
 const TABLES = 15;
 
-const now = new Date();
-const ORDERS = [];
+let now = new Date();
+const DEMO = [];
 for (let dayAgo = 59; dayAgo >= 0; dayAgo--){
   const day = new Date(now); day.setDate(now.getDate() - dayAgo);
   const wk = day.getDay(), growth = 1 + (59 - dayAgo) * 0.004;   // slow upward trend, as after launching the menu
@@ -136,7 +173,7 @@ for (let dayAgo = 59; dayAgo >= 0; dayAgo--){
     const guests = 1 + Math.floor(rnd() * 5), items = {};
     for (let i = 0, m = guests + Math.floor(rnd() * 3); i < m; i++){ const d = pick(); items[d] = (items[d] || 0) + 1; }
     const sum = Object.entries(items).reduce((s, [d, q]) => s + DISHES[d].p * q, 0);
-    ORDERS.push({ t, table: 1 + Math.floor(rnd() * TABLES), guests, items, sum });
+    DEMO.push({ t, table: 1 + Math.floor(rnd() * TABLES), items, sum });
   }
 }
 /* ========================================================================================== */
@@ -155,15 +192,16 @@ function range(p, back = 0){
   const start = new Date(end); start.setDate(end.getDate() - days);
   return [start, end, days];
 }
-const inRange = ([s, e]) => ORDERS.filter(o => o.t >= s && o.t < e);
+const inRange = ([s, e]) => allOrders().filter(o => o.t >= s && o.t < e);
 
 function stats(list){
   const rev = list.reduce((s, o) => s + o.sum, 0);
-  return { rev, orders: list.length, avg: list.length ? rev / list.length : 0, guests: list.reduce((s, o) => s + o.guests, 0) };
+  return { rev, orders: list.length, avg: list.length ? rev / list.length : 0, dishes: list.reduce((s, o) => s + Object.values(o.items).reduce((a, q) => a + q, 0), 0) };
 }
 
 function render(){
   const t = T[lang];
+  now = new Date();
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i]').forEach(el => el.textContent = t[el.dataset.i]);
   document.querySelectorAll('#period button').forEach(b => { b.textContent = t[b.dataset.p]; b.classList.toggle('on', b.dataset.p === period); });
@@ -173,7 +211,7 @@ function render(){
   // the current period is still running: compare with the same stretch of the previous one
   const prevCut = inRange(pr).filter(o => o.t - pr[0] <= now - cur[0]);
   const a = stats(list), b = stats(prevCut);
-  const K = [["rev","fa-coins",a.rev,b.rev,t.sum],["orders","fa-receipt",a.orders,b.orders,""],["avg","fa-scale-balanced",a.avg,b.avg,t.sum],["guests","fa-user-group",a.guests,b.guests,""]];
+  const K = [["rev","fa-coins",a.rev,b.rev,t.sum],["orders","fa-receipt",a.orders,b.orders,""],["avg","fa-scale-balanced",a.avg,b.avg,t.sum],["dishes","fa-utensils",a.dishes,b.dishes,""]];
   $('kpis').innerHTML = K.map(([k, ic, v, pv, u]) => {
     const d = pv ? Math.round((v - pv) / pv * 100) : 0;
     return `<div class="kpi"><small><i class="fa-solid ${ic}"></i>${t[k]}</small><b>${fmt(v)}<span>${u}</span></b>
@@ -244,10 +282,76 @@ function barChart(B){
   el.querySelector('svg').onmouseleave = () => { tip.style.opacity = 0; el.querySelectorAll('.bar').forEach(p => p.style.opacity = 1); };
 }
 
+/* ===== live orders from the table menu (live.js) ===== */
+const LIVE_ORDERS = new Map(), CALLS = new Map();
+const opened = Date.now();
+let showDemo = true, audio = null;
+
+// live orders keep dish names; map them back to menu dishes for the stats
+const dishIdx = nm => DISHES.findIndex(d => d.n.ru + (d.w ? ` (${d.w.ru})` : '') === nm);
+function allOrders(){
+  const live = [...LIVE_ORDERS.values()].filter(o => o.s === 'paid').map(o => {
+    const items = {}; o.items.forEach(([nm, q]) => { const i = dishIdx(nm); if (i >= 0) items[i] = (items[i] || 0) + q; });
+    return { t:o.t, table:+o.table || 0, items, sum:o.sum };
+  });
+  return showDemo ? DEMO.concat(live) : live;
+}
+
+function beep(){
+  if (!audio) return;
+  [0, .18].forEach(d => { const o = audio.createOscillator(), g = audio.createGain();
+    o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
+    g.gain.setValueAtTime(.25, audio.currentTime + d); g.gain.exponentialRampToValueAtTime(.001, audio.currentTime + d + .15);
+    o.start(audio.currentTime + d); o.stop(audio.currentTime + d + .16); });
+}
+
+function onLive(m, time){
+  const fresh = time > opened - 5000;   // history replayed on connect stays quiet
+  if (m.k === 'order') { LIVE_ORDERS.set(m.id, { ...m, t:new Date(time), s:'new' }); if (fresh) beep(); }
+  if (m.k === 'waiter') { CALLS.set(m.id, { ...m, t:new Date(time) }); if (fresh) beep(); }
+  if (m.k === 'status') { if (LIVE_ORDERS.has(m.id)) LIVE_ORDERS.get(m.id).s = m.s; if (m.s === 'done') CALLS.delete(m.id); }
+  drawLive();
+  if (m.k === 'status' && m.s === 'paid') render();
+}
+
+function drawLive(){
+  const t = T[lang], ago = d => { const m = Math.floor((Date.now() - d) / 60000); return m < 1 ? t.now : `${m} ${t.ago}`; };
+  const hm = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  const open = [...LIVE_ORDERS.values()].filter(o => o.s === 'new' || o.s === 'accepted').sort((a, b) => b.t - a.t);
+  const calls = [...CALLS.values()].sort((a, b) => b.t - a.t);
+  $('liveCount').textContent = open.length + calls.length;
+  document.title = (open.length + calls.length ? `(${open.length + calls.length}) ` : '') + 'Xan Shatir — Savdo paneli';
+  const menuUrl = new URL('./?table=5', location.href).href;
+  $('liveList').innerHTML = calls.map(c => `<div class="lv call"><div class="lvh"><b>${t.tbl} №${c.table}</b><span>${hm(c.t)} · ${ago(c.t)}</span><em><i class="fa-solid fa-bell-concierge"></i> ${t.callTxt}</em></div>
+      <div class="lvf"><b></b><button class="p" data-act="done" data-id="${c.id}">${t.done}</button></div></div>`).join('')
+    + open.map(o => `<div class="lv ${o.s}"><div class="lvh"><b>${t.tbl} №${o.table}</b><span>${hm(o.t)} · ${ago(o.t)}</span><em>${t['st_' + o.s]}</em></div>
+      <div class="lvi">${o.items.map(([nm, q]) => { const i = dishIdx(nm); return (i >= 0 ? dishName(i) : nm) + (q > 1 ? ' ×' + q : ''); }).join(', ')}</div>
+      <div class="lvf"><b>${fmt(o.sum)} ${t.sum}</b>${o.s === 'new' ? `<button data-act="accepted" data-id="${o.id}">${t.accept}</button>` : ''}
+      <button class="p" data-act="paid" data-id="${o.id}">${t.pay}</button><button data-act="cancel" data-id="${o.id}" aria-label="${t.cancel}"><i class="fa-solid fa-xmark"></i></button></div></div>`).join('')
+    || `<div class="empty">${t.empty} <a href="${menuUrl}" target="_blank" rel="noopener">${menuUrl}</a></div>`;
+}
+
+$('liveList').onclick = async e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  b.disabled = true;
+  try { await LIVE.send({ k:'status', id:b.dataset.id, s:b.dataset.act }); } catch(err){ b.disabled = false; }
+};
+$('sound').onclick = () => {
+  if (!audio) { audio = new (window.AudioContext || window.webkitAudioContext)(); beep(); } else { audio.close(); audio = null; }
+  $('sound').classList.toggle('on', !!audio);
+  $('sound').querySelector('i').className = 'fa-solid ' + (audio ? 'fa-volume-high' : 'fa-volume-xmark');
+};
+$('demoTg').onclick = () => { showDemo = !showDemo; $('demoTg').classList.toggle('on', showDemo); render(); };
+function setState(on){ $('live').classList.toggle('on', on); $('live').querySelector('span').textContent = T[lang][on ? 'on' : 'off']; }
+LIVE.listen(onLive, setState);
+setInterval(drawLive, 30000);   // keep "N min ago" fresh
+
 document.querySelectorAll('#period button').forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
-document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { lang = b.dataset.l; try { localStorage.setItem('xs_admin_lang', lang); } catch(e){} render(); });
+document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { lang = b.dataset.l; try { localStorage.setItem('xs_admin_lang', lang); } catch(e){} render(); drawLive(); setState($('live').classList.contains('on')); });
 addEventListener('resize', () => render());
 render();
+drawLive();
+setState(false);
 </script>
 </body>
 </html>
