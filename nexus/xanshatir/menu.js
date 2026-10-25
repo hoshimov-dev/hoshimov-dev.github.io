@@ -21,7 +21,10 @@ const MENU = [
   { id:"shashlik", icon:"fa-fire-flame-curved", n:S("Shashlik","Шашлык","Kebabs"), items:[
     { n:S("Tovuq shashlik","Куриный шашлык","Chicken kebab"), d:S("Ko'mirda, piyoz bilan","На углях, с луком","Charcoal grilled, with onion"), p:22000, img:"shashlyk-kuriny" },
     { n:S("Qanotchalar","Крылышки","Chicken wings"), d:S("Ko'mirda, piyoz bilan","На углях, с луком","Charcoal grilled, with onion"), p:22000, img:"krylyshki" },
-    { n:S("Rulet","Рулет","Rulet"), d:S("Qiymali shashlik, piyoz bilan","Шашлык из фарша, с луком","Minced meat kebab, with onion"), p:25000, img:"rulet" }
+    { n:S("Rulet","Рулет","Rulet"), d:S("Qiymali shashlik, piyoz bilan","Шашлык из фарша, с луком","Minced meat kebab, with onion"), p:25000, img:"rulet" },
+    { n:S("Bo'lak go'sht shashlik","Кусковой шашлык","Meat chunk kebab"), d:S("Ko'mirda, piyoz bilan","На углях, с луком","Charcoal grilled, with onion"), p:25000, img:"shashlyk-kuskovoy" },
+    { n:S("Jigar shashlik","Шашлык из печени","Liver kebab"), d:S("Ko'mirda, piyoz bilan","На углях, с луком","Charcoal grilled, with onion"), p:22000, img:"shashlyk-pechen" },
+    { n:S("Qiyma shashlik","Молотый шашлык","Minced meat kebab"), d:S("Ko'mirda, piyoz bilan","На углях, с луком","Charcoal grilled, with onion"), p:23000, img:"shashlyk-molotyy" }
   ]},
   { id:"shorva", icon:"fa-mug-hot", n:S("Sho'rvalar","Супы","Soups"), items:[
     { n:S("Sho'rva","Шурпа","Shurpa"), d:S("Go'sht va kartoshka","Мясо и картофель","Meat and potatoes"), p:45000, ic:"fa-mug-hot" },
@@ -38,7 +41,7 @@ const MENU = [
     { n:S("Pod vodochku","Под водочку","Pod vodochku"), d:S("Go'sht va qo'ziqorin","Мясо и грибы","Meat and mushrooms"), p:50000, img:"pod-vodochku" },
     { n:S("Chiroqchi","Чирокчи","Chirokchi"), d:S("","",""), p:35000, img:"chirokchi" },
     { n:S("Pikantniy","Пикантный","Piquant"), d:S("","",""), p:45000, img:"pikantnyy" },
-    { n:S("Xan","Хан","Khan"), d:S("Restoranning nomdosh salati","Фирменный салат ресторана","The house salad"), p:45000, img:"xan" },
+    { n:S("Xan","Хан","Khan"), d:S("","",""), p:45000, img:"xan" },
     { n:S("Prints","Принц","Prince"), d:S("","",""), p:45000, img:"prints" },
     { n:S("Smak","Смак","Smak"), d:S("","",""), p:45000, img:"smak" },
     { n:S("Chen-son","Чен-сон","Chen-son"), d:S("","",""), p:50000, ic:"fa-pepper-hot" },
@@ -46,7 +49,20 @@ const MENU = [
     { n:S("Sharqona","Восточный","Oriental"), d:S("","",""), p:45000, ic:"fa-leaf" },
     { n:S("Mujskoy kapriz","Мужской каприз","Men's Caprice"), d:S("","",""), p:45000, ic:"fa-leaf" },
     { n:S("Gnezdo gluxarya","Гнездо глухаря","Grouse's Nest"), d:S("","",""), p:45000, ic:"fa-leaf" },
-    { n:S("Go'shtli olivye","Оливье с мясом","Olivier with meat"), d:S("","",""), p:45000, ic:"fa-leaf" }
+    { n:S("Go'shtli olivye","Оливье с мясом","Olivier with meat"), d:S("","",""), p:45000, ic:"fa-leaf" },
+    { n:S("Xan shatir","Хан шатыр","Khan Shatyr"), d:S("Restoranning nomdosh salati","Фирменный салат ресторана","The restaurant's signature salad"), p:60000, tag:"hit", img:"xan-shatyr" },
+    { n:S("Tbilisi","Тбилиси","Tbilisi"), d:S("Go'sht, loviya, sabzavotlar, yong'oq","Мясо, фасоль, овощи, орехи","Meat, beans, vegetables, nuts"), p:45000, img:"tbilisi" },
+    { n:S("Ruscha seledka","Селёдочка по-русски","Russian-style herring"), d:S("Kartoshka, piyoz va no'xat bilan","С картофелем, луком и горошком","With potatoes, onion and peas"), p:45000, img:"seledka" }
+  ]},
+  { id:"gazak", icon:"fa-plate-wheat", n:S("Gazaklar va mevalar","Закуски и фрукты","Starters & fruit"), items:[
+    { n:S("Go'shtli assorti","Мясное ассорти","Meat platter"), d:S("Til, kolbasa va go'sht kesmalari","Язык, колбаса и мясная нарезка","Tongue, sausage and cold cuts"), p:150000, img:"assorti-myasnoe" },
+    { n:S("Tuzlama assorti","Соленое ассорти","Pickles platter"), d:S("Tuzlangan sabzavotlar","Соленья","Pickled vegetables"), p:35000, img:"assorti-solenoe" },
+    { n:S("Meva assorti","Фруктовое ассорти","Fruit platter"), d:S("Mavsumiy mevalar","Сезонные фрукты","Seasonal fruit"), p:145000, img:"assorti-frukt" }
+  ]},
+  { id:"non", icon:"fa-bread-slice", n:S("Non","Хлеб и выпечка","Bread"), items:[
+    { n:S("Non","Хлеб","Bread"), d:S("Tandir noni","Лепёшка из тандыра","Tandoor flatbread"), p:6000, img:"non" },
+    { n:S("Qatlama","Катлама","Katlama"), d:S("Qatlamali yupqa non","Слоёная лепёшка","Layered flatbread"), p:15000, img:"katlama" },
+    { n:S("Bauyrsak","Бауырсак","Baursak"), d:S("Qaymoq bilan","Со сметаной","With sour cream"), p:25000, img:"bauyrsak" }
   ]},
   { id:"ichimlik", icon:"fa-glass-water", n:S("Ichimliklar","Напитки","Drinks"), items:[
     { n:S("Qimiz","Кымыз","Kumis"), d:S("Biya sutidan milliy ichimlik","Национальный напиток из кобыльего молока","Traditional fermented mare's milk"), p:50000, img:"kymyz" }
