@@ -217,11 +217,12 @@ const CUTS = [1.5, 3.0, 5.0, 8.0, 10.0, 12.8];
 const SUBS = "Telegram, Instagram и номер сразу в контактах".split(' ');
 const BARS = [.35, .5, .42, .7, .58, .85, 1];
 
-function render(t){
-  const f = Math.floor(t * 30);
+// beatT: real playback time, keeps grain and beat punches on a steady grid when t is time-warped to a voiceover
+function render(t, beatT = t){
+  const f = Math.floor(beatT * 30);
   G.putImageData(tiles[f % 4], 0, 0);
 
-  const sinceBeat = t % BEAT, punch = 1 + .035 * Math.pow(1 - clamp(sinceBeat / .18), 2);
+  const sinceBeat = beatT % BEAT, punch = 1 + .035 * Math.pow(1 - clamp(sinceBeat / .18), 2);
   $('world').style.transform = `scale(${punch})`;
   const fl = Math.max(...CUTS.map(c => t >= c && t < c + .1 ? 1 - (t - c) / .1 : 0));
   $('flash').style.opacity = fl * .55;
@@ -293,7 +294,7 @@ function render(t){
   // 7. end 12.8–15
   const e = out(seg(t, 12.8, 13.3));
   set('end', seg(t, 12.8, 12.95), `scale(${lerp(1.25, 1, e)})`);
-  set('dm', seg(t, 13.5, 13.7), `scale(${(1 + Math.sin(Math.max(0, t - 13.7) * Math.PI * 2) * .035) * lerp(.8, 1, out(seg(t, 13.5, 13.75)))})`);
+  set('dm', seg(t, 13.0, 13.2), `scale(${(1 + Math.sin(Math.max(0, t - 13.2) * Math.PI * 2) * .035) * lerp(.8, 1, out(seg(t, 13.0, 13.25)))})`);
 }
 
 const params = new URLSearchParams(location.search);
