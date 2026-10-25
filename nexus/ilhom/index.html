@@ -63,14 +63,15 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--li
 .chip{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(212,175,55,.06);font-size:13px;color:var(--gold-lt)}
 .chip i{color:var(--gold);margin-right:6px}
 
-.proj{display:grid;grid-auto-flow:column;grid-auto-columns:72%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
-.proj::-webkit-scrollbar{display:none}
-.pc{scroll-snap-align:start;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
-.pc .cv{height:110px;display:grid;place-items:center;position:relative}
-.pc .cv b{font-size:30px}
+.proj{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pc{display:block;border-radius:20px;transition:transform .15s,border-color .2s;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
+.pc:active{transform:scale(.97)}
+.pc:hover{border-color:rgba(212,175,55,.5)}
+.pc .cv{height:96px;display:grid;place-items:center;position:relative}
+.pc .cv b{font-size:26px;transform:scale(.8)}
 .pc .cv em{position:absolute;top:10px;left:10px;font:600 9px 'Space Grotesk';letter-spacing:.2em;text-transform:uppercase;font-style:normal;color:var(--gold);padding:4px 9px;border-radius:999px;background:rgba(8,12,10,.85);border:1px solid var(--line)}
-.pc .bd{padding:12px 14px 14px}
-.pc h3{font:600 15px 'Inter'}
+.pc .bd{padding:10px 12px 12px}
+.pc h3{font:600 14px 'Inter';line-height:1.25}
 .pc p{font-size:12px;color:var(--muted);margin-top:2px}
 
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px}
@@ -130,7 +131,7 @@ const ME = {
   github: "hoshimov-dev",
   site: "https://hoshimov-dev.github.io/",
   email: "xshking001@gmail.com",
-  phone: ""                       // add "+998..." to show a call button and put it in the saved contact
+  phone: "+998990042724"
 };
 /* =================== */
 
