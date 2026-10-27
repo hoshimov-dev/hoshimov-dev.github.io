@@ -179,7 +179,7 @@ main{padding:26px 30px 60px;min-width:0}
   </aside>
 
   <main>
-    <div class="banner"><i class="fa-solid fa-flask"></i><span>Это демо-версия админ-панели. Оформите заказ <a href="index.html" target="_blank" rel="noopener">в магазине</a> — он сразу появится здесь. Все данные хранятся только в этом браузере.</span></div>
+    <div class="banner" id="banner"><i class="fa-solid fa-flask"></i><span>Это демо-версия админ-панели. Оформите заказ <a href="index.html" target="_blank" rel="noopener">в магазине</a> — он сразу появится здесь. Все данные хранятся только в этом браузере.</span></div>
     <div class="top">
       <button class="btn btn-soft mob" id="burger"><i class="fa-solid fa-bars"></i></button>
       <div><h1 id="title"></h1><div class="sub" id="subtitle"></div></div>
@@ -203,7 +203,16 @@ const STAT = Object.fromEntries(KAB.statuses.map(s => [s.id, s]));
 const PAY = Object.fromEntries(KAB.payments.map(p => [p.id, p.name || p.ru]));
 const ZONE = Object.fromEntries(KAB.zones.map(z => [z.id, z.ru]));
 let S = KAB.load(), page = 'dash', ofilter = 'all', oq = '', pq = '';
-const save = () => { KAB.save(S); };
+// live mode (KAB.API set): orders and settings live on the server and are shared by every device
+const LIVE = !!KAB.API;
+let PIN = '', remote = [];
+try { PIN = sessionStorage.getItem('kab_pin') || ''; } catch (er) {}
+const load = () => { S = KAB.load(); if (LIVE) S.orders = remote; return S; };
+let saveTm;
+const save = () => {
+  KAB.save(S);
+  if (LIVE){ clearTimeout(saveTm); saveTm = setTimeout(() => KAB.call('/settings', { method: 'PUT', pin: PIN, body: { products: S.products, zones: S.zones, custom: S.custom || [] } }).catch(() => toast('Не удалось сохранить на сервере')), 400); }
+};
 const stTag = id => `<span class="st" style="color:${STAT[id].color};background:${STAT[id].color}18">${STAT[id].ru}</span>`;
 const when = ts => { const d = new Date(ts); return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); };
 const revenue = o => o.status === 'cancelled' ? 0 : o.total;
@@ -217,11 +226,36 @@ pins.forEach((el, i) => {
 });
 $('lform').addEventListener('submit', e => {
   e.preventDefault();
-  if (pins.map(p => p.value).join('') === '1234'){ try { sessionStorage.setItem('kab_admin', '1'); } catch (er) {} enter(); }
-  else { $('lform').classList.remove('shake'); void $('lform').offsetWidth; $('lform').classList.add('shake'); pins.forEach(p => p.value = ''); pins[0].focus(); }
+  const code = pins.map(p => p.value).join('');
+  const wrong = () => { $('lform').classList.remove('shake'); void $('lform').offsetWidth; $('lform').classList.add('shake'); pins.forEach(p => p.value = ''); pins[0].focus(); };
+  if (LIVE){
+    KAB.call('/orders', { pin: code }).then(list => { remote = list; PIN = code; try { sessionStorage.setItem('kab_pin', code); } catch (er) {} enter(); })
+      .catch(er => er.status === 401 ? wrong() : (toast('Сервер недоступен. Проверьте интернет.'), wrong()));
+    return;
+  }
+  if (code === '1234'){ try { sessionStorage.setItem('kab_admin', '1'); } catch (er) {} enter(); }
+  else wrong();
 });
-function enter(){ $('login').hidden = true; $('app').hidden = false; route(); }
-$('logout').onclick = e => { e.preventDefault(); try { sessionStorage.removeItem('kab_admin'); } catch (er) {} location.hash = ''; location.reload(); };
+function enter(){
+  $('login').hidden = true; $('app').hidden = false; route();
+  if (LIVE){
+    KAB.call('/settings').then(st => { if (st){ KAB.save(KAB.applyRemote(KAB.load(), st)); route(); } }).catch(() => {});
+    setInterval(poll, 5000);
+  }
+}
+// live mode: pick up orders placed on any phone every few seconds
+function poll(){
+  KAB.call('/orders', { pin: PIN }).then(list => {
+    const fresh = list.length > remote.length, changed = JSON.stringify(list) !== JSON.stringify(remote);
+    remote = list;
+    if (!changed) return;
+    if (fresh) toast('Новый заказ!');
+    const busy = $('modal').classList.contains('on') || document.activeElement?.matches('input,select,textarea');
+    if (!busy && ['dash', 'orders'].includes(page)){ const open = $('drawer').classList.contains('on') && $('drawer').querySelector('h3'); route(); if (open){ const no = +open.textContent.replace(/\D/g, ''); openOrder(no); } }
+    else { load(); $('newN').textContent = S.orders.filter(o => o.status === 'new').length || ''; }
+  }).catch(() => {});
+}
+$('logout').onclick = e => { e.preventDefault(); try { sessionStorage.removeItem('kab_admin'); sessionStorage.removeItem('kab_pin'); } catch (er) {} location.hash = ''; location.reload(); };
 
 /* ---------- pages ---------- */
 const PAGES = {
@@ -285,7 +319,9 @@ const PAGES = {
   settings(){
     return `<div class="two"><div class="panel"><h3><i class="fa-brands fa-telegram" style="color:#2aabee"></i>Уведомления в Telegram</h3>
         <p style="color:var(--muted);font-size:14px;margin-bottom:12px">Каждый новый заказ и каждая оплата приходят владельцу и менеджерам в Telegram за секунду.</p>
-        <div class="kv"><span>Бот</span><b>@kab_orders_bot (пример)</b></div><div class="kv"><span>Получатели</span><b>Владелец, менеджер</b></div></div>
+        ${LIVE ? `<p style="font-size:14px;margin-bottom:12px">1. Нажмите кнопку — откроется страница подключения.<br>2. Перейдите по ссылке из неё в Telegram и нажмите <b>Start</b>.<br>Так может подключиться каждый менеджер.</p>
+          <a class="btn btn-dark" href="${KAB.API.replace(/\/$/, '')}/init?pin=${encodeURIComponent(PIN)}" target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i>Подключить Telegram</a>`
+        : `<div class="kv"><span>Бот</span><b>@kab_orders_bot (пример)</b></div><div class="kv"><span>Получатели</span><b>Владелец, менеджер</b></div>`}</div>
       <div class="panel"><h3><i class="fa-solid fa-credit-card"></i>Платёжные системы</h3>
         ${['Payme', 'Click', 'Uzum Bank'].map(n => `<div class="kv"><span>${n}</span><b style="color:var(--muted)">подключается после договора</b></div>`).join('')}
         <div class="kv"><span>Наличные / перевод</span><b style="color:var(--ok)">включено</b></div></div></div>
@@ -305,7 +341,7 @@ function route(){
   const h = location.hash.slice(1); let flash = 0;
   if (h.startsWith('order-')){ flash = +h.slice(6); page = 'orders'; }
   else if (PAGES[h]) page = h;
-  S = KAB.load();
+  load();
   document.querySelectorAll('.menu a').forEach(a => a.classList.toggle('on', a.dataset.p === page));
   $('title').textContent = TITLES[page][0]; $('subtitle').textContent = TITLES[page][1];
   $('page').innerHTML = PAGES[page]();
@@ -364,14 +400,19 @@ document.addEventListener('click', e => {
   const el = e.target.closest('[data-order],[data-st],[data-closed],[data-of],[data-vis],[data-editp],[data-newp],[data-savep],[data-closem],[data-reset],[data-print],#burger'); if (!el) return;
   const d = el.dataset;
   if (d.order){ openOrder(+d.order); return; }
-  if (d.st){ const o = S.orders.find(x => x.no === +d.no); o.status = d.st; save(); openOrder(o.no); $('page').innerHTML = PAGES[page](); $('newN').textContent = S.orders.filter(x => x.status === 'new').length || ''; toast('Статус: ' + STAT[d.st].ru); return; }
+  if (d.st){ const o = S.orders.find(x => x.no === +d.no); o.status = d.st;
+    if (LIVE) KAB.call('/orders/' + o.no, { method: 'PATCH', pin: PIN, body: { status: d.st } }).catch(() => toast('Не удалось сохранить статус на сервере')); else save();
+    openOrder(o.no); $('page').innerHTML = PAGES[page](); $('newN').textContent = S.orders.filter(x => x.status === 'new').length || ''; toast('Статус: ' + STAT[d.st].ru); return; }
   if ('closed' in d || 'closem' in d){ closeAll(); return; }
   if (d.of){ ofilter = d.of; route(); return; }
   if (d.vis){ const sp = S.products.find(x => x.id === +d.vis); sp.hidden = !sp.hidden; save(); route(); toast(sp.hidden ? 'Товар скрыт с сайта' : 'Товар снова на сайте'); return; }
   if (d.editp){ editProduct(+d.editp); return; }
   if ('newp' in d){ editProduct(0); return; }
   if (d.savep !== undefined){ saveProduct(+d.savep); return; }
-  if ('reset' in d){ S = KAB.fresh(); save(); route(); toast('Демо-данные сброшены'); return; }
+  if ('reset' in d){
+    if (LIVE){ if (!confirm('Удалить все заказы на сервере и вернуть цены к исходным?')) return;
+      remote = []; S = KAB.fresh(); S.orders = []; save(); KAB.call('/orders', { method: 'DELETE', pin: PIN }).then(() => { route(); toast('Сброшено'); }).catch(() => toast('Сервер недоступен')); return; }
+    S = KAB.fresh(); save(); route(); toast('Демо-данные сброшены'); return; }
   if (d.print){ e.preventDefault(); toast('В рабочей версии откроется накладная для печати'); return; }
   if (el.id === 'burger'){ $('side').classList.add('on'); return; }
 });
@@ -392,8 +433,14 @@ addEventListener('hashchange', route);
 // a new order placed in the store tab appears here without reloading
 addEventListener('storage', e => { if (e.key === KAB.KEY && !$('app').hidden){ const before = S.orders.length; route(); if (KAB.load().orders.length > before) toast('Новый заказ!'); } });
 
-let authed = false; try { authed = sessionStorage.getItem('kab_admin') === '1'; } catch (er) {}
-if (authed || location.hash.startsWith('#order-')) enter(); else pins[0].focus();
+if (LIVE){
+  $('banner').innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--ok)"></i><span>Рабочий режим: заказы с любого телефона приходят сюда и в Telegram.</span>';
+  if (PIN) KAB.call('/orders', { pin: PIN }).then(list => { remote = list; enter(); }).catch(() => pins[0].focus()); else pins[0].focus();
+  $('lform').querySelector('.hint').hidden = true;
+} else {
+  let authed = false; try { authed = sessionStorage.getItem('kab_admin') === '1'; } catch (er) {}
+  if (authed || location.hash.startsWith('#order-')) enter(); else pins[0].focus();
+}
 </script>
 </body>
 </html>

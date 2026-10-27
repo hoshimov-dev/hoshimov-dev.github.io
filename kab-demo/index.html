@@ -541,6 +541,7 @@ const T = {
     agree: 'Нажимая кнопку, вы соглашаетесь с условиями публичной оферты.',
     payGo: 'Оплата заказа', payDemo: 'В рабочем сайте здесь откроется защищённая страница {p}, где покупатель вводит карту и код из SMS. В демо-версии оплата только имитируется — карта не нужна.', paySim: 'Имитировать успешную оплату', payCancel: 'Вернуться',
     okT: 'Спасибо! Заказ принят', okPaid: 'Оплата прошла успешно', okS: 'Номер заказа', okCall: 'Менеджер свяжется с вами в течение 15 минут для подтверждения.', okTg: 'Так владелец магазина мгновенно получает заказ в Telegram:', okAdmin: 'Посмотреть заказ в админ-панели', okMore: 'Продолжить покупки',
+    sendFail: 'Не удалось отправить заказ. Проверьте интернет и попробуйте ещё раз.',
     tgNew: 'Новый заказ', tgPaid: 'ОПЛАЧЕН', tgUnpaid: 'оплата при получении',
     dealT: 'Скидки <em>недели</em>', dealS: 'Успейте купить по специальной цене — акция закончится через:', dd: 'дн', hh: 'ч', mm: 'мин', ss: 'сек',
     hitWeek: 'Хит недели', home: 'Главная', tabDesc: 'Описание', tabUse: 'Применение', tabDel: 'Доставка', upsell: 'Добавьте к заказу',
@@ -574,6 +575,7 @@ const T = {
     agree: "Tugmani bosish orqali ommaviy oferta shartlariga rozilik bildirasiz.",
     payGo: "Buyurtma uchun to'lov", payDemo: "Ishlaydigan saytda bu yerda {p} ning himoyalangan sahifasi ochiladi, xaridor karta va SMS kodni kiritadi. Demo-versiyada to'lov faqat taqlid qilinadi — karta kerak emas.", paySim: "Muvaffaqiyatli to'lovni taqlid qilish", payCancel: 'Ortga',
     okT: 'Rahmat! Buyurtma qabul qilindi', okPaid: "To'lov muvaffaqiyatli o'tdi", okS: 'Buyurtma raqami', okCall: "Menejer tasdiqlash uchun 15 daqiqa ichida siz bilan bog'lanadi.", okTg: "Do'kon egasi buyurtmani Telegramda shunday oladi:", okAdmin: "Buyurtmani admin panelda ko'rish", okMore: 'Xaridni davom ettirish',
+    sendFail: "Buyurtmani yuborib bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.",
     tgNew: 'Yangi buyurtma', tgPaid: "TO'LANGAN", tgUnpaid: "qabul qilganda to'lov",
     dealT: 'Hafta <em>chegirmalari</em>', dealS: "Maxsus narxda xarid qilishga ulguring — aksiya tugashiga:", dd: 'kun', hh: 'soat', mm: 'daq', ss: 'son',
     hitWeek: 'Hafta xiti', home: 'Bosh sahifa', tabDesc: 'Tavsif', tabUse: "Qo'llash", tabDel: 'Yetkazish', upsell: "Buyurtmaga qo'shing",
@@ -780,17 +782,27 @@ function readForm(){
   co.name = ($('fName') || {}).value?.trim() ?? co.name; co.phone = ($('fPhone') || {}).value?.trim() ?? co.phone;
   if ($('fAddr')) co.addr = $('fAddr').value.trim(); if ($('fComment')) co.comment = $('fComment').value.trim();
 }
-function placeOrder(){
+let lastOrder = null;
+async function placeOrder(){
   readForm();
   const errs = { name: !co.name, phone: co.phone.replace(/\D/g, '').length < 12, addr: co.zone !== 'pickup' && !co.addr };
   if (errs.name || errs.phone || errs.addr){ drawCheckout(errs); return; }
   const tt = totals(co.zone);
   S = KAB.load();
-  const order = { no: S.nextNo++, at: Date.now(), name: co.name, phone: co.phone, zone: co.zone, address: co.zone === 'pickup' ? '' : co.addr, comment: co.comment,
+  let order = { at: Date.now(), name: co.name, phone: co.phone, zone: co.zone, address: co.zone === 'pickup' ? '' : co.addr, comment: co.comment,
     pay: co.pay, status: 'new', items: cart.map(i => ({ id: i.id, q: i.q, price: linePrice(i), name: lineName(i) })), sum: tt.sub, discount: tt.disc, ship: tt.ship, total: tt.total, promo };
-  S.orders.push(order);
-  cart.forEach(i => { const sp = S.products.find(x => x.id === i.id); if (sp) sp.stock = Math.max(0, sp.stock - i.q); });
-  KAB.save(S);
+  if (KAB.API){
+    // live mode: the server numbers the order, stores it and sends it to the shop's Telegram
+    const btn = $('place'); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    try { order = await KAB.call('/order', { method: 'POST', body: order }); }
+    catch (e){ btn.disabled = false; btn.textContent = t('place'); toast(t('sendFail')); return; }
+  } else {
+    order.no = S.nextNo++;
+    S.orders.push(order);
+    cart.forEach(i => { const sp = S.products.find(x => x.id === i.id); if (sp) sp.stock = Math.max(0, sp.stock - i.q); });
+    KAB.save(S);
+  }
+  lastOrder = order;
   cart = []; promo = null; store('kab_cart', cart); renderBadges(); renderGrid();
   const pay = KAB.payments.find(p => p.id === order.pay);
   pay.online ? drawPayment(order) : drawSuccess(order);
@@ -858,8 +870,10 @@ document.addEventListener('click', e => {
   if (el.id === 'promoBtn'){ const c = $('promoIn').value.trim().toUpperCase(); if (KAB.promo[c]){ promo = c; toast(t('promoOk')); } else { promo = null; toast(t('promoBad')); } renderCart(); return; }
   if (el.id === 'toCheckout'){ openCheckout(); return; }
   if (el.id === 'place'){ placeOrder(); return; }
-  if (d.paid){ S = KAB.load(); const o = S.orders.find(x => x.no === +d.paid); o.status = 'paid'; KAB.save(S); drawSuccess(o); return; }
-  if (d.unpaid){ S = KAB.load(); drawSuccess(S.orders.find(x => x.no === +d.unpaid)); return; }
+  if (d.paid){
+    if (KAB.API){ el.disabled = true; KAB.call(`/order/${d.paid}/paid`, { method: 'POST' }).then(drawSuccess).catch(() => { lastOrder.status = 'paid'; drawSuccess(lastOrder); }); return; }
+    S = KAB.load(); const o = S.orders.find(x => x.no === +d.paid); o.status = 'paid'; KAB.save(S); drawSuccess(o); return; }
+  if (d.unpaid){ if (KAB.API){ drawSuccess(lastOrder); return; } S = KAB.load(); drawSuccess(S.orders.find(x => x.no === +d.unpaid)); return; }
   if (el.id === 'cartBtn'){ openDrawer(false); return; }
   if (el.id === 'favBtn'){ openDrawer(true); return; }
   if (el.id === 'burger'){ $('mnav').classList.add('on'); $('shade').classList.add('on'); return; }
@@ -885,6 +899,8 @@ const io = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 renderStatic();
+// live mode: take prices, stock, visibility and delivery zones from the server, so admin edits on any device show here
+if (KAB.API) KAB.call('/settings').then(st => { if (st){ S = KAB.applyRemote(KAB.load(), st); KAB.save(S); renderStatic(); } }).catch(() => {});
 </script>
 </body>
 </html>

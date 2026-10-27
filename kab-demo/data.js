@@ -255,3 +255,27 @@ KAB.howto = {
   jewelry: { ru: 'Храните в мешочке отдельно от других украшений. Снимайте перед душем и бассейном, избегайте контакта с парфюмом.',
              uz: "Boshqa taqinchoqlardan alohida xaltachada saqlang. Dush va basseyndan oldin yeching, atir tegishidan saqlang." }
 };
+
+/* ---------- order server (Cloudflare Worker, see server/worker.js) ----------
+   Empty = demo mode: orders stay in this browser only.
+   Set to the Worker address, e.g. 'https://kab-orders.<name>.workers.dev', and orders from any phone
+   reach the admin panel on any device and the shop's Telegram. */
+KAB.API = '';
+KAB.call = async (path, { method = 'GET', body, pin } = {}) => {
+  const r = await fetch(KAB.API.replace(/\/$/, '') + path, { method, headers: { 'Content-Type': 'application/json', ...(pin ? { 'X-Pin': pin } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const data = await r.json().catch(() => null);
+  if (!r.ok) throw Object.assign(new Error((data && data.error) || 'HTTP ' + r.status), { status: r.status });
+  return data;
+};
+// apply admin settings from the server (prices, stock, visibility, zones, added products) to a local state object
+KAB.applyRemote = (S, st) => {
+  if (!st) return S;
+  if (Array.isArray(st.custom)) S.custom = st.custom;
+  // overlay saved values by id on the full list, so a partial or older save never drops products or zones
+  const merge = (base, saved) => base.map(x => ({ ...x, ...((saved || []).find(y => y.id === x.id) || {}) }));
+  const fresh = KAB.fresh();
+  const extra = (S.custom || []).map(c => ({ id: c.id, price: c.price, old: c.old || 0, stock: c.stock, hidden: false }));
+  S.products = merge([...fresh.products, ...extra], st.products);
+  S.zones = merge(fresh.zones, st.zones);
+  return S;
+};
