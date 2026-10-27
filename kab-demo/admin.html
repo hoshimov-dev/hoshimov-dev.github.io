@@ -6,8 +6,10 @@
 <title>Админ-панель — K.A.B cosmetics (демо)</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#1d1719">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;900&family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../fa/all.min.css">
 <style>
 :root{--bg:#f6f3f4;--ink:#1d1719;--muted:#7d7175;--pink:#e2789a;--pink-dk:#c95479;--blush:#fdeef2;--line:#ebe3e5;--card:#fff;--ok:#2e9e6b}
@@ -26,7 +28,8 @@ button{cursor:pointer;border:0;background:none}
 #login{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 30% 20%,#fbe1e8,transparent 50%),radial-gradient(circle at 80% 90%,#f3d6cc,transparent 50%),var(--bg)}
 .lbox{width:min(400px,100%);background:#fff;border-radius:26px;padding:34px;box-shadow:0 40px 80px -40px rgba(80,30,50,.4);text-align:center}
 .logo b{font:700 34px 'Cormorant Garamond',serif;letter-spacing:.04em}.logo b span{color:var(--pink)}
-.logo small{display:block;font-size:9px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted)}
+.logo .kablogo{display:block}
+.logo small{display:block;font-size:9px;letter-spacing:.5em;margin-top:5px;text-transform:uppercase;color:var(--muted)}
 .lbox h1{font-size:18px;margin:18px 0 4px}.lbox p{color:var(--muted);font-size:13.5px}
 .pin{display:flex;gap:10px;justify-content:center;margin:22px 0 10px}
 .pin input{width:54px;height:62px;border-radius:14px;border:1.5px solid var(--line);text-align:center;font-size:24px;font-weight:800;outline:0;background:var(--bg)}
@@ -149,7 +152,7 @@ main{padding:26px 30px 60px;min-width:0}
 
 <div id="login">
   <form class="lbox" id="lform">
-    <div class="logo"><b>K<span>.</span>A<span>.</span>B</b><small>admin</small></div>
+    <div class="logo"><svg class="kablogo" viewBox="0 0 1000 250" style="height:34px;width:auto" role="img" aria-label="K.A.B cosmetics" xmlns="http://www.w3.org/2000/svg"><g font-family="Montserrat,Arial Black,sans-serif" font-weight="900" font-size="268" text-anchor="middle"><g fill="#1d1719"><text x="128" y="230">K</text><text x="493" y="230">A</text><text x="853" y="230">B</text></g><g fill="#f3b6c4"><text x="162" y="230">K</text><text x="527" y="230">A</text><text x="887" y="230">B</text></g></g><circle cx="300" cy="205" r="25" fill="#1d1719"/><circle cx="350" cy="205" r="25" fill="#f3b6c4"/><circle cx="660" cy="205" r="25" fill="#1d1719"/><circle cx="710" cy="205" r="25" fill="#f3b6c4"/></svg><small>admin</small></div>
     <h1>Вход в админ-панель</h1>
     <p>Введите PIN-код владельца магазина</p>
     <div class="pin" id="pin"></div>
@@ -160,7 +163,7 @@ main{padding:26px 30px 60px;min-width:0}
 
 <div class="app" id="app" hidden>
   <aside class="sidebar" id="side">
-    <div class="logo"><b>K<span>.</span>A<span>.</span>B</b><small>admin panel</small></div>
+    <div class="logo"><svg class="kablogo" viewBox="0 0 1000 250" style="height:28px;width:auto" role="img" aria-label="K.A.B cosmetics" xmlns="http://www.w3.org/2000/svg"><g font-family="Montserrat,Arial Black,sans-serif" font-weight="900" font-size="268" text-anchor="middle"><g fill="#ffffff"><text x="128" y="230">K</text><text x="493" y="230">A</text><text x="853" y="230">B</text></g><g fill="#f3b6c4"><text x="162" y="230">K</text><text x="527" y="230">A</text><text x="887" y="230">B</text></g></g><circle cx="300" cy="205" r="25" fill="#ffffff"/><circle cx="350" cy="205" r="25" fill="#f3b6c4"/><circle cx="660" cy="205" r="25" fill="#ffffff"/><circle cx="710" cy="205" r="25" fill="#f3b6c4"/></svg><small>admin panel</small></div>
     <nav class="menu">
       <a href="#dash" data-p="dash"><i class="fa-solid fa-chart-pie"></i>Обзор</a>
       <a href="#orders" data-p="orders"><i class="fa-solid fa-receipt"></i>Заказы<em id="newN"></em></a>

@@ -7,8 +7,10 @@
 <meta name="description" content="Демо-версия интернет-магазина K.A.B cosmetics: каталог, корзина, доставка и онлайн-оплата.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#fbf7f5">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../fa/all.min.css">
 <style>
 :root{--bg:#fbf7f5;--ink:#1d1719;--muted:#7d7175;--pink:#e2789a;--pink-dk:#c95479;--pink-lt:#f8dbe3;--blush:#fdeef2;--gold:#c9a46a;--line:#efe5e7;--card:#fff;--ok:#2e9e6b;--r:20px}
@@ -44,7 +46,8 @@ header{position:sticky;top:0;z-index:40;background:rgba(251,247,245,.88);backdro
 .logo{display:flex;flex-direction:column;line-height:1}
 .logo b{font:700 30px 'Cormorant Garamond',serif;letter-spacing:.04em}
 .logo b span{color:var(--pink)}
-.logo small{font-size:9px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted);margin-top:3px;padding-left:2px}
+.logo .kablogo{display:block}
+.logo small{font-size:9px;letter-spacing:.5em;margin-top:5px;text-transform:uppercase;color:var(--muted);margin-top:3px;padding-left:2px}
 .links{display:flex;gap:24px;font-size:14px;font-weight:600;color:#4b4246}
 .links a{position:relative;padding:6px 0}
 .links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--pink);transition:right .25s}
@@ -356,7 +359,7 @@ footer li i{width:20px;color:var(--pink)}
 <header>
   <div class="wrap nav">
     <button class="icon burger" id="burger" aria-label="menu"><i class="fa-solid fa-bars"></i></button>
-    <a href="#top" class="logo" aria-label="K.A.B cosmetics"><b>K<span>.</span>A<span>.</span>B</b><small>cosmetics</small></a>
+    <a href="#top" class="logo" aria-label="K.A.B cosmetics"><svg class="kablogo" viewBox="0 0 1000 250" style="height:28px;width:auto" role="img" aria-label="K.A.B cosmetics" xmlns="http://www.w3.org/2000/svg"><g font-family="Montserrat,Arial Black,sans-serif" font-weight="900" font-size="268" text-anchor="middle"><g fill="#1d1719"><text x="128" y="230">K</text><text x="493" y="230">A</text><text x="853" y="230">B</text></g><g fill="#f3b6c4"><text x="162" y="230">K</text><text x="527" y="230">A</text><text x="887" y="230">B</text></g></g><circle cx="300" cy="205" r="25" fill="#1d1719"/><circle cx="350" cy="205" r="25" fill="#f3b6c4"/><circle cx="660" cy="205" r="25" fill="#1d1719"/><circle cx="710" cy="205" r="25" fill="#f3b6c4"/></svg><small>cosmetics</small></a>
     <nav class="links">
       <a href="#catalog" data-t="navCatalog"></a>
       <a href="#catalog" data-cat="perfume" data-t="c_perfume"></a>
@@ -476,7 +479,7 @@ footer li i{width:20px;color:var(--pink)}
 <footer>
   <div class="wrap">
     <div class="fgrid">
-      <div><a class="logo"><b>K<span>.</span>A<span>.</span>B</b><small>cosmetics</small></a><p style="margin-top:14px;font-size:14px;max-width:280px" data-t="fAbout"></p></div>
+      <div><a class="logo"><svg class="kablogo" viewBox="0 0 1000 250" style="height:30px;width:auto" role="img" aria-label="K.A.B cosmetics" xmlns="http://www.w3.org/2000/svg"><g font-family="Montserrat,Arial Black,sans-serif" font-weight="900" font-size="268" text-anchor="middle"><g fill="#ffffff"><text x="128" y="230">K</text><text x="493" y="230">A</text><text x="853" y="230">B</text></g><g fill="#f3b6c4"><text x="162" y="230">K</text><text x="527" y="230">A</text><text x="887" y="230">B</text></g></g><circle cx="300" cy="205" r="25" fill="#ffffff"/><circle cx="350" cy="205" r="25" fill="#f3b6c4"/><circle cx="660" cy="205" r="25" fill="#ffffff"/><circle cx="710" cy="205" r="25" fill="#f3b6c4"/></svg><small style="color:#cfc3c7">cosmetics</small></a><p style="margin-top:14px;font-size:14px;max-width:280px" data-t="fAbout"></p></div>
       <div><h4 data-t="fShop"></h4><ul id="fcats"></ul></div>
       <div><h4 data-t="fHelp"></h4><ul><li><a href="#delivery" data-t="navDelivery"></a></li><li><a href="#delivery" data-t="fPay"></a></li><li><a href="#" data-t="fReturn"></a></li><li><a href="#" data-t="fOffer"></a></li></ul></div>
       <div><h4 data-t="navContacts"></h4><ul>
