@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Админ-панель — K.A.B cosmetics (демо)</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1d1719">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../fa/all.min.css">
+<style>
+:root{--bg:#f6f3f4;--ink:#1d1719;--muted:#7d7175;--pink:#e2789a;--pink-dk:#c95479;--blush:#fdeef2;--line:#ebe3e5;--card:#fff;--ok:#2e9e6b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;line-height:1.5;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:12px;font-weight:700;font-size:14px;transition:.2s}
+.btn-dark{background:var(--ink);color:#fff}.btn-dark:hover{background:#000}
+.btn-soft{background:#fff;border:1px solid var(--line)}.btn-soft:hover{border-color:#cfc3c7}
+.btn-pink{background:var(--pink);color:#fff}
+
+/* login */
+#login{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 30% 20%,#fbe1e8,transparent 50%),radial-gradient(circle at 80% 90%,#f3d6cc,transparent 50%),var(--bg)}
+.lbox{width:min(400px,100%);background:#fff;border-radius:26px;padding:34px;box-shadow:0 40px 80px -40px rgba(80,30,50,.4);text-align:center}
+.logo b{font:700 34px 'Cormorant Garamond',serif;letter-spacing:.04em}.logo b span{color:var(--pink)}
+.logo small{display:block;font-size:9px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted)}
+.lbox h1{font-size:18px;margin:18px 0 4px}.lbox p{color:var(--muted);font-size:13.5px}
+.pin{display:flex;gap:10px;justify-content:center;margin:22px 0 10px}
+.pin input{width:54px;height:62px;border-radius:14px;border:1.5px solid var(--line);text-align:center;font-size:24px;font-weight:800;outline:0;background:var(--bg)}
+.pin input:focus{border-color:var(--pink)}
+.hint{display:inline-block;margin-top:12px;font-size:12.5px;background:#fff8e6;border:1px solid #f2dfb0;color:#7a5a12;padding:7px 12px;border-radius:10px}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* layout */
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:var(--ink);color:#cfc3c7;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.sidebar .logo{padding:0 10px 20px;border-bottom:1px solid #3a3034;margin-bottom:16px}
+.sidebar .logo b{color:#fff}
+.menu a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;font-weight:600;font-size:14.5px;margin-bottom:4px;transition:.2s}
+.menu a i{width:20px;text-align:center}
+.menu a:hover{background:#2a2226;color:#fff}
+.menu a.on{background:var(--pink);color:#fff}
+.menu a em{margin-left:auto;font-style:normal;background:#fff;color:var(--pink-dk);font-size:11px;font-weight:800;padding:1px 8px;border-radius:999px}
+.menu a em:empty{display:none}
+.side-foot{margin-top:auto;font-size:12.5px;padding:14px 10px;border-top:1px solid #3a3034}
+.side-foot a{display:flex;gap:10px;align-items:center;padding:8px 0;color:#fff}
+main{padding:26px 30px 60px;min-width:0}
+.top{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.top h1{font:700 34px 'Cormorant Garamond',serif;line-height:1}
+.top .sub{color:var(--muted);font-size:13.5px}
+.top .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.who{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 14px 5px 5px;font-size:13px;font-weight:700}
+.who i{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f6c9d6,#e2789a);color:#fff;display:grid;place-items:center;font-style:normal}
+.mob{display:none}
+@media (max-width:900px){.app{grid-template-columns:1fr}.sidebar{position:fixed;z-index:30;inset:0 auto 0 0;width:260px;transform:translateX(-100%);transition:.3s}.sidebar.on{transform:none}.mob{display:grid}main{padding:18px 16px 60px}}
+
+/* cards */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px}
+.kpi span{font-size:13px;color:var(--muted);font-weight:600;display:flex;gap:8px;align-items:center}
+.kpi span i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--blush);color:var(--pink-dk);font-size:13px}
+.kpi b{display:block;font-size:24px;font-weight:800;margin-top:10px;letter-spacing:-.01em}
+.kpi small{font-size:12px;color:var(--ok);font-weight:700}
+@media (max-width:1100px){.kpis{grid-template-columns:1fr 1fr}}
+.two{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+@media (max-width:1100px){.two{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;min-width:0}
+.panel h3{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.panel h3 .r{margin-left:auto;font-size:13px;color:var(--pink-dk);font-weight:700}
+.chart svg{width:100%;height:auto}
+.top-p{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.top-p:last-child{border:0}
+.top-p .p{width:42px;height:42px;border-radius:12px;padding:4px;flex:none}
+.top-p span{flex:1;font-weight:600}
+.top-p small{color:var(--muted)}
+
+/* tables */
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.seg{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px;overflow-x:auto;max-width:100%}
+.seg button{padding:8px 12px;border-radius:9px;font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--ink);color:#fff}
+.sbox{flex:1;min-width:180px;display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 14px}
+.sbox input{border:0;outline:0;padding:10px 0;flex:1;background:none;font-size:14px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl td b{white-space:nowrap}
+.tbl tr.click{cursor:pointer;transition:background .15s}
+.tbl tr.click:hover{background:#fcf8f9}
+.tbl tr.flash{animation:flash 2.2s}
+@keyframes flash{0%,40%{background:#fde6ee}}
+.scroll{overflow-x:auto}
+.st{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
+.st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.paytag{font-size:12px;font-weight:700;padding:3px 8px;border-radius:7px;background:var(--bg);white-space:nowrap}
+.pimg{width:46px;height:46px;border-radius:12px;padding:4px}
+.inp{width:110px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;outline:0;font-weight:700;background:var(--bg)}
+.inp:focus{border-color:var(--pink)}
+.tog{width:44px;height:26px;border-radius:999px;background:#d9d0d3;position:relative;transition:.2s;flex:none}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.on{background:var(--ok)}.tog.on::after{left:21px}
+.low{color:#b5473a;font-weight:800}
+
+/* order drawer */
+.shade{position:fixed;inset:0;z-index:40;background:rgba(29,23,25,.4);opacity:0;pointer-events:none;transition:.25s}
+.shade.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:45;width:min(480px,100%);background:var(--bg);transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);overflow-y:auto}
+.drawer.on{transform:none}
+.dh{position:sticky;top:0;background:var(--bg);display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid var(--line);z-index:2}
+.dh h3{font:700 28px 'Cormorant Garamond',serif}
+.dh .x{margin-left:auto;width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center}
+.db{padding:18px 22px}
+.blk{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;font-size:14px}
+.blk h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0}
+.kv span{color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;gap:8px}
+.flow button{padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:13px;font-weight:700;background:#fff}
+.flow button.on{color:#fff}
+.act{display:flex;gap:8px;flex-wrap:wrap}
+.act a,.act button{flex:1;min-width:120px}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:46;display:grid;place-items:center;padding:16px;pointer-events:none}
+.mbox{pointer-events:auto;width:min(520px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:#fff;border-radius:24px;padding:26px;opacity:0;transform:translateY(20px);transition:.3s}
+.modal.on .mbox{opacity:1;transform:none}
+.modal:not(.on) .mbox{pointer-events:none}
+.mbox h3{font:700 28px 'Cormorant Garamond',serif;margin-bottom:16px}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#5d5357;margin-bottom:12px}
+.fld input,.fld select,.fld textarea{border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;outline:0;background:var(--bg);font-weight:500;font-size:15px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toast{position:fixed;left:50%;bottom:24px;z-index:60;transform:translate(-50%,160%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:700;transition:transform .3s;display:flex;gap:10px;align-items:center;white-space:nowrap}
+.toast.on{transform:translate(-50%,0)}
+.toast i{color:#7fe0b1}
+.banner{display:flex;gap:12px;align-items:center;background:#fff8e6;border:1px solid #f2dfb0;color:#7a5a12;border-radius:14px;padding:12px 16px;font-size:13.5px;margin-bottom:18px}
+.banner a{font-weight:800;text-decoration:underline;white-space:nowrap}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ok);font-weight:800}
+.live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(46,158,107,.15)}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <form class="lbox" id="lform">
+    <div class="logo"><b>K<span>.</span>A<span>.</span>B</b><small>admin</small></div>
+    <h1>Вход в админ-панель</h1>
+    <p>Введите PIN-код владельца магазина</p>
+    <div class="pin" id="pin"></div>
+    <button class="btn btn-dark" style="width:100%" type="submit">Войти</button>
+    <span class="hint"><i class="fa-solid fa-circle-info"></i> Демо: PIN-код <b>1234</b></span>
+  </form>
+</div>
+
+<div class="app" id="app" hidden>
+  <aside class="sidebar" id="side">
+    <div class="logo"><b>K<span>.</span>A<span>.</span>B</b><small>admin panel</small></div>
+    <nav class="menu">
+      <a href="#dash" data-p="dash"><i class="fa-solid fa-chart-pie"></i>Обзор</a>
+      <a href="#orders" data-p="orders"><i class="fa-solid fa-receipt"></i>Заказы<em id="newN"></em></a>
+      <a href="#products" data-p="products"><i class="fa-solid fa-box-open"></i>Товары</a>
+      <a href="#delivery" data-p="delivery"><i class="fa-solid fa-truck-fast"></i>Доставка</a>
+      <a href="#settings" data-p="settings"><i class="fa-solid fa-gear"></i>Настройки</a>
+    </nav>
+    <div class="side-foot">
+      <a href="index.html" target="_blank" rel="noopener"><i class="fa-solid fa-store"></i>Открыть магазин</a>
+      <a href="tarif.html" target="_blank" rel="noopener"><i class="fa-solid fa-layer-group"></i>Варианты сайта</a>
+      <a href="#" id="logout"><i class="fa-solid fa-right-from-bracket"></i>Выйти</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="banner"><i class="fa-solid fa-flask"></i><span>Это демо-версия админ-панели. Оформите заказ <a href="index.html" target="_blank" rel="noopener">в магазине</a> — он сразу появится здесь. Все данные хранятся только в этом браузере.</span></div>
+    <div class="top">
+      <button class="btn btn-soft mob" id="burger"><i class="fa-solid fa-bars"></i></button>
+      <div><h1 id="title"></h1><div class="sub" id="subtitle"></div></div>
+      <div class="right"><span class="live">онлайн</span><div class="who"><i>K</i>Владелец</div></div>
+    </div>
+    <div id="page"></div>
+  </main>
+</div>
+
+<div class="shade" id="shade"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span></span></div>
+
+<script src="data.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = n => KAB.fmt(n);
+const STAT = Object.fromEntries(KAB.statuses.map(s => [s.id, s]));
+const PAY = Object.fromEntries(KAB.payments.map(p => [p.id, p.name || p.ru]));
+const ZONE = Object.fromEntries(KAB.zones.map(z => [z.id, z.ru]));
+let S = KAB.load(), page = 'dash', ofilter = 'all', oq = '', pq = '';
+const save = () => { KAB.save(S); };
+const stTag = id => `<span class="st" style="color:${STAT[id].color};background:${STAT[id].color}18">${STAT[id].ru}</span>`;
+const when = ts => { const d = new Date(ts); return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); };
+const revenue = o => o.status === 'cancelled' ? 0 : o.total;
+
+/* ---------- login ---------- */
+$('pin').innerHTML = [0, 1, 2, 3].map(i => `<input inputmode="numeric" maxlength="1" aria-label="digit ${i + 1}">`).join('');
+const pins = [...$('pin').querySelectorAll('input')];
+pins.forEach((el, i) => {
+  el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, ''); if (el.value && pins[i + 1]) pins[i + 1].focus(); if (pins.every(p => p.value)) $('lform').requestSubmit(); });
+  el.addEventListener('keydown', e => { if (e.key === 'Backspace' && !el.value && pins[i - 1]) pins[i - 1].focus(); });
+});
+$('lform').addEventListener('submit', e => {
+  e.preventDefault();
+  if (pins.map(p => p.value).join('') === '1234'){ try { sessionStorage.setItem('kab_admin', '1'); } catch (er) {} enter(); }
+  else { $('lform').classList.remove('shake'); void $('lform').offsetWidth; $('lform').classList.add('shake'); pins.forEach(p => p.value = ''); pins[0].focus(); }
+});
+function enter(){ $('login').hidden = true; $('app').hidden = false; route(); }
+$('logout').onclick = e => { e.preventDefault(); try { sessionStorage.removeItem('kab_admin'); } catch (er) {} location.hash = ''; location.reload(); };
+
+/* ---------- pages ---------- */
+const PAGES = {
+  dash(){
+    const O = S.orders, day = 864e5, now = Date.now();
+    const week = O.filter(o => now - o.at < 7 * day), today = O.filter(o => new Date(o.at).toDateString() === new Date().toDateString());
+    const rev = week.reduce((a, o) => a + revenue(o), 0);
+    const avg = week.length ? rev / week.filter(o => o.status !== 'cancelled').length : 0;
+    const days = [...Array(7)].map((_, i) => { const d = new Date(now - (6 - i) * day); return { d, v: O.filter(o => new Date(o.at).toDateString() === d.toDateString()).reduce((a, o) => a + revenue(o), 0) }; });
+    const max = Math.max(...days.map(x => x.v), 1);
+    const sold = {}; O.forEach(o => o.status !== 'cancelled' && o.items.forEach(i => sold[i.id] = (sold[i.id] || 0) + i.q));
+    const top = Object.entries(sold).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const C = KAB.catalog(S);
+    return `<div class="kpis">
+      <div class="kpi"><span><i class="fa-solid fa-sack-dollar"></i>Выручка за 7 дней</span><b>${fmt(rev)}</b><small><i class="fa-solid fa-arrow-trend-up"></i> онлайн-заказы</small></div>
+      <div class="kpi"><span><i class="fa-solid fa-receipt"></i>Заказы сегодня</span><b>${today.length}</b><small>${O.filter(o => o.status === 'new').length} ждут обработки</small></div>
+      <div class="kpi"><span><i class="fa-solid fa-basket-shopping"></i>Средний чек</span><b>${fmt(avg)}</b><small>за неделю</small></div>
+      <div class="kpi"><span><i class="fa-solid fa-box-open"></i>Товары</span><b>${C.filter(p => !p.hidden).length}</b><small style="color:#b5473a">${C.filter(p => p.stock <= 3).length} заканчиваются</small></div>
+    </div>
+    <div class="two">
+      <div class="panel"><h3>Продажи за неделю</h3><div class="chart"><svg viewBox="0 0 700 260">
+        ${days.map((x, i) => { const h = x.v / max * 180; const X = 30 + i * 95;
+          return `<rect x="${X}" y="${210 - h}" width="56" height="${Math.max(h, 2)}" rx="10" fill="${i === 6 ? '#e2789a' : '#f3c9d6'}"/>
+          <text x="${X + 28}" y="236" font-size="15" text-anchor="middle" fill="#7d7175" font-family="Manrope">${x.d.toLocaleDateString('ru-RU', { weekday: 'short' })}</text>
+          <text x="${X + 28}" y="${200 - h}" font-size="13" text-anchor="middle" fill="#1d1719" font-weight="700" font-family="Manrope">${x.v ? Math.round(x.v / 1000) + 'k' : ''}</text>`; }).join('')}
+      </svg></div></div>
+      <div class="panel"><h3>Хиты продаж</h3>
+        ${top.map(([id, q]) => { const p = C.find(x => x.id === +id); return `<div class="top-p"><div class="p pimg" style="background:${p.c[0]}55">${KAB.art(p.art, p.c[0], p.c[1], 't' + id)}</div><span>${esc(p.name.ru)}</span><small>${q} шт.</small></div>`; }).join('')}
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px"><h3>Последние заказы<a class="r" href="#orders">Все заказы →</a></h3>${orderTable(O.slice().sort((a, b) => b.at - a.at).slice(0, 6))}</div>`;
+  },
+  orders(){
+    let L = S.orders.slice().sort((a, b) => b.at - a.at);
+    if (ofilter !== 'all') L = L.filter(o => o.status === ofilter);
+    if (oq){ const q = oq.toLowerCase(); L = L.filter(o => (o.no + ' ' + o.name + ' ' + o.phone).toLowerCase().includes(q)); }
+    return `<div class="tools"><div class="seg">${[['all', 'Все'], ...KAB.statuses.map(s => [s.id, s.ru])].map(([id, n]) => `<button data-of="${id}" class="${ofilter === id ? 'on' : ''}">${n} <small>${id === 'all' ? S.orders.length : S.orders.filter(o => o.status === id).length}</small></button>`).join('')}</div>
+      <label class="sbox"><i class="fa-solid fa-magnifying-glass"></i><input id="oq" placeholder="Номер, имя или телефон" value="${esc(oq)}"></label></div>
+      <div class="panel">${L.length ? orderTable(L) : '<p style="color:var(--muted);text-align:center;padding:30px">Заказов нет</p>'}</div>`;
+  },
+  products(){
+    let L = KAB.catalog(S); if (pq){ const q = pq.toLowerCase(); L = L.filter(p => p.name.ru.toLowerCase().includes(q)); }
+    return `<div class="tools"><label class="sbox"><i class="fa-solid fa-magnifying-glass"></i><input id="pq" placeholder="Поиск товара" value="${esc(pq)}"></label>
+      <button class="btn btn-dark" data-newp><i class="fa-solid fa-plus"></i>Добавить товар</button></div>
+      <div class="panel scroll"><table class="tbl"><tr><th></th><th>Товар</th><th>Категория</th><th>Цена, сум</th><th>Остаток</th><th>На сайте</th><th></th></tr>
+      ${L.map(p => `<tr><td><div class="pimg" style="background:${p.c[0]}55">${KAB.art(p.art, p.c[0], p.c[1], 'p' + p.id)}</div></td>
+        <td><b>${esc(p.name.ru)}</b><br><small style="color:var(--muted)">${esc(p.sub.ru)}</small></td>
+        <td>${KAB.categories.find(c => c.id === p.cat).ru}</td>
+        <td><input class="inp" type="number" step="1000" min="0" value="${p.price}" data-price="${p.id}"></td>
+        <td><input class="inp" type="number" min="0" style="width:80px" value="${p.stock}" data-stock="${p.id}">${p.stock <= 3 ? ' <span class="low"><i class="fa-solid fa-triangle-exclamation"></i></span>' : ''}</td>
+        <td><button class="tog${p.hidden ? '' : ' on'}" data-vis="${p.id}" aria-label="visible"></button></td>
+        <td><button class="btn btn-soft" data-editp="${p.id}"><i class="fa-solid fa-pen"></i></button></td></tr>`).join('')}</table></div>
+      <p style="color:var(--muted);font-size:13px;margin-top:10px"><i class="fa-solid fa-bolt"></i> Изменения цен, остатков и видимости сразу появляются в открытом магазине.</p>`;
+  },
+  delivery(){
+    return `<div class="panel scroll"><table class="tbl"><tr><th>Зона</th><th>Стоимость, сум</th><th>Бесплатно от, сум</th><th>Срок</th></tr>
+      ${KAB.zoneList(S).map(z => `<tr><td><b>${z.ru}</b></td><td><input class="inp" type="number" step="1000" min="0" value="${z.price}" data-zp="${z.id}"></td>
+        <td><input class="inp" type="number" step="10000" min="0" value="${z.free}" data-zf="${z.id}"> <small style="color:var(--muted)">${z.free ? '' : 'не действует'}</small></td><td>${z.days.ru}</td></tr>`).join('')}</table></div>
+      <p style="color:var(--muted);font-size:13px;margin-top:10px"><i class="fa-solid fa-bolt"></i> Стоимость доставки в корзине пересчитывается автоматически.</p>`;
+  },
+  settings(){
+    return `<div class="two"><div class="panel"><h3><i class="fa-brands fa-telegram" style="color:#2aabee"></i>Уведомления в Telegram</h3>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:12px">Каждый новый заказ и каждая оплата приходят владельцу и менеджерам в Telegram за секунду.</p>
+        <div class="kv"><span>Бот</span><b>@kab_orders_bot (пример)</b></div><div class="kv"><span>Получатели</span><b>Владелец, менеджер</b></div></div>
+      <div class="panel"><h3><i class="fa-solid fa-credit-card"></i>Платёжные системы</h3>
+        ${['Payme', 'Click', 'Uzum Bank'].map(n => `<div class="kv"><span>${n}</span><b style="color:var(--muted)">подключается после договора</b></div>`).join('')}
+        <div class="kv"><span>Наличные / перевод</span><b style="color:var(--ok)">включено</b></div></div></div>
+      <div class="panel" style="margin-top:16px"><h3><i class="fa-solid fa-rotate-left"></i>Демо-данные</h3>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:12px">Вернуть товары, цены и заказы к исходному примеру.</p><button class="btn btn-soft" data-reset><i class="fa-solid fa-rotate-left"></i>Сбросить демо</button></div>`;
+  }
+};
+const TITLES = { dash: ['Обзор', 'Как идут продажи'], orders: ['Заказы', 'Нажмите на заказ, чтобы открыть детали и сменить статус'], products: ['Товары', 'Цены, остатки и видимость на сайте'], delivery: ['Доставка', 'Зоны, стоимость и бесплатная доставка'], settings: ['Настройки', 'Уведомления и оплата'] };
+
+function orderTable(L){
+  return `<div class="scroll"><table class="tbl"><tr><th>№</th><th>Дата</th><th>Покупатель</th><th>Сумма</th><th>Оплата</th><th>Доставка</th><th>Статус</th></tr>
+    ${L.map(o => `<tr class="click" data-order="${o.no}" id="row-${o.no}"><td><b>#${o.no}</b></td><td>${when(o.at)}</td><td>${esc(o.name)}<br><small style="color:var(--muted)">${esc(o.phone)}</small></td>
+      <td><b>${fmt(o.total)}</b></td><td><span class="paytag">${PAY[o.pay]}</span></td><td>${ZONE[o.zone]}</td><td>${stTag(o.status)}</td></tr>`).join('')}</table></div>`;
+}
+
+function route(){
+  const h = location.hash.slice(1); let flash = 0;
+  if (h.startsWith('order-')){ flash = +h.slice(6); page = 'orders'; }
+  else if (PAGES[h]) page = h;
+  S = KAB.load();
+  document.querySelectorAll('.menu a').forEach(a => a.classList.toggle('on', a.dataset.p === page));
+  $('title').textContent = TITLES[page][0]; $('subtitle').textContent = TITLES[page][1];
+  $('page').innerHTML = PAGES[page]();
+  $('newN').textContent = S.orders.filter(o => o.status === 'new').length || '';
+  $('side').classList.remove('on');
+  if (flash && S.orders.some(o => o.no === flash)){ const r = $('row-' + flash); r && r.classList.add('flash'); openOrder(flash); }
+}
+
+/* ---------- order drawer ---------- */
+function openOrder(no){
+  const o = S.orders.find(x => x.no === no); if (!o) return;
+  $('drawer').innerHTML = `<div class="dh"><h3>Заказ #${o.no}</h3>${stTag(o.status)}<button class="x" data-closed><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="db">
+      <div class="blk"><h4>Статус</h4><div class="flow">${KAB.statuses.map(s => `<button data-st="${s.id}" data-no="${o.no}" class="${o.status === s.id ? 'on' : ''}" style="${o.status === s.id ? `background:${s.color};border-color:${s.color}` : ''}">${s.ru}</button>`).join('')}</div></div>
+      <div class="blk"><h4>Покупатель</h4><div class="kv"><span>Имя</span><b>${esc(o.name)}</b></div><div class="kv"><span>Телефон</span><b>${esc(o.phone)}</b></div>
+        <div class="kv"><span>Доставка</span><b>${ZONE[o.zone]}</b></div>${o.address ? `<div class="kv"><span>Адрес</span><b style="text-align:right">${esc(o.address)}</b></div>` : ''}
+        ${o.comment ? `<div class="kv"><span>Комментарий</span><b style="text-align:right">${esc(o.comment)}</b></div>` : ''}<div class="kv"><span>Создан</span><b>${when(o.at)}</b></div></div>
+      <div class="blk"><h4>Товары</h4>${o.items.map(i => `<div class="kv"><span style="color:var(--ink)">${esc(i.name)} × ${i.q}</span><b>${fmt(i.price * i.q)}</b></div>`).join('')}
+        <div style="border-top:1px dashed var(--line);margin-top:8px;padding-top:8px"><div class="kv"><span>Товары</span><b>${fmt(o.sum)}</b></div>${o.discount ? `<div class="kv"><span>Скидка${o.promo ? ' (' + esc(o.promo) + ')' : ''}</span><b style="color:var(--ok)">−${fmt(o.discount)}</b></div>` : ''}
+        <div class="kv"><span>Доставка</span><b>${o.ship ? fmt(o.ship) : 'бесплатно'}</b></div><div class="kv" style="font-size:17px"><span style="color:var(--ink);font-weight:800">Итого</span><b>${fmt(o.total)}</b></div></div></div>
+      <div class="blk"><h4>Оплата</h4><div class="kv"><span>Способ</span><b>${PAY[o.pay]}</b></div><div class="kv"><span>Статус оплаты</span><b style="color:${['paid', 'packing', 'shipping', 'done'].includes(o.status) ? 'var(--ok)' : '#d49a2a'}">${['paid', 'packing', 'shipping', 'done'].includes(o.status) ? 'оплачено' : 'ожидает оплаты'}</b></div></div>
+      <div class="act"><a class="btn btn-soft" href="tel:${o.phone.replace(/\s/g, '')}"><i class="fa-solid fa-phone"></i>Позвонить</a><a class="btn btn-soft" href="#" data-print="${o.no}"><i class="fa-solid fa-print"></i>Накладная</a></div>
+    </div>`;
+  $('shade').classList.add('on'); $('drawer').classList.add('on');
+}
+function closeAll(){ ['shade', 'drawer', 'modal'].forEach(id => $(id).classList.remove('on')); if (location.hash.startsWith('#order-')) history.replaceState(null, '', '#orders'); }
+
+/* ---------- product editor ---------- */
+function editProduct(id){
+  const C = KAB.catalog(S); const p = id ? C.find(x => x.id === id) : null;
+  $('mbox').innerHTML = `<h3>${p ? 'Редактировать товар' : 'Новый товар'}</h3>
+    <label class="fld">Название<input id="eName" value="${esc(p ? p.name.ru : '')}" ${p ? 'readonly' : ''} placeholder="Например: Бальзам для губ"></label>
+    <div class="f2"><label class="fld">Цена, сум<input id="ePrice" type="number" step="1000" value="${p ? p.price : ''}"></label><label class="fld">Старая цена (для скидки)<input id="eOld" type="number" step="1000" value="${p && p.old ? p.old : ''}"></label></div>
+    <div class="f2"><label class="fld">Остаток, шт<input id="eStock" type="number" value="${p ? p.stock : 10}"></label>
+      <label class="fld">Категория<select id="eCat" ${p ? 'disabled' : ''}>${KAB.categories.map(c => `<option value="${c.id}"${p && p.cat === c.id ? ' selected' : ''}>${c.ru}</option>`).join('')}</select></label></div>
+    <label class="fld">Фото<div style="border:1.5px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--muted);font-weight:500"><i class="fa-solid fa-cloud-arrow-up"></i> В рабочей версии здесь загружаются фото товара</div></label>
+    <div style="display:flex;gap:10px;margin-top:6px"><button class="btn btn-soft" data-closem style="flex:1">Отмена</button><button class="btn btn-dark" data-savep="${id || 0}" style="flex:1">Сохранить</button></div>`;
+  $('shade').classList.add('on'); $('modal').classList.add('on');
+}
+function saveProduct(id){
+  const price = +$('ePrice').value || 0, old = +$('eOld').value || 0, stock = +$('eStock').value || 0;
+  if (id){ const sp = S.products.find(x => x.id === id); Object.assign(sp, { price, old, stock }); }
+  else {
+    const name = $('eName').value.trim(); if (!name || !price){ toast('Укажите название и цену'); return; }
+    const nid = Math.max(...KAB.products.map(p => p.id), ...S.products.map(p => p.id)) + 1, catId = $('eCat').value;
+    const look = { perfume: ['perfume', ['#f9e0e8', '#d98aa5']], care: ['jar', ['#eef4f0', '#9cc9b0']], makeup: ['lipstick', ['#f9d5dd', '#b8305f']], jewelry: ['ring', ['#fdf3ea', '#d6b06a']] }[catId];
+    (S.custom = S.custom || []).push({ id: nid, cat: catId, art: look[0], c: look[1], price, old, stock, name: { ru: name, uz: name }, sub: { ru: 'Новинка', uz: 'Yangi' }, desc: { ru: 'Описание товара', uz: "Mahsulot tavsifi" }, badge: 'new' });
+    S.products.push({ id: nid, price, old, stock, hidden: false });
+  }
+  save(); closeAll(); route(); toast('Сохранено — уже на сайте');
+}
+
+/* ---------- events ---------- */
+function toast(s){ const el = $('toast'); el.querySelector('span').textContent = s; el.classList.add('on'); clearTimeout(toast.tm); toast.tm = setTimeout(() => el.classList.remove('on'), 1900); }
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-order],[data-st],[data-closed],[data-of],[data-vis],[data-editp],[data-newp],[data-savep],[data-closem],[data-reset],[data-print],#burger'); if (!el) return;
+  const d = el.dataset;
+  if (d.order){ openOrder(+d.order); return; }
+  if (d.st){ const o = S.orders.find(x => x.no === +d.no); o.status = d.st; save(); openOrder(o.no); $('page').innerHTML = PAGES[page](); $('newN').textContent = S.orders.filter(x => x.status === 'new').length || ''; toast('Статус: ' + STAT[d.st].ru); return; }
+  if ('closed' in d || 'closem' in d){ closeAll(); return; }
+  if (d.of){ ofilter = d.of; route(); return; }
+  if (d.vis){ const sp = S.products.find(x => x.id === +d.vis); sp.hidden = !sp.hidden; save(); route(); toast(sp.hidden ? 'Товар скрыт с сайта' : 'Товар снова на сайте'); return; }
+  if (d.editp){ editProduct(+d.editp); return; }
+  if ('newp' in d){ editProduct(0); return; }
+  if (d.savep !== undefined){ saveProduct(+d.savep); return; }
+  if ('reset' in d){ S = KAB.fresh(); save(); route(); toast('Демо-данные сброшены'); return; }
+  if (d.print){ e.preventDefault(); toast('В рабочей версии откроется накладная для печати'); return; }
+  if (el.id === 'burger'){ $('side').classList.add('on'); return; }
+});
+document.addEventListener('change', e => {
+  const d = e.target.dataset;
+  if (d.price){ S.products.find(x => x.id === +d.price).price = Math.max(0, +e.target.value); save(); toast('Цена обновлена'); }
+  if (d.stock){ S.products.find(x => x.id === +d.stock).stock = Math.max(0, +e.target.value); save(); route(); toast('Остаток обновлён'); }
+  if (d.zp){ S.zones.find(x => x.id === d.zp).price = Math.max(0, +e.target.value); save(); toast('Стоимость доставки обновлена'); }
+  if (d.zf){ S.zones.find(x => x.id === d.zf).free = Math.max(0, +e.target.value); save(); route(); toast('Порог бесплатной доставки обновлён'); }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'oq'){ oq = e.target.value; const pos = e.target.selectionStart; route(); const i = $('oq'); i.focus(); i.setSelectionRange(pos, pos); }
+  if (e.target.id === 'pq'){ pq = e.target.value; const pos = e.target.selectionStart; route(); const i = $('pq'); i.focus(); i.setSelectionRange(pos, pos); }
+});
+$('shade').addEventListener('click', closeAll);
+addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+addEventListener('hashchange', route);
+// a new order placed in the store tab appears here without reloading
+addEventListener('storage', e => { if (e.key === KAB.KEY && !$('app').hidden){ const before = S.orders.length; route(); if (KAB.load().orders.length > before) toast('Новый заказ!'); } });
+
+let authed = false; try { authed = sessionStorage.getItem('kab_admin') === '1'; } catch (er) {}
+if (authed || location.hash.startsWith('#order-')) enter(); else pins[0].focus();
+</script>
+</body>
+</html>
