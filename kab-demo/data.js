@@ -260,7 +260,7 @@ KAB.howto = {
    Empty = demo mode: orders stay in this browser only.
    Set to the Worker address, e.g. 'https://kab-orders.<name>.workers.dev', and orders from any phone
    reach the admin panel on any device and the shop's Telegram. */
-KAB.API = '';
+KAB.API = 'https://kab-orders.lamineyamaljan.workers.dev';
 KAB.call = async (path, { method = 'GET', body, pin } = {}) => {
   const r = await fetch(KAB.API.replace(/\/$/, '') + path, { method, headers: { 'Content-Type': 'application/json', ...(pin ? { 'X-Pin': pin } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) });
   const data = await r.json().catch(() => null);
