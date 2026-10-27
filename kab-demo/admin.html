@@ -97,7 +97,8 @@ main{padding:26px 30px 60px;min-width:0}
 .st{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
 .st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
 .paytag{font-size:12px;font-weight:700;padding:3px 8px;border-radius:7px;background:var(--bg);white-space:nowrap}
-.pimg{width:46px;height:46px;border-radius:12px;padding:4px}
+.pimg{position:relative;overflow:hidden;width:46px;height:46px;border-radius:12px;padding:4px}
+.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .inp{width:110px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;outline:0;font-weight:700;background:var(--bg)}
 .inp:focus{border-color:var(--pink)}
 .tog{width:44px;height:26px;border-radius:999px;background:#d9d0d3;position:relative;transition:.2s;flex:none}
@@ -134,7 +135,8 @@ main{padding:26px 30px 60px;min-width:0}
 .fld input,.fld select,.fld textarea{border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;outline:0;background:var(--bg);font-weight:500;font-size:15px}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .toast{position:fixed;left:50%;bottom:24px;z-index:60;transform:translate(-50%,160%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:700;transition:transform .3s;display:flex;gap:10px;align-items:center;white-space:nowrap}
-.toast.on{transform:translate(-50%,0)}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.toast{pointer-events:none;opacity:0}
 .toast i{color:#7fe0b1}
 .banner{display:flex;gap:12px;align-items:center;background:#fff8e6;border:1px solid #f2dfb0;color:#7a5a12;border-radius:14px;padding:12px 16px;font-size:13.5px;margin-bottom:18px}
 .banner a{font-weight:800;text-decoration:underline;white-space:nowrap}
@@ -244,7 +246,7 @@ const PAGES = {
           <text x="${X + 28}" y="${200 - h}" font-size="13" text-anchor="middle" fill="#1d1719" font-weight="700" font-family="Manrope">${x.v ? Math.round(x.v / 1000) + 'k' : ''}</text>`; }).join('')}
       </svg></div></div>
       <div class="panel"><h3>Хиты продаж</h3>
-        ${top.map(([id, q]) => { const p = C.find(x => x.id === +id); return `<div class="top-p"><div class="p pimg" style="background:${p.c[0]}55">${KAB.art(p.art, p.c[0], p.c[1], 't' + id)}</div><span>${esc(p.name.ru)}</span><small>${q} шт.</small></div>`; }).join('')}
+        ${top.map(([id, q]) => { const p = C.find(x => x.id === +id); return `<div class="top-p"><div class="p pimg" style="background:${p.c[0]}55">${KAB.pic(p, 120)}</div><span>${esc(p.name.ru)}</span><small>${q} шт.</small></div>`; }).join('')}
       </div>
     </div>
     <div class="panel" style="margin-top:16px"><h3>Последние заказы<a class="r" href="#orders">Все заказы →</a></h3>${orderTable(O.slice().sort((a, b) => b.at - a.at).slice(0, 6))}</div>`;
@@ -262,7 +264,7 @@ const PAGES = {
     return `<div class="tools"><label class="sbox"><i class="fa-solid fa-magnifying-glass"></i><input id="pq" placeholder="Поиск товара" value="${esc(pq)}"></label>
       <button class="btn btn-dark" data-newp><i class="fa-solid fa-plus"></i>Добавить товар</button></div>
       <div class="panel scroll"><table class="tbl"><tr><th></th><th>Товар</th><th>Категория</th><th>Цена, сум</th><th>Остаток</th><th>На сайте</th><th></th></tr>
-      ${L.map(p => `<tr><td><div class="pimg" style="background:${p.c[0]}55">${KAB.art(p.art, p.c[0], p.c[1], 'p' + p.id)}</div></td>
+      ${L.map(p => `<tr><td><div class="pimg" style="background:${p.c[0]}55">${KAB.pic(p, 120)}</div></td>
         <td><b>${esc(p.name.ru)}</b><br><small style="color:var(--muted)">${esc(p.sub.ru)}</small></td>
         <td>${KAB.categories.find(c => c.id === p.cat).ru}</td>
         <td><input class="inp" type="number" step="1000" min="0" value="${p.price}" data-price="${p.id}"></td>

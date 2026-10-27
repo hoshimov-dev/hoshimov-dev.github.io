@@ -78,7 +78,7 @@ header{position:sticky;top:0;z-index:40;background:rgba(251,247,245,.88);backdro
 .hp{position:absolute;filter:drop-shadow(0 18px 24px rgba(120,40,70,.18));animation:float 6s ease-in-out infinite}
 .hp:nth-of-type(2){animation-delay:-2s}.hp:nth-of-type(3){animation-delay:-4s}
 @keyframes float{50%{transform:translateY(-12px)}}
-.chipf{position:absolute;background:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 16px 40px -12px rgba(80,30,50,.25);display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700}
+.chipf{z-index:3;position:absolute;background:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 16px 40px -12px rgba(80,30,50,.25);display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700}
 .chipf i{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--blush);color:var(--pink-dk);font-size:16px}
 .chipf small{display:block;font-weight:500;color:var(--muted);font-size:12px}
 @media (max-width:860px){.hero{grid-template-columns:1fr;padding-top:30px;padding-bottom:10px;gap:20px}.stage{justify-self:center;max-width:420px}.chipf{font-size:12px;padding:10px 12px}.chipf.l{left:0!important}.chipf.r{right:0!important}}
@@ -121,10 +121,10 @@ select.sort{border:1px solid var(--line);background:#fff;border-radius:999px;pad
 @media (max-width:1040px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:720px){.grid{grid-template-columns:1fr 1fr;gap:12px}}
 .card{position:relative;background:var(--card);border-radius:var(--r);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s}
-.card:hover{transform:translateY(-4px);box-shadow:0 22px 40px -22px rgba(80,30,50,.35)}
+@media (hover:hover){.card:hover{transform:translateY(-4px);box-shadow:0 22px 40px -22px rgba(80,30,50,.35)}}
 .pic{position:relative;aspect-ratio:1/1;cursor:pointer;display:grid;place-items:center;padding:12%}
 .pic svg{transition:transform .4s}
-.card:hover .pic svg{transform:scale(1.06) rotate(-2deg)}
+@media (hover:hover){.card:hover .pic svg{transform:scale(1.06) rotate(-2deg)}}
 .badge{position:absolute;top:12px;left:12px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.02em;background:#fff;color:var(--ink)}
 .badge.hit{background:var(--ink);color:#fff}.badge.new{background:#fff;color:var(--ok)}.badge.sale{background:var(--pink);color:#fff}
 .badge.premium{background:linear-gradient(110deg,#a7834f,#f1dfba,#a7834f);color:#3a2a1a}.badge.gift{background:#fff;color:var(--pink-dk)}
@@ -137,7 +137,7 @@ select.sort{border:1px solid var(--line);background:#fff;border-radius:999px;pad
 .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:10px}
 .price b{font-size:16px;font-weight:800}
 .price s{display:block;font-size:12px;color:var(--muted)}
-.add{width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;font-size:16px;display:grid;place-items:center;transition:background .2s,transform .15s}
+.add{flex:none;width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;font-size:16px;display:grid;place-items:center;transition:background .2s,transform .15s}
 .add:hover{background:var(--pink)}
 .add:active{transform:scale(.9)}
 .empty{grid-column:1/-1;text-align:center;padding:50px 0;color:var(--muted)}
@@ -277,11 +277,72 @@ footer li i{width:20px;color:var(--pink)}
 .tg .h i{width:32px;height:32px;border-radius:50%;background:#2aabee;display:grid;place-items:center;color:#fff}
 .tg .msg{background:#182533;border-radius:14px 14px 14px 4px;padding:12px 14px;white-space:pre-line;line-height:1.5}
 .toast{position:fixed;left:50%;bottom:26px;z-index:90;transform:translate(-50%,160%);background:var(--ink);color:#fff;padding:13px 20px;border-radius:999px;font-size:14px;font-weight:700;transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;gap:10px;align-items:center;white-space:nowrap;box-shadow:0 20px 40px -14px rgba(0,0,0,.5)}
-.toast.on{transform:translate(-50%,0)}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.toast{pointer-events:none;opacity:0;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .25s}
 .toast i{color:#7fe0b1}
 .mnav{position:fixed;inset:0 30% 0 0;z-index:75;background:var(--bg);transform:translateX(-105%);transition:transform .35s;padding:24px;display:flex;flex-direction:column;gap:6px}
 .mnav.on{transform:none}
 .mnav a{font:600 28px 'Cormorant Garamond',serif;padding:8px 0;border-bottom:1px solid var(--line)}
+.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.pic{overflow:hidden}.pic img.ph{transform:scale(1.001)}
+@media (hover:hover){.card:hover .pic img.ph{transform:scale(1.07)}}
+.ci .p,.mini .p{position:relative;overflow:hidden}
+.arch img.ph{z-index:1}
+.stage.photo .hp{display:none}
+.hcard{position:absolute;left:4%;bottom:6%;z-index:3;display:flex;gap:12px;align-items:center;background:#fff;border-radius:18px;padding:10px 14px 10px 10px;box-shadow:0 20px 44px -14px rgba(80,30,50,.35);cursor:pointer;max-width:250px;transition:transform .25s}
+.hcard:hover{transform:translateY(-4px)}
+.hcard .p{position:relative;width:58px;height:58px;border-radius:12px;overflow:hidden;flex:none;display:grid;place-items:center;padding:6px}
+.hcard small{display:block;font-size:11px;font-weight:800;color:var(--pink-dk);letter-spacing:.06em;text-transform:uppercase}
+.hcard b{display:block;font-size:13.5px;line-height:1.25}
+.hcard span{font-size:13px;font-weight:800}
+.cat .bgart{padding:0}
+.cat .bgart .ill{position:absolute;inset:0;display:grid;place-items:center;padding:18% 18% 30%}
+/* deals */
+.deal{display:grid;grid-template-columns:1fr 1.4fr;gap:26px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:32px;padding:34px}
+.deal h2{font:600 clamp(34px,4vw,50px)/1 'Cormorant Garamond',serif}
+.deal h2 em{font-style:italic;color:var(--pink)}
+.deal p{color:var(--muted);margin:12px 0 18px}
+.cd{display:flex;gap:10px}
+.cd div{min-width:66px;text-align:center;background:var(--ink);color:#fff;border-radius:16px;padding:10px 6px}
+.cd b{display:block;font-size:26px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.cd small{font-size:11px;color:#d7c9ce}
+.deal .grid{grid-template-columns:repeat(3,1fr)}
+@media (max-width:900px){.deal{grid-template-columns:1fr;padding:22px}.deal .grid{grid-template-columns:1fr 1fr}}
+/* instagram */
+.ig{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 0 26px}
+.ig a{position:relative;aspect-ratio:1;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,#f6c9d6,#e2789a)}
+.ig a::after{content:"\f16d";font:var(--fa-font-brands);position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:26px;background:rgba(29,23,25,.35);opacity:0;transition:.25s}
+.ig a:hover::after{opacity:1}
+@media (max-width:720px){.ig{grid-template-columns:repeat(3,1fr)}}
+/* product gallery + tabs */
+.pm .big{position:relative;overflow:hidden}
+.pm .big img.ph{border-radius:inherit}
+.thumbs{position:absolute;left:16px;bottom:16px;z-index:2;display:flex;gap:8px}
+.thumbs button{position:relative;width:54px;height:54px;border-radius:12px;overflow:hidden;border:2px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.15);background:#fff;display:grid;place-items:center;padding:4px;opacity:.75}
+.thumbs button.on{opacity:1;border-color:var(--ink)}
+.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 12px}
+.ptabs button{padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.ptabs button.on{color:var(--ink);border-color:var(--pink)}
+.ptxt{font-size:14.5px;color:#5d5357;min-height:66px}
+/* upsell */
+.ups{margin-top:18px}
+.ups h5{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.ups .l{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ups .u{background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px;font-size:12px;position:relative}
+.ups .u .p{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;display:grid;place-items:center;padding:8px;margin-bottom:6px}
+.ups .u b{display:block;font-size:12.5px}
+.ups .u .add{position:absolute;right:6px;top:6px;width:30px;height:30px;font-size:12px;z-index:2}
+/* mobile app-style bottom bar */
+.bnav{display:none}
+@media (max-width:720px){
+  .bnav{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:50;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(29,23,25,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:22px;padding:8px;box-shadow:0 18px 40px -12px rgba(0,0,0,.5)}
+  .bnav button,.bnav a{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;color:#cfc3c7;font-size:10.5px;font-weight:700;padding:6px 0}
+  .bnav i{font-size:18px}
+  .bnav em{position:absolute;top:0;left:56%;min-width:17px;height:17px;border-radius:999px;background:var(--pink);color:#fff;font:800 10px/17px 'Manrope';font-style:normal;text-align:center;padding:0 4px}
+  .bnav em:empty{display:none}
+  body{padding-bottom:84px}
+  .toast{bottom:96px}
+}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
 .reveal.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
@@ -335,12 +396,13 @@ footer li i{width:20px;color:var(--pink)}
       </div>
     </div>
     <div class="stage" id="stage">
-      <div class="arch"></div>
+      <div class="arch" id="arch"></div>
       <div class="hp" style="left:14%;top:28%;width:40%" id="h1art"></div>
       <div class="hp" style="left:46%;top:16%;width:44%" id="h2art"></div>
       <div class="hp" style="left:34%;top:56%;width:34%" id="h3art"></div>
       <div class="chipf l" style="left:-2%;top:12%"><i class="fa-solid fa-certificate"></i><div><span data-t="chip1"></span><small data-t="chip1s"></small></div></div>
-      <div class="chipf r" style="right:-2%;bottom:10%"><i class="fa-solid fa-truck-fast"></i><div><span data-t="chip2"></span><small data-t="chip2s"></small></div></div>
+      <div class="hcard" id="hcard"></div>
+      <div class="chipf r" style="right:-2%;bottom:30%"><i class="fa-solid fa-truck-fast"></i><div><span data-t="chip2"></span><small data-t="chip2s"></small></div></div>
     </div>
   </div>
 
@@ -354,6 +416,13 @@ footer li i{width:20px;color:var(--pink)}
   <section class="wrap reveal">
     <div class="head"><h2 data-t="catsTitle"></h2><p data-t="catsSub"></p></div>
     <div class="cats" id="cats"></div>
+  </section>
+
+  <section class="wrap reveal" id="deals">
+    <div class="deal">
+      <div><h2 data-t="dealT"></h2><p data-t="dealS"></p><div class="cd" id="cd"></div></div>
+      <div class="grid" id="dealGrid"></div>
+    </div>
   </section>
 
   <section class="wrap" id="catalog">
@@ -392,6 +461,7 @@ footer li i{width:20px;color:var(--pink)}
 
   <section class="wrap reveal" id="contacts">
     <div class="insta">
+      <div class="ig" id="ig"></div>
       <i class="fa-brands fa-instagram ic"></i>
       <h2 data-t="instaT"></h2>
       <p data-t="instaS"></p>
@@ -419,6 +489,12 @@ footer li i{width:20px;color:var(--pink)}
   </div>
 </footer>
 
+<nav class="bnav">
+  <a href="#top"><i class="fa-solid fa-house"></i><span data-t="home"></span></a>
+  <a href="#catalog"><i class="fa-solid fa-table-cells-large"></i><span data-t="navCatalog"></span></a>
+  <button id="favBtn2"><i class="fa-solid fa-heart"></i><span data-t="favT"></span><em id="favN2"></em></button>
+  <button id="cartBtn2"><i class="fa-solid fa-bag-shopping"></i><span data-t="cartT"></span><em id="cartN2"></em></button>
+</nav>
 <div class="shade" id="shade"></div>
 
 <aside class="drawer" id="cart">
@@ -462,7 +538,10 @@ const T = {
     agree: 'Нажимая кнопку, вы соглашаетесь с условиями публичной оферты.',
     payGo: 'Оплата заказа', payDemo: 'В рабочем сайте здесь откроется защищённая страница {p}, где покупатель вводит карту и код из SMS. В демо-версии оплата только имитируется — карта не нужна.', paySim: 'Имитировать успешную оплату', payCancel: 'Вернуться',
     okT: 'Спасибо! Заказ принят', okPaid: 'Оплата прошла успешно', okS: 'Номер заказа', okCall: 'Менеджер свяжется с вами в течение 15 минут для подтверждения.', okTg: 'Так владелец магазина мгновенно получает заказ в Telegram:', okAdmin: 'Посмотреть заказ в админ-панели', okMore: 'Продолжить покупки',
-    tgNew: 'Новый заказ', tgPaid: 'ОПЛАЧЕН', tgUnpaid: 'оплата при получении'
+    tgNew: 'Новый заказ', tgPaid: 'ОПЛАЧЕН', tgUnpaid: 'оплата при получении',
+    dealT: 'Скидки <em>недели</em>', dealS: 'Успейте купить по специальной цене — акция закончится через:', dd: 'дн', hh: 'ч', mm: 'мин', ss: 'сек',
+    hitWeek: 'Хит недели', home: 'Главная', tabDesc: 'Описание', tabUse: 'Применение', tabDel: 'Доставка', upsell: 'Добавьте к заказу',
+    delNote: 'По Чирчику — сегодня, бесплатно от 300 000 сум. По Ташкенту — за 1 день. По Узбекистану — 2–4 дня. Самовывоз: Chirchiq bozor, 9:00–17:00.'
   },
   uz: {
     demo: "K.A.B cosmetics uchun sayt demo-versiyasi. Mahsulotlar va narxlar — namuna, buyurtmalar faqat brauzeringizda saqlanadi.", demoAdmin: 'Admin panelni ochish →', demoPlans: 'Sayt variantlari →', demoShort: 'demo-versiya',
@@ -492,7 +571,10 @@ const T = {
     agree: "Tugmani bosish orqali ommaviy oferta shartlariga rozilik bildirasiz.",
     payGo: "Buyurtma uchun to'lov", payDemo: "Ishlaydigan saytda bu yerda {p} ning himoyalangan sahifasi ochiladi, xaridor karta va SMS kodni kiritadi. Demo-versiyada to'lov faqat taqlid qilinadi — karta kerak emas.", paySim: "Muvaffaqiyatli to'lovni taqlid qilish", payCancel: 'Ortga',
     okT: 'Rahmat! Buyurtma qabul qilindi', okPaid: "To'lov muvaffaqiyatli o'tdi", okS: 'Buyurtma raqami', okCall: "Menejer tasdiqlash uchun 15 daqiqa ichida siz bilan bog'lanadi.", okTg: "Do'kon egasi buyurtmani Telegramda shunday oladi:", okAdmin: "Buyurtmani admin panelda ko'rish", okMore: 'Xaridni davom ettirish',
-    tgNew: 'Yangi buyurtma', tgPaid: "TO'LANGAN", tgUnpaid: "qabul qilganda to'lov"
+    tgNew: 'Yangi buyurtma', tgPaid: "TO'LANGAN", tgUnpaid: "qabul qilganda to'lov",
+    dealT: 'Hafta <em>chegirmalari</em>', dealS: "Maxsus narxda xarid qilishga ulguring — aksiya tugashiga:", dd: 'kun', hh: 'soat', mm: 'daq', ss: 'son',
+    hitWeek: 'Hafta xiti', home: 'Bosh sahifa', tabDesc: 'Tavsif', tabUse: "Qo'llash", tabDel: 'Yetkazish', upsell: "Buyurtmaga qo'shing",
+    delNote: "Chirchiqda — bugun, 300 000 so'mdan bepul. Toshkentga — 1 kunda. O'zbekiston bo'ylab — 2–4 kun. Olib ketish: Chirchiq bozor, 9:00–17:00."
   }
 };
 
@@ -521,7 +603,7 @@ function renderStatic(){
   $('cats').innerHTML = KAB.categories.map((c, i) => {
     const p = C.find(x => x.cat === c.id && x.badge === 'hit') || C.find(x => x.cat === c.id);
     const bg = ['linear-gradient(160deg,#f6c9d6,#e2789a)', 'linear-gradient(160deg,#d7ecf2,#7fb6c9)', 'linear-gradient(160deg,#f3d6cc,#c98e74)', 'linear-gradient(160deg,#efe6d6,#c9a46a)'][i];
-    return `<a href="#catalog" class="cat" data-cat="${c.id}" style="background:${bg}"><div class="bgart">${KAB.art(p.art, p.c[0], p.c[1], 'cat' + i)}</div><b>${c[lang]}</b><span>${C.filter(x => x.cat === c.id && !x.hidden).length} ${t('items')}</span></a>`;
+    return `<a href="#catalog" class="cat" data-cat="${c.id}" style="background:${bg}"><div class="bgart"><div class="ill">${KAB.art(p.art, p.c[0], p.c[1], 'cat' + i)}</div>${KAB.scene(KAB.SCENE.cats[c.id], 600, 750)}</div><b>${c[lang]}</b><span>${C.filter(x => x.cat === c.id && !x.hidden).length} ${t('items')}</span></a>`;
   }).join('');
   $('chips').innerHTML = [{ id: 'all', [lang]: t('c_all') }, ...KAB.categories].map(c => `<button class="chip${cat === c.id ? ' on' : ''}" data-chip="${c.id}">${c[lang]}</button>`).join('');
   $('sort').innerHTML = [['pop', 'sortPop'], ['cheap', 'sortCheap'], ['exp', 'sortExp'], ['new', 'sortNew']].map(([v, k]) => `<option value="${v}"${v === sortBy ? ' selected' : ''}>${t(k)}</option>`).join('');
@@ -532,7 +614,14 @@ function renderStatic(){
   $('h1art').innerHTML = KAB.art('perfume2', C2[3].c[0], C2[3].c[1], 'h1');
   $('h2art').innerHTML = KAB.art('perfume', C2[0].c[0], C2[0].c[1], 'h2');
   $('h3art').innerHTML = KAB.art('jar', '#fff4f6', '#f2a7ba', 'h3');
-  $('promoArt').innerHTML = `<div style="width:min(300px,100%)">${KAB.art('gift', '#ffe3ea', '#e0789a', 'pr')}</div>`;
+  $('promoArt').innerHTML = `<div style="position:relative;width:min(340px,100%);aspect-ratio:1;border-radius:26px;overflow:hidden;display:grid;place-items:center;padding:10%">${KAB.pic(prod(20), 700)}</div>`;
+  $('arch').innerHTML = `<img class="ph" src="${KAB.photo(KAB.SCENE.hero, 900, 1100)}" alt="" onload="this.closest('.stage').classList.add('photo')" onerror="this.remove()">`;
+  const hp = prod(1);
+  $('hcard').innerHTML = `<div class="p" style="${tile(hp)}">${KAB.pic(hp, 160)}</div><div><small>${t('hitWeek')}</small><b>${esc(hp.name[lang])}</b><span>${fmt(hp.price)}</span></div>`;
+  $('hcard').dataset.open = hp.id;
+  $('ig').innerHTML = KAB.SCENE.insta.map(id => `<a href="https://instagram.com/k.a.b_cosmetics" target="_blank" rel="noopener" aria-label="Instagram">${KAB.scene(id, 400, 400)}</a>`).join('');
+  $('dealGrid').innerHTML = cat_().filter(p => !p.hidden && (p.old || p.badge === 'gift')).slice(0, 3).map(cardHTML).join('');
+  tick();
   renderGrid(); renderBadges();
 }
 
@@ -545,9 +634,12 @@ function renderGrid(){
   else if (sortBy === 'new') L.sort((a, b) => (b.badge === 'new') - (a.badge === 'new'));
   else L.sort((a, b) => (rank[a.badge] ?? 9) - (rank[b.badge] ?? 9));
   L.sort((a, b) => (a.stock <= 0) - (b.stock <= 0));
-  $('grid').innerHTML = L.length ? L.map(p => `
+  $('grid').innerHTML = L.length ? L.map(cardHTML).join('') : `<div class="empty">${t('nothing')}</div>`;
+}
+function cardHTML(p){
+  return `
     <article class="card">
-      <div class="pic" data-open="${p.id}" style="${tile(p)}">${KAB.art(p.art, p.c[0], p.c[1], 'g' + p.id)}
+      <div class="pic" data-open="${p.id}" style="${tile(p)}">${KAB.pic(p, 600)}
         ${p.badge ? `<span class="badge ${p.badge}">${p.badge === 'sale' && p.old ? '−' + Math.round(100 - p.price / p.old * 100) + '%' : t(p.badge)}</span>` : ''}
         ${p.stock <= 0 ? `<span class="out">${t('outStock')}</span>` : ''}
       </div>
@@ -558,28 +650,30 @@ function renderGrid(){
         <div class="row"><div class="price">${p.old ? `<s>${fmt(p.old)}</s>` : ''}<b>${p.variants ? (lang === 'uz' ? '' : 'от ') : ''}${fmt(p.variants ? Math.min(...p.variants.map(v => v.price)) : p.price)}${p.variants && lang === 'uz' ? 'dan' : ''}</b></div>
         <button class="add" data-quick="${p.id}" aria-label="${t('addCart')}"${p.stock <= 0 ? ' disabled style="opacity:.3"' : ''}><i class="fa-solid fa-plus"></i></button></div>
       </div>
-    </article>`).join('') : `<div class="empty">${t('nothing')}</div>`;
+    </article>`;
 }
 
 function renderBadges(){
-  $('cartN').textContent = cart.reduce((a, i) => a + i.q, 0) || '';
-  $('favN').textContent = favs.length || '';
+  $('cartN').textContent = $('cartN2').textContent = cart.reduce((a, i) => a + i.q, 0) || '';
+  $('favN').textContent = $('favN2').textContent = favs.length || '';
 }
 
 /* ---------- product modal ---------- */
-let pv = 0, psh = 0, pq = 1, pid = 0;
+let pv = 0, psh = 0, pq = 1, pid = 0, pimg = 0, ptab = 'desc';
 function openProduct(id){
-  pid = id; const p = prod(id); pv = p.variants ? Math.min(1, p.variants.length - 1) : 0; psh = 0; pq = 1;
+  pid = id; const p = prod(id); pv = p.variants ? Math.min(1, p.variants.length - 1) : 0; psh = 0; pq = 1; pimg = 0; ptab = 'desc';
   drawProduct(); openModal('pModal');
 }
 function drawProduct(){
   const p = prod(pid); const price = p.variants ? p.variants[pv].price : p.price;
   $('pBody').innerHTML = `<div class="pm">
-    <div class="big" style="${tile(p)}">${KAB.art(p.art, p.shades ? p.shades[psh] + '55' : p.c[0], p.shades ? p.shades[psh] : p.c[1], 'm' + p.id)}</div>
+    <div class="big" style="${tile(p)}">${pimg === 2 || !p.img ? KAB.art(p.art, p.shades ? p.shades[psh] + '55' : p.c[0], p.shades ? p.shades[psh] : p.c[1], 'm' + p.id) : KAB.pic(p, 900, pimg ? 1.8 : 0)}
+      ${p.img ? `<div class="thumbs">${[0, 1, 2].map(i => `<button class="${i === pimg ? 'on' : ''}" data-pimg="${i}" aria-label="photo ${i + 1}" style="${i === 2 ? tile(p) : ''}">${i === 2 ? KAB.art(p.art, p.c[0], p.shades ? p.shades[psh] : p.c[1], 'th' + p.id) : KAB.pic(p, 120, i ? 1.8 : 0)}</button>`).join('')}</div>` : ''}</div>
     <div class="tx">
       ${p.badge ? `<span class="badge ${p.badge}" style="position:static;display:inline-block">${t(p.badge)}</span>` : ''}
       <h2>${esc(p.name[lang])}</h2><div style="color:var(--muted)">${esc(p.sub[lang])}</div>
-      <p class="desc">${esc(p.desc[lang])}</p>
+      <div class="ptabs">${[['desc', 'tabDesc'], ['use', 'tabUse'], ['del', 'tabDel']].map(([k, n]) => `<button data-ptab="${k}" class="${ptab === k ? 'on' : ''}">${t(n)}</button>`).join('')}</div>
+      <p class="ptxt">${ptab === 'desc' ? esc(p.desc[lang]) : ptab === 'use' ? KAB.howto[p.cat][lang] : t('delNote')}</p>
       ${p.variants ? `<div class="lbl">${t('variant')}</div><div class="vars">${p.variants.map((v, i) => `<button class="var${i === pv ? ' on' : ''}" data-v="${i}">${v[lang]}</button>`).join('')}</div>` : ''}
       ${p.shades ? `<div class="lbl">${t('shade')}</div><div class="vars">${p.shades.map((s, i) => `<button class="sw${i === psh ? ' on' : ''}" data-sh="${i}" style="background:${s}" aria-label="shade ${i + 1}"></button>`).join('')}</div>` : ''}
       <div class="stock ${p.stock > 0 ? 'yes' : 'no'}">${p.stock > 0 ? `<i class="fa-solid fa-circle-check"></i> ${t('inStock')}${p.stock <= 5 ? ` · ${t('left')} ${p.stock}` : ''}` : `<i class="fa-solid fa-circle-xmark"></i> ${t('outStock')}`}</div>
@@ -618,9 +712,11 @@ function renderCart(){
     $('cartFoot').innerHTML = ''; return;
   }
   $('cartBody').innerHTML = cart.map((i, k) => { const p = prod(i.id); return `<div class="ci">
-    <div class="p" style="${tile(p)}">${KAB.art(p.art, p.c[0], p.shades ? p.shades[i.sh] : p.c[1], 'c' + k)}</div>
+    <div class="p" style="${tile(p)}">${KAB.pic(p, 160, 0, p.shades ? p.shades[i.sh] : 0)}</div>
     <div><h4>${esc(lineName(i))}</h4><small>${fmt(linePrice(i))}</small><br><div class="qty"><button data-cq="${k}:-1">−</button><span>${i.q}</span><button data-cq="${k}:1">+</button></div></div>
     <div style="text-align:right"><button class="rm" data-rm="${k}" aria-label="remove"><i class="fa-solid fa-xmark"></i></button><div style="font-weight:800;margin-top:22px">${fmt(linePrice(i) * i.q)}</div></div></div>`; }).join('');
+  const ups = cat_().filter(p => !p.hidden && p.stock > 0 && !p.variants && !p.shades && !cart.some(i => i.id === p.id)).sort((a, b) => a.price - b.price).slice(0, 3);
+  if (ups.length) $('cartBody').innerHTML += `<div class="ups"><h5>${t('upsell')}</h5><div class="l">${ups.map(p => `<div class="u"><button class="add" data-quick="${p.id}" aria-label="+"><i class="fa-solid fa-plus"></i></button><div class="p" style="${tile(p)}">${KAB.pic(p, 200)}</div><b>${esc(p.name[lang])}</b>${fmt(p.price)}</div>`).join('')}</div></div>`;
   const tt = totals(); const z = KAB.zoneList(S).find(x => x.id === 'chirchiq'); const left = Math.max(0, z.free - (tt.sub - tt.disc));
   $('cartFoot').innerHTML = `
     <div class="freebar">${left ? `${t('freeLeft')} <b>${fmt(left)}</b>` : t('freeYes')}<div class="tr"><i style="width:${Math.min(100, (tt.sub - tt.disc) / z.free * 100)}%"></i></div></div>
@@ -632,7 +728,7 @@ function renderCart(){
 }
 function renderFavs(){
   const L = favs.map(prod).filter(Boolean);
-  $('cartBody').innerHTML = L.length ? L.map(p => `<div class="ci"><div class="p" style="${tile(p)}">${KAB.art(p.art, p.c[0], p.c[1], 'f' + p.id)}</div>
+  $('cartBody').innerHTML = L.length ? L.map(p => `<div class="ci"><div class="p" style="${tile(p)}">${KAB.pic(p, 160)}</div>
     <div><h4>${esc(p.name[lang])}</h4><small>${fmt(p.price)}</small></div><button class="add" data-quick="${p.id}"><i class="fa-solid fa-plus"></i></button></div>`).join('')
     : `<p style="text-align:center;color:var(--muted);padding:60px 10px">${t('favEmpty')}</p>`;
   $('cartFoot').innerHTML = '';
@@ -666,7 +762,7 @@ function drawCheckout(errs = {}){
       </div>
     </div>
     <div><div class="fs side"><h4>${t('yourOrder')}</h4>
-      ${cart.map((i, k) => { const p = prod(i.id); return `<div class="mini"><div class="p" style="${tile(p)}">${KAB.art(p.art, p.c[0], p.shades ? p.shades[i.sh] : p.c[1], 'o' + k)}</div><span>${esc(lineName(i))} × ${i.q}</span><b>${fmt(linePrice(i) * i.q)}</b></div>`; }).join('')}
+      ${cart.map((i, k) => { const p = prod(i.id); return `<div class="mini"><div class="p" style="${tile(p)}">${KAB.pic(p, 100, 0, p.shades ? p.shades[i.sh] : 0)}</div><span>${esc(lineName(i))} × ${i.q}</span><b>${fmt(linePrice(i) * i.q)}</b></div>`; }).join('')}
       <div style="margin-top:14px">
         <div class="sumrow"><span>${t('subtotal')}</span><span>${fmt(tt.sub)}</span></div>
         ${tt.disc ? `<div class="sumrow" style="color:var(--ok)"><span>${t('discount')} (${promo})</span><span>−${fmt(tt.disc)}</span></div>` : ''}
@@ -719,6 +815,15 @@ ${o.items.map(i => `• ${i.name} × ${i.q}`).join('\n')}
     <button class="btn" style="width:100%;margin-top:8px" data-close>${t('okMore')}</button></div>`;
 }
 
+/* ---------- deal countdown ---------- */
+function tick(){
+  const now = new Date(), end = new Date(now); end.setDate(now.getDate() + ((7 - now.getDay()) % 7)); end.setHours(23, 59, 59, 999);
+  let s = Math.max(0, Math.floor((end - now) / 1000));
+  const parts = [[Math.floor(s / 86400), 'dd'], [Math.floor(s % 86400 / 3600), 'hh'], [Math.floor(s % 3600 / 60), 'mm'], [s % 60, 'ss']];
+  $('cd').innerHTML = parts.map(([v, k]) => `<div><b>${String(v).padStart(2, '0')}</b><small>${t(k)}</small></div>`).join('');
+}
+setInterval(tick, 1000);
+
 /* ---------- overlays ---------- */
 function openModal(id){ $('shade').classList.add('on'); $(id).classList.add('on'); document.body.classList.add('lock'); }
 function openDrawer(fav){ $('cart').querySelector('h3').textContent = fav ? t('favT') : t('cartT'); fav ? renderFavs() : renderCart(); $('shade').classList.add('on'); $('cart').classList.add('on'); document.body.classList.add('lock'); }
@@ -727,18 +832,22 @@ function toast(s){ const el = $('toast'); el.querySelector('span').textContent =
 
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-l],[data-open],[data-quick],[data-fav],[data-chip],[data-cat],[data-close],[data-v],[data-sh],[data-pq],[data-cq],[data-rm],[data-paid],[data-unpaid],#pAdd,#toCheckout,#promoBtn,#place,#cartBtn,#favBtn,#burger');
+  const el = e.target.closest('[data-pimg],[data-ptab],#cartBtn2,#favBtn2,[data-l],[data-open],[data-quick],[data-fav],[data-chip],[data-cat],[data-close],[data-v],[data-sh],[data-pq],[data-cq],[data-rm],[data-paid],[data-unpaid],#pAdd,#toCheckout,#promoBtn,#place,#cartBtn,#favBtn,#burger');
   if (!el) return;
   const d = el.dataset;
+  if (d.pimg){ pimg = +d.pimg; drawProduct(); return; }
+  if (d.ptab){ ptab = d.ptab; drawProduct(); return; }
+  if (el.id === 'cartBtn2'){ openDrawer(false); return; }
+  if (el.id === 'favBtn2'){ openDrawer(true); return; }
   if (d.l){ lang = d.l; store('kab_lang', lang); renderStatic(); return; }
   if (d.open){ e.preventDefault(); openProduct(+d.open); return; }
-  if (d.quick){ const p = prod(+d.quick); if (p.variants || p.shades){ closeAll(); openProduct(p.id); } else addToCart(p.id); if ($('cart').classList.contains('on')) renderFavs(); return; }
+  if (d.quick){ const p = prod(+d.quick); if (p.variants || p.shades){ closeAll(); openProduct(p.id); } else addToCart(p.id); if ($('cart').classList.contains('on')) ($('cart').querySelector('h3').textContent === t('favT') ? renderFavs() : renderCart()); return; }
   if (d.fav){ const id = +d.fav; favs = favs.includes(id) ? favs.filter(x => x !== id) : [...favs, id]; store('kab_favs', favs); if (favs.includes(id)) toast(t('favAdded')); renderGrid(); renderBadges(); if ($('pModal').classList.contains('on')) drawProduct(); return; }
   if (d.chip){ cat = d.chip; renderStatic(); return; }
   if (d.cat){ cat = d.cat; closeAll(); renderStatic(); return; }
   if ('close' in d){ closeAll(); return; }
   if (d.v){ pv = +d.v; drawProduct(); return; }
-  if (d.sh){ psh = +d.sh; drawProduct(); return; }
+  if (d.sh){ psh = +d.sh; pimg = 2; drawProduct(); return; }
   if (d.pq){ pq = Math.max(1, Math.min(prod(pid).stock || 1, pq + +d.pq)); drawProduct(); return; }
   if (el.id === 'pAdd'){ addToCart(pid, prod(pid).variants ? pv : 0, psh, pq); closeAll(); return; }
   if (d.cq){ const [k, dq] = d.cq.split(':').map(Number); const p = prod(cart[k].id); cart[k].q = Math.max(0, Math.min(p.stock, cart[k].q + dq)); if (!cart[k].q) cart.splice(k, 1); store('kab_cart', cart); renderCart(); renderBadges(); return; }
