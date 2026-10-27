@@ -218,3 +218,40 @@ KAB.art = (type, c1, c2, id = 'a') => {
   };
   return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${g}${shadow}${shapes[type] || shapes.jar}</svg>`;
 };
+
+/* ---------- photos (free Unsplash licence, loaded straight from images.unsplash.com) ----------
+   If a photo fails to load, KAB.fail swaps it for the drawn illustration, so nothing ever shows broken. */
+KAB.IMG = {
+  1: '1594035910387-fea47794261f', 2: '1592945403244-b3fbafd7f539', 3: '1541643600914-78b084683601', 4: '1587017539504-67cfbddac569',
+  5: '1570194065650-d99fb4bedf0a', 6: '1620916566398-39f1143ab7be', 7: '1608248543803-ba4f8c70ae0b', 8: '1611930022073-b7a4ba5fcccd',
+  9: '1556228578-8c89e6adf883', 10: '1598440947619-2c35fc9aa908', 11: '1586495777744-4413f21062fa', 12: '1625093742435-6fa192b6fb10',
+  13: '1512496015851-a90fb38ba796', 14: '1631729371254-42c2892f0e6e', 15: '1596462502278-27bfdc403348', 16: '1599643478518-a784e5dc4c8f',
+  17: '1535632066927-ab7c9ab60908', 18: '1611591437281-460bfbe1220a', 19: '1605100804763-247f67b3557e', 20: '1549465220-1a8b9238cd48'
+};
+KAB.products.forEach(p => p.img = KAB.IMG[p.id]);
+KAB.SCENE = {
+  hero: '1487412947147-5cebf100ffc2',
+  cats: { perfume: '1541643600914-78b084683601', care: '1556228578-8c89e6adf883', makeup: '1522335789203-aabd1fc54bc9', jewelry: '1515562141207-7a88fb7ce338' },
+  insta: ['1522337360788-8b13dee7a37e', '1571781926291-c477ebfd024b', '1512496015851-a90fb38ba796', '1599643478518-a784e5dc4c8f', '1594035910387-fea47794261f', '1586495777744-4413f21062fa'],
+  gift: '1549465220-1a8b9238cd48'
+};
+KAB.photo = (id, w = 600, h = w, zoom = 0) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&q=78` + (zoom ? `&crop=focalpoint&fp-x=.5&fp-y=.5&fp-z=${zoom}` : '');
+let artSeq = 0;
+// <img> for a product, falling back to its illustration (data-* carry what to draw)
+KAB.pic = (p, w = 600, zoom = 0, c2) => p.img
+  ? `<img class="ph" src="${KAB.photo(p.img, w, w, zoom)}" alt="" loading="lazy" decoding="async" onerror="KAB.fail(this)" data-t="${p.art}" data-a="${p.c[0]}" data-b="${c2 || p.c[1]}">`
+  : KAB.art(p.art, p.c[0], c2 || p.c[1], 'n' + (++artSeq));
+// <img> for a scene photo; on failure the box just keeps its gradient background
+KAB.scene = (id, w, h, cls = 'ph') => `<img class="${cls}" src="${KAB.photo(id, w, h)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`;
+KAB.fail = img => { const d = img.dataset; img.outerHTML = KAB.art(d.t, d.a, d.b, 'x' + (++artSeq)); };
+
+KAB.howto = {
+  perfume: { ru: 'Нанесите 2–3 распыления на запястья, шею и за ушами с расстояния 15–20 см. Не растирайте — так аромат раскрывается лучше и держится дольше.',
+             uz: "15–20 sm masofadan bilak, bo'yin va quloq orqasiga 2–3 marta seping. Ishqalamang — shunda atir yaxshiroq ochiladi va uzoqroq saqlanadi." },
+  care:    { ru: 'Наносите на чистую кожу утром и вечером лёгкими похлопывающими движениями. Перед первым применением проверьте на небольшом участке кожи.',
+             uz: "Ertalab va kechqurun toza teriga yengil urib surting. Birinchi qo'llashdan oldin terining kichik qismida sinab ko'ring." },
+  makeup:  { ru: 'Наносите на подготовленную кожу после увлажняющего крема. Для стойкости зафиксируйте пудрой или спреем.',
+             uz: "Namlovchi kremdan keyin tayyorlangan teriga surting. Uzoq saqlanishi uchun upa yoki sprey bilan mahkamlang." },
+  jewelry: { ru: 'Храните в мешочке отдельно от других украшений. Снимайте перед душем и бассейном, избегайте контакта с парфюмом.',
+             uz: "Boshqa taqinchoqlardan alohida xaltachada saqlang. Dush va basseyndan oldin yeching, atir tegishidan saqlang." }
+};
