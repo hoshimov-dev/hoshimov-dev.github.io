@@ -134,6 +134,7 @@ KAB.fresh = () => ({
   products: KAB.products.map(p => ({ id: p.id, price: p.price, old: p.old || 0, stock: p.stock, hidden: false })),
   zones: KAB.zones.map(z => ({ id: z.id, price: z.price, free: z.free })),
   orders: KAB.seedOrders(),
+  reviews: [],
   nextNo: 1048
 });
 // merge the editable fields from the admin (price, stock, visibility) into the catalogue
@@ -255,6 +256,14 @@ KAB.howto = {
   jewelry: { ru: 'Храните в мешочке отдельно от других украшений. Снимайте перед душем и бассейном, избегайте контакта с парфюмом.',
              uz: "Boshqa taqinchoqlardan alohida xaltachada saqlang. Dush va basseyndan oldin yeching, atir tegishidan saqlang." }
 };
+
+/* ---------- reviews ----------
+   Real reviews only: a new review waits until the owner approves it in the admin panel. */
+KAB.rating = (reviews, pid) => {
+  const L = reviews.filter(r => r.pid === pid);
+  return { n: L.length, avg: L.length ? L.reduce((a, r) => a + r.rating, 0) / L.length : 0 };
+};
+KAB.stars = v => [1, 2, 3, 4, 5].map(i => `<i class="fa-solid fa-star${v >= i ? '' : v >= i - .5 ? '-half-stroke' : ''}" style="${v >= i - .5 ? '' : 'opacity:.25'}"></i>`).join('');
 
 /* ---------- order server (Cloudflare Worker, see server/worker.js) ----------
    Empty = demo mode: orders stay in this browser only.

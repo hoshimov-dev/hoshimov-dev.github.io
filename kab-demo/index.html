@@ -218,7 +218,7 @@ footer li i{width:20px;color:var(--pink)}
 .mbox>.close{position:absolute;top:14px;right:14px;z-index:2}
 .pm{display:grid;grid-template-columns:1fr 1fr}
 .pm .big{display:grid;place-items:center;padding:12%;border-radius:28px 0 0 28px;min-height:420px}
-.pm .tx{padding:40px 34px 32px}
+.pm .tx{padding:40px 34px 32px;min-width:0}
 .pm h2{font:600 40px/1.05 'Cormorant Garamond',serif;margin:8px 0}
 .pm .desc{color:#5d5357;margin:12px 0 20px}
 .lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
@@ -323,10 +323,35 @@ footer li i{width:20px;color:var(--pink)}
 .thumbs{position:absolute;left:16px;bottom:16px;z-index:2;display:flex;gap:8px}
 .thumbs button{position:relative;width:54px;height:54px;border-radius:12px;overflow:hidden;border:2px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.15);background:#fff;display:grid;place-items:center;padding:4px;opacity:.75}
 .thumbs button.on{opacity:1;border-color:var(--ink)}
-.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 12px}
-.ptabs button{padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 12px;overflow-x:auto;scrollbar-width:none}
+.ptabs::-webkit-scrollbar{display:none}
+.ptabs button{white-space:nowrap;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
 .ptabs button.on{color:var(--ink);border-color:var(--pink)}
+@media (max-width:720px){.ptabs{gap:0}.ptabs button{padding:10px 9px;font-size:13px}}
 .ptxt{font-size:14.5px;color:#5d5357;min-height:66px}
+/* reviews */
+.rt{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:800;color:var(--ink)}
+.rt i{color:#f2b01e;font-size:11px}
+.rt small{color:var(--muted);font-weight:600;font-size:12px}
+.pstars{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13.5px;color:var(--muted);cursor:pointer}
+.pstars .s,.rv .s{color:#f2b01e;display:inline-flex;gap:2px;font-size:13px}
+.rvs{display:grid;gap:10px}
+.rv{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.rv .h{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:6px}
+.rv b{font-size:14px;color:var(--ink)}
+.rv p{font-size:14px;color:#5d5357;margin-bottom:6px;overflow-wrap:anywhere}
+.rv small{color:var(--muted);font-size:12px}
+.rv .pn{display:block;font-size:12.5px;color:var(--pink-dk);font-weight:700;margin-top:8px}
+.rform{display:grid;gap:10px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.rform h5{font-size:15px;color:var(--ink)}
+.rpick{display:flex;gap:2px}
+.rpick button{font-size:24px;color:#e3d9dc;padding:2px}
+.rpick button.on{color:#f2b01e}
+.rok{background:var(--blush);border-radius:14px;padding:14px;font-size:14px;margin-top:14px;color:var(--ink)}
+.revgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:900px){.revgrid{grid-template-columns:1fr}}
+.revempty{background:#fff;border:1px dashed #e6d6da;border-radius:24px;padding:30px 20px;text-align:center;color:var(--muted)}
+.revempty i{color:#f2b01e;font-size:22px;letter-spacing:4px;display:block;margin-bottom:10px}
 /* upsell */
 .ups{margin-top:18px}
 .ups h5{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
@@ -450,6 +475,11 @@ footer li i{width:20px;color:var(--pink)}
     </div>
   </section>
 
+  <section class="wrap reveal" id="reviews">
+    <div class="head"><h2 data-t="revT"></h2><p data-t="revS"></p></div>
+    <div id="revHome"></div>
+  </section>
+
   <section class="wrap reveal" id="delivery">
     <div class="head"><h2 data-t="delTitle"></h2><p data-t="delSub"></p></div>
     <div class="info2">
@@ -545,6 +575,10 @@ const T = {
     tgNew: 'Новый заказ', tgPaid: 'ОПЛАЧЕН', tgUnpaid: 'оплата при получении',
     dealT: 'Скидки <em>недели</em>', dealS: 'Успейте купить по специальной цене — акция закончится через:', dd: 'дн', hh: 'ч', mm: 'мин', ss: 'сек',
     hitWeek: 'Хит недели', home: 'Главная', tabDesc: 'Описание', tabUse: 'Применение', tabDel: 'Доставка', upsell: 'Добавьте к заказу',
+    tabRev: 'Отзывы', revT: 'Отзывы <em>покупателей</em>', revS: 'Только настоящие отзывы: магазин проверяет каждый перед публикацией.',
+    revEmpty: 'Пока нет отзывов. Покупали у нас? Откройте товар и оставьте первый отзыв!', revNone: 'У этого товара пока нет отзывов — будьте первой!',
+    revWrite: 'Оставить отзыв', revYour: 'Ваша оценка', revName: 'Ваше имя', revText: 'Ваш отзыв', revTextPh: 'Что понравилось, как пользуетесь…', revSend: 'Отправить отзыв',
+    revThanks: 'Спасибо! Отзыв появится на сайте после проверки магазином.', revBad: 'Напишите имя и пару слов о товаре', revFail: 'Не удалось отправить отзыв. Попробуйте ещё раз.',
     delNote: 'По Чирчику — сегодня, бесплатно от 300 000 сум. По Ташкенту — за 1 день. По Узбекистану — 2–4 дня. Самовывоз: Chirchiq bozor, 9:00–17:00.'
   },
   uz: {
@@ -579,6 +613,10 @@ const T = {
     tgNew: 'Yangi buyurtma', tgPaid: "TO'LANGAN", tgUnpaid: "qabul qilganda to'lov",
     dealT: 'Hafta <em>chegirmalari</em>', dealS: "Maxsus narxda xarid qilishga ulguring — aksiya tugashiga:", dd: 'kun', hh: 'soat', mm: 'daq', ss: 'son',
     hitWeek: 'Hafta xiti', home: 'Bosh sahifa', tabDesc: 'Tavsif', tabUse: "Qo'llash", tabDel: 'Yetkazish', upsell: "Buyurtmaga qo'shing",
+    tabRev: 'Sharhlar', revT: 'Xaridorlar <em>sharhlari</em>', revS: "Faqat haqiqiy sharhlar: do'kon har birini e'lon qilishdan oldin tekshiradi.",
+    revEmpty: "Hozircha sharhlar yo'q. Bizdan xarid qildingizmi? Mahsulotni oching va birinchi sharhni qoldiring!", revNone: "Bu mahsulotga hali sharh yo'q — birinchi bo'ling!",
+    revWrite: 'Sharh qoldirish', revYour: 'Bahoingiz', revName: 'Ismingiz', revText: 'Sharhingiz', revTextPh: 'Nimasi yoqdi, qanday foydalanasiz…', revSend: 'Sharhni yuborish',
+    revThanks: "Rahmat! Sharh do'kon tekshiruvidan so'ng saytda paydo bo'ladi.", revBad: "Ismingizni va mahsulot haqida bir-ikki so'z yozing", revFail: "Sharhni yuborib bo'lmadi. Qayta urinib ko'ring.",
     delNote: "Chirchiqda — bugun, 300 000 so'mdan bepul. Toshkentga — 1 kunda. O'zbekiston bo'ylab — 2–4 kun. Olib ketish: Chirchiq bozor, 9:00–17:00."
   }
 };
@@ -627,7 +665,7 @@ function renderStatic(){
   $('ig').innerHTML = KAB.SCENE.insta.map(id => `<a href="https://instagram.com/k.a.b_cosmetics" target="_blank" rel="noopener" aria-label="Instagram">${KAB.scene(id, 400, 400)}</a>`).join('');
   $('dealGrid').innerHTML = cat_().filter(p => !p.hidden && (p.old || p.badge === 'gift')).slice(0, 3).map(cardHTML).join('');
   tick();
-  renderGrid(); renderBadges();
+  renderGrid(); renderBadges(); renderReviews();
 }
 
 function renderGrid(){
@@ -652,6 +690,7 @@ function cardHTML(p){
       <div class="info">
         <span class="sub">${esc(p.sub[lang])}</span>
         <h3 data-open="${p.id}">${esc(p.name[lang])}</h3>
+        ${(r => r.n ? `<span class="rt"><i class="fa-solid fa-star"></i>${r.avg.toFixed(1)}<small>(${r.n})</small></span>` : '')(rateOf(p.id))}
         <div class="row"><div class="price">${p.old ? `<s>${fmt(p.old)}</s>` : ''}<b>${p.variants ? (lang === 'uz' ? '' : 'от ') : ''}${fmt(p.variants ? Math.min(...p.variants.map(v => v.price)) : p.price)}${p.variants && lang === 'uz' ? 'dan' : ''}</b></div>
         <button class="add" data-quick="${p.id}" aria-label="${t('addCart')}"${p.stock <= 0 ? ' disabled style="opacity:.3"' : ''}><i class="fa-solid fa-plus"></i></button></div>
       </div>
@@ -670,15 +709,16 @@ function openProduct(id){
   drawProduct(); openModal('pModal');
 }
 function drawProduct(){
-  const p = prod(pid); const price = p.variants ? p.variants[pv].price : p.price;
+  const p = prod(pid); const price = p.variants ? p.variants[pv].price : p.price, rt = rateOf(p.id);
   $('pBody').innerHTML = `<div class="pm">
     <div class="big" style="${tile(p)}">${pimg === 2 || !p.img ? KAB.art(p.art, p.shades ? p.shades[psh] + '55' : p.c[0], p.shades ? p.shades[psh] : p.c[1], 'm' + p.id) : KAB.pic(p, 900, pimg ? 1.8 : 0)}
       ${p.img ? `<div class="thumbs">${[0, 1, 2].map(i => `<button class="${i === pimg ? 'on' : ''}" data-pimg="${i}" aria-label="photo ${i + 1}" style="${i === 2 ? tile(p) : ''}">${i === 2 ? KAB.art(p.art, p.c[0], p.shades ? p.shades[psh] : p.c[1], 'th' + p.id) : KAB.pic(p, 120, i ? 1.8 : 0)}</button>`).join('')}</div>` : ''}</div>
     <div class="tx">
       ${p.badge ? `<span class="badge ${p.badge}" style="position:static;display:inline-block">${t(p.badge)}</span>` : ''}
       <h2>${esc(p.name[lang])}</h2><div style="color:var(--muted)">${esc(p.sub[lang])}</div>
-      <div class="ptabs">${[['desc', 'tabDesc'], ['use', 'tabUse'], ['del', 'tabDel']].map(([k, n]) => `<button data-ptab="${k}" class="${ptab === k ? 'on' : ''}">${t(n)}</button>`).join('')}</div>
-      <p class="ptxt">${ptab === 'desc' ? esc(p.desc[lang]) : ptab === 'use' ? KAB.howto[p.cat][lang] : t('delNote')}</p>
+      ${rt.n ? `<div class="pstars" data-ptab="rev"><span class="s">${KAB.stars(rt.avg)}</span><b style="color:var(--ink)">${rt.avg.toFixed(1)}</b>· ${rt.n} ${revWord(rt.n)}</div>` : ''}
+      <div class="ptabs">${[['desc', 'tabDesc'], ['use', 'tabUse'], ['del', 'tabDel'], ['rev', 'tabRev']].map(([k, n]) => `<button data-ptab="${k}" class="${ptab === k ? 'on' : ''}">${t(n)}${k === 'rev' && rt.n ? ` (${rt.n})` : ''}</button>`).join('')}</div>
+      ${ptab === 'rev' ? `<div class="ptxt">${revTab(p)}</div>` : `<p class="ptxt">${ptab === 'desc' ? esc(p.desc[lang]) : ptab === 'use' ? KAB.howto[p.cat][lang] : t('delNote')}</p>`}
       ${p.variants ? `<div class="lbl">${t('variant')}</div><div class="vars">${p.variants.map((v, i) => `<button class="var${i === pv ? ' on' : ''}" data-v="${i}">${v[lang]}</button>`).join('')}</div>` : ''}
       ${p.shades ? `<div class="lbl">${t('shade')}</div><div class="vars">${p.shades.map((s, i) => `<button class="sw${i === psh ? ' on' : ''}" data-sh="${i}" style="background:${s}" aria-label="shade ${i + 1}"></button>`).join('')}</div>` : ''}
       <div class="stock ${p.stock > 0 ? 'yes' : 'no'}">${p.stock > 0 ? `<i class="fa-solid fa-circle-check"></i> ${t('inStock')}${p.stock <= 5 ? ` · ${t('left')} ${p.stock}` : ''}` : `<i class="fa-solid fa-circle-xmark"></i> ${t('outStock')}`}</div>
@@ -691,6 +731,50 @@ function drawProduct(){
         <button class="icon" style="border:1px solid var(--line);background:#fff" data-fav="${p.id}"><i class="fa-solid fa-heart" style="color:${favs.includes(p.id) ? 'var(--pink)' : '#c9bec2'}"></i></button>
       </div>
     </div></div>`;
+}
+
+/* ---------- reviews ---------- */
+let reviews = [], rstar = 5, rsent = 0;   // approved reviews; star picked in the form; product a review was just sent for
+const rateOf = id => KAB.rating(reviews, id);
+const revWord = n => lang === 'uz' ? 'ta sharh' : n % 10 === 1 && n % 100 !== 11 ? 'отзыв' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'отзыва' : 'отзывов';
+const revHTML = (r, home) => { const p = home && prod(r.pid);
+  return `<div class="rv"><div class="h"><b>${esc(r.name)}</b><span class="s">${KAB.stars(r.rating)}</span></div><p>${esc(r.text)}</p>
+    <small>${new Date(r.at).toLocaleDateString('ru-RU')}</small>${p && !p.hidden ? `<a class="pn" href="#" data-open="${p.id}">${esc(p.name[lang])} →</a>` : ''}</div>`; };
+function loadReviews(){
+  if (!KAB.API){ reviews = (S.reviews || []).filter(r => r.ok); renderStatic(); return; }
+  KAB.call('/reviews').then(L => { if (!Array.isArray(L)) return; reviews = L; renderStatic(); if ($('pModal').classList.contains('on') && ptab !== 'rev') drawProduct(); }).catch(() => {});
+}
+function renderReviews(){
+  const L = reviews.slice().sort((a, b) => b.at - a.at).slice(0, 6);
+  $('revHome').innerHTML = L.length ? `<div class="revgrid">${L.map(r => revHTML(r, true)).join('')}</div>`
+    : `<div class="revempty"><i class="fa-solid fa-star"></i>${t('revEmpty')}</div>`;
+  // structured data, so search engines can show star ratings for reviewed products
+  const R = cat_().filter(p => !p.hidden && rateOf(p.id).n);
+  let ld = $('ld'); if (!ld){ ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.id = 'ld'; document.head.appendChild(ld); }
+  ld.textContent = JSON.stringify(R.map(p => { const r = rateOf(p.id);
+    return { '@context': 'https://schema.org', '@type': 'Product', name: p.name.ru, description: p.desc.ru,
+      offers: { '@type': 'Offer', price: p.price, priceCurrency: 'UZS', availability: 'https://schema.org/' + (p.stock > 0 ? 'InStock' : 'OutOfStock') },
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: +r.avg.toFixed(1), reviewCount: r.n },
+      review: reviews.filter(x => x.pid === p.id).slice(-3).map(x => ({ '@type': 'Review', author: { '@type': 'Person', name: x.name }, datePublished: new Date(x.at).toISOString().slice(0, 10),
+        reviewRating: { '@type': 'Rating', ratingValue: x.rating }, reviewBody: x.text })) }; }));
+}
+function revTab(p){
+  const L = reviews.filter(r => r.pid === p.id).sort((a, b) => b.at - a.at);
+  return `${L.length ? `<div class="rvs">${L.map(r => revHTML(r)).join('')}</div>` : t('revNone')}
+    ${rsent === p.id ? `<div class="rok"><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i> ${t('revThanks')}</div>` : `<div class="rform"><h5>${t('revWrite')}</h5>
+      <div class="lbl">${t('revYour')}</div><div class="rpick">${[1, 2, 3, 4, 5].map(i => `<button type="button" data-rs="${i}" class="${i <= rstar ? 'on' : ''}" aria-label="${i}"><i class="fa-solid fa-star"></i></button>`).join('')}</div>
+      <label class="fld">${t('revName')}<input id="rName" maxlength="40" autocomplete="given-name"></label>
+      <label class="fld">${t('revText')}<textarea id="rText" rows="3" maxlength="600" placeholder="${t('revTextPh')}"></textarea></label>
+      <button class="btn btn-dark" id="revSend"><i class="fa-solid fa-paper-plane"></i>${t('revSend')}</button></div>`}`;
+}
+async function sendReview(){
+  const name = $('rName').value.trim(), text = $('rText').value.trim();
+  if (name.length < 2 || text.length < 5){ toast(t('revBad')); return; }
+  const r = { pid, pname: prod(pid).name.ru, name, rating: rstar, text };
+  $('revSend').disabled = true;
+  if (KAB.API){ try { await KAB.call('/review', { method: 'POST', body: r }); } catch (er){ $('revSend').disabled = false; toast(t('revFail')); return; } }
+  else { S = KAB.load(); (S.reviews = S.reviews || []).push({ ...r, id: Date.now().toString(36), at: Date.now(), ok: false }); KAB.save(S); }
+  rsent = pid; rstar = 5; drawProduct();
 }
 
 /* ---------- cart ---------- */
@@ -847,9 +931,11 @@ function toast(s){ const el = $('toast'); el.querySelector('span').textContent =
 
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-pimg],[data-ptab],#cartBtn2,#favBtn2,[data-l],[data-open],[data-quick],[data-fav],[data-chip],[data-cat],[data-close],[data-v],[data-sh],[data-pq],[data-cq],[data-rm],[data-paid],[data-unpaid],#pAdd,#toCheckout,#promoBtn,#place,#cartBtn,#favBtn,#burger');
+  const el = e.target.closest('[data-rs],#revSend,[data-pimg],[data-ptab],#cartBtn2,#favBtn2,[data-l],[data-open],[data-quick],[data-fav],[data-chip],[data-cat],[data-close],[data-v],[data-sh],[data-pq],[data-cq],[data-rm],[data-paid],[data-unpaid],#pAdd,#toCheckout,#promoBtn,#place,#cartBtn,#favBtn,#burger');
   if (!el) return;
   const d = el.dataset;
+  if (d.rs){ rstar = +d.rs; document.querySelectorAll('[data-rs]').forEach(b => b.classList.toggle('on', +b.dataset.rs <= rstar)); return; }
+  if (el.id === 'revSend'){ sendReview(); return; }
   if (d.pimg){ pimg = +d.pimg; drawProduct(); return; }
   if (d.ptab){ ptab = d.ptab; drawProduct(); return; }
   if (el.id === 'cartBtn2'){ openDrawer(false); return; }
@@ -894,11 +980,11 @@ document.addEventListener('input', e => {
 });
 $('shade').addEventListener('click', closeAll);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
-addEventListener('storage', e => { if (e.key === KAB.KEY){ S = KAB.load(); renderStatic(); } });   // admin edits show up live
+addEventListener('storage', e => { if (e.key === KAB.KEY){ S = KAB.load(); KAB.API ? renderStatic() : loadReviews(); } });   // admin edits show up live
 const io = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); } }), { threshold: .12 });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-renderStatic();
+renderStatic(); loadReviews();
 // live mode: take prices, stock, visibility and delivery zones from the server, so admin edits on any device show here
 if (KAB.API) KAB.call('/settings').then(st => { if (st){ S = KAB.applyRemote(KAB.load(), st); KAB.save(S); renderStatic(); } }).catch(() => {});
 </script>

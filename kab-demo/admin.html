@@ -100,6 +100,16 @@ main{padding:26px 30px 60px;min-width:0}
 .st{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
 .st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
 .paytag{font-size:12px;font-weight:700;padding:3px 8px;border-radius:7px;background:var(--bg);white-space:nowrap}
+/* reviews */
+.rvrow{display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.rvrow:first-child{padding-top:0}
+.rvrow:last-child{border-bottom:0;padding-bottom:0}
+.rvb small{color:var(--muted);font-size:12px}
+.rvb .stars{color:#f2b01e;font-size:12px;margin:0 6px}
+.rvp{font-size:12.5px;color:var(--muted);margin:2px 0 6px}
+.rvb p{font-size:14px;overflow-wrap:anywhere}
+.rva{display:flex;gap:8px;align-items:center}
+@media (max-width:720px){.rvrow{grid-template-columns:46px 1fr}.rva{grid-column:2}}
 .pimg{position:relative;overflow:hidden;width:46px;height:46px;border-radius:12px;padding:4px}
 .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .inp{width:110px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;outline:0;font-weight:700;background:var(--bg)}
@@ -168,6 +178,7 @@ main{padding:26px 30px 60px;min-width:0}
       <a href="#dash" data-p="dash"><i class="fa-solid fa-chart-pie"></i>Обзор</a>
       <a href="#orders" data-p="orders"><i class="fa-solid fa-receipt"></i>Заказы<em id="newN"></em></a>
       <a href="#products" data-p="products"><i class="fa-solid fa-box-open"></i>Товары</a>
+      <a href="#reviews" data-p="reviews"><i class="fa-solid fa-star"></i>Отзывы<em id="revN"></em></a>
       <a href="#delivery" data-p="delivery"><i class="fa-solid fa-truck-fast"></i>Доставка</a>
       <a href="#settings" data-p="settings"><i class="fa-solid fa-gear"></i>Настройки</a>
     </nav>
@@ -207,7 +218,8 @@ let S = KAB.load(), page = 'dash', ofilter = 'all', oq = '', pq = '';
 const LIVE = !!KAB.API;
 let PIN = '', remote = [];
 try { PIN = sessionStorage.getItem('kab_pin') || ''; } catch (er) {}
-const load = () => { S = KAB.load(); if (LIVE) S.orders = remote; return S; };
+let rv = [], rvErr = false, rvInit = false, rfilter = 'wait';   // reviews; rvErr = the server has no review routes yet
+const load = () => { S = KAB.load(); if (LIVE) S.orders = remote; else rv = S.reviews = S.reviews || []; return S; };
 let saveTm;
 const save = () => {
   KAB.save(S);
@@ -241,7 +253,20 @@ function enter(){
   if (LIVE){
     KAB.call('/settings').then(st => { if (st){ KAB.save(KAB.applyRemote(KAB.load(), st)); route(); } }).catch(() => {});
     setInterval(poll, 5000);
+    loadRv(); setInterval(loadRv, 30000);
   }
+}
+// live mode: reviews waiting for approval, checked every 30 s
+function loadRv(){
+  KAB.call('/reviews/all', { pin: PIN }).then(L => {
+    const before = rv.filter(r => !r.ok).length; rv = L; rvErr = false;
+    if (rvInit && rv.filter(r => !r.ok).length > before) toast('Новый отзыв!');
+    rvInit = true; rvDraw();
+  }).catch(er => { rvErr = er.status === 404; rvDraw(); });
+}
+function rvDraw(){
+  $('revN').textContent = rv.filter(r => !r.ok).length || '';
+  if (page === 'reviews' && !$('modal').classList.contains('on')) $('page').innerHTML = PAGES.reviews();
 }
 // live mode: pick up orders placed on any phone every few seconds
 function poll(){
@@ -310,6 +335,23 @@ const PAGES = {
         <td><button class="btn btn-soft" data-editp="${p.id}"><i class="fa-solid fa-pen"></i></button></td></tr>`).join('')}</table></div>
       <p style="color:var(--muted);font-size:13px;margin-top:10px"><i class="fa-solid fa-bolt"></i> Изменения цен, остатков и видимости сразу появляются в открытом магазине.</p>`;
   },
+  reviews(){
+    if (rvErr) return `<div class="panel"><h3><i class="fa-solid fa-triangle-exclamation" style="color:#d49a2a"></i>Обновите код сервера</h3>
+      <p style="color:var(--muted);font-size:14px">Чтобы отзывы заработали, вставьте новую версию <b>worker.js</b> в Cloudflare: Worker <b>kab-orders</b> → «Edit code» → «Deploy». Шаги — в server/README.md.</p></div>`;
+    const C = KAB.catalog(S), wait = rv.filter(r => !r.ok).length;
+    let L = rv.slice().sort((a, b) => b.at - a.at);
+    if (rfilter !== 'all') L = L.filter(r => rfilter === 'ok' ? r.ok : !r.ok);
+    return `<div class="tools"><div class="seg">${[['wait', 'Ждут проверки', wait], ['ok', 'Опубликованы', rv.length - wait], ['all', 'Все', rv.length]].map(([id, n, c]) => `<button data-rf="${id}" class="${rfilter === id ? 'on' : ''}">${n} <small>${c}</small></button>`).join('')}</div></div>
+      <div class="panel">${L.length ? L.map(r => { const p = C.find(x => x.id === r.pid);
+        return `<div class="rvrow"><div class="pimg" style="background:${p ? p.c[0] + '55' : 'var(--line)'}">${p ? KAB.pic(p, 120) : ''}</div>
+          <div class="rvb"><div><b>${esc(r.name)}</b><span class="stars">${KAB.stars(r.rating)}</span><small>${when(r.at)}</small></div>
+            <div class="rvp">${esc(p ? p.name.ru : r.pname || 'Товар #' + r.pid)}</div><p>${esc(r.text)}</p></div>
+          <div class="rva">${r.ok ? `<span style="color:var(--ok);font-size:13px;font-weight:700">на сайте</span><button class="btn btn-soft" data-rok="${r.id}" data-on="0">Скрыть</button>`
+            : `<button class="btn btn-dark" data-rok="${r.id}" data-on="1"><i class="fa-solid fa-check"></i>Опубликовать</button>`}
+            <button class="btn btn-soft" data-rdel="${r.id}" aria-label="Удалить"><i class="fa-solid fa-trash"></i></button></div></div>`; }).join('')
+        : `<p style="color:var(--muted);text-align:center;padding:30px">${rfilter === 'wait' ? 'Новых отзывов нет. Когда покупатель оставит отзыв на сайте, он появится здесь' + (LIVE ? ' и придёт в Telegram' : '') + '.' : 'Отзывов пока нет'}</p>`}</div>
+      <p style="color:var(--muted);font-size:13px;margin-top:10px"><i class="fa-solid fa-shield-halved"></i> На сайте видны только отзывы, которые вы опубликовали. Не публикуйте выдуманные отзывы: покупатели и Google это замечают.</p>`;
+  },
   delivery(){
     return `<div class="panel scroll"><table class="tbl"><tr><th>Зона</th><th>Стоимость, сум</th><th>Бесплатно от, сум</th><th>Срок</th></tr>
       ${KAB.zoneList(S).map(z => `<tr><td><b>${z.ru}</b></td><td><input class="inp" type="number" step="1000" min="0" value="${z.price}" data-zp="${z.id}"></td>
@@ -329,7 +371,7 @@ const PAGES = {
         <p style="color:var(--muted);font-size:14px;margin-bottom:12px">Вернуть товары, цены и заказы к исходному примеру.</p><button class="btn btn-soft" data-reset><i class="fa-solid fa-rotate-left"></i>Сбросить демо</button></div>`;
   }
 };
-const TITLES = { dash: ['Обзор', 'Как идут продажи'], orders: ['Заказы', 'Нажмите на заказ, чтобы открыть детали и сменить статус'], products: ['Товары', 'Цены, остатки и видимость на сайте'], delivery: ['Доставка', 'Зоны, стоимость и бесплатная доставка'], settings: ['Настройки', 'Уведомления и оплата'] };
+const TITLES = { dash: ['Обзор', 'Как идут продажи'], orders: ['Заказы', 'Нажмите на заказ, чтобы открыть детали и сменить статус'], products: ['Товары', 'Цены, остатки и видимость на сайте'], reviews: ['Отзывы', 'Проверьте отзывы покупателей и опубликуйте их на сайте'], delivery: ['Доставка', 'Зоны, стоимость и бесплатная доставка'], settings: ['Настройки', 'Уведомления и оплата'] };
 
 function orderTable(L){
   return `<div class="scroll"><table class="tbl"><tr><th>№</th><th>Дата</th><th>Покупатель</th><th>Сумма</th><th>Оплата</th><th>Доставка</th><th>Статус</th></tr>
@@ -346,6 +388,7 @@ function route(){
   $('title').textContent = TITLES[page][0]; $('subtitle').textContent = TITLES[page][1];
   $('page').innerHTML = PAGES[page]();
   $('newN').textContent = S.orders.filter(o => o.status === 'new').length || '';
+  $('revN').textContent = rv.filter(r => !r.ok).length || '';
   $('side').classList.remove('on');
   if (flash && S.orders.some(o => o.no === flash)){ const r = $('row-' + flash); r && r.classList.add('flash'); openOrder(flash); }
 }
@@ -397,9 +440,16 @@ function saveProduct(id){
 /* ---------- events ---------- */
 function toast(s){ const el = $('toast'); el.querySelector('span').textContent = s; el.classList.add('on'); clearTimeout(toast.tm); toast.tm = setTimeout(() => el.classList.remove('on'), 1900); }
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-order],[data-st],[data-closed],[data-of],[data-vis],[data-editp],[data-newp],[data-savep],[data-closem],[data-reset],[data-print],#burger'); if (!el) return;
+  const el = e.target.closest('[data-order],[data-st],[data-closed],[data-of],[data-vis],[data-editp],[data-newp],[data-savep],[data-closem],[data-reset],[data-print],[data-rf],[data-rok],[data-rdel],#burger'); if (!el) return;
   const d = el.dataset;
   if (d.order){ openOrder(+d.order); return; }
+  if (d.rf){ rfilter = d.rf; route(); return; }
+  if (d.rok){ const r = rv.find(x => x.id === d.rok), on = d.on === '1'; if (!r) return; r.ok = on;
+    if (LIVE) KAB.call('/reviews/' + r.id, { method: 'PATCH', pin: PIN, body: { ok: on } }).catch(() => toast('Не удалось сохранить на сервере')); else save();
+    route(); toast(on ? 'Отзыв опубликован на сайте' : 'Отзыв скрыт с сайта'); return; }
+  if (d.rdel){ if (!confirm('Удалить отзыв навсегда?')) return; rv = rv.filter(x => x.id !== d.rdel);
+    if (LIVE) KAB.call('/reviews/' + d.rdel, { method: 'DELETE', pin: PIN }).catch(() => toast('Не удалось удалить на сервере')); else { S.reviews = rv; save(); }
+    route(); toast('Отзыв удалён'); return; }
   if (d.st){ const o = S.orders.find(x => x.no === +d.no); o.status = d.st;
     if (LIVE) KAB.call('/orders/' + o.no, { method: 'PATCH', pin: PIN, body: { status: d.st } }).catch(() => toast('Не удалось сохранить статус на сервере')); else save();
     openOrder(o.no); $('page').innerHTML = PAGES[page](); $('newN').textContent = S.orders.filter(x => x.status === 'new').length || ''; toast('Статус: ' + STAT[d.st].ru); return; }

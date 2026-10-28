@@ -14,6 +14,11 @@
      GET    /orders              list orders                       (PIN)
      PATCH  /orders/:no          change status {status}            (PIN)
      DELETE /orders              wipe demo orders                  (PIN)
+     GET    /reviews             approved product reviews (public)
+     POST   /review              leave a review; it waits for approval, Telegram is notified
+     GET    /reviews/all         every review, approved or waiting  (PIN)
+     PATCH  /reviews/:id         approve or hide {ok}               (PIN)
+     DELETE /reviews/:id         delete a review                    (PIN)
      GET    /init?pin=…          connect the bot (sets the webhook) and show the link to subscribe
      POST   /tg                  Telegram webhook ("/start <PIN>" subscribes a chat)
 */
@@ -21,7 +26,7 @@
 const STATUS = { new: 'Новый', paid: 'Оплачен', packing: 'Собирается', shipping: 'В пути', done: 'Выполнен', cancelled: 'Отменён' };
 const ZONES = { chirchiq: 'Чирчик', tashkent: 'Ташкент', region: 'Ташкентская область', country: 'Другие регионы', pickup: 'Самовывоз: Chirchiq bozor' };
 const PAYS = { payme: 'Payme', click: 'Click', uzum: 'Uzum Bank', cash: 'Наличными при получении', card: 'Переводом на карту' };
-const MAX_ORDERS = 500;
+const MAX_ORDERS = 500, MAX_REVIEWS = 1000, MAX_WAITING = 100;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -79,6 +84,15 @@ function cleanOrder(b){
     items, sum, discount, ship, total: sum - discount + ship };
 }
 
+function cleanReview(b){
+  const pid = +b.pid, rating = Math.round(+b.rating), name = str(b.name, 40), text = str(b.text, 600);
+  if (!Number.isInteger(pid) || pid <= 0) throw new Error('unknown product');
+  if (!(rating >= 1 && rating <= 5)) throw new Error('rating must be 1–5');
+  if (name.length < 2 || text.length < 5) throw new Error('name and text are required');
+  return { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), pid, pname: str(b.pname, 120), name, rating, text, at: Date.now(), ok: false };
+}
+const publicReview = ({ id, pid, name, rating, text, at }) => ({ id, pid, name, rating, text, at });
+
 export default {
   async fetch(req, env, ctx){
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
@@ -120,6 +134,27 @@ export default {
         if (!o) return fail('order not found', 404);
         o.status = status; await putJSON(env, 'orders', orders);
         return json(o);
+      }
+
+      if (path === '/reviews' && M === 'GET') return json((await getJSON(env, 'reviews', [])).filter(r => r.ok).map(publicReview));
+      if (path === '/review' && M === 'POST'){
+        const r = cleanReview(await req.json());
+        const reviews = await getJSON(env, 'reviews', []);
+        if (reviews.filter(x => !x.ok).length >= MAX_WAITING) return fail('too many reviews waiting for approval', 429);
+        reviews.push(r); await putJSON(env, 'reviews', reviews.slice(-MAX_REVIEWS));
+        ctx.waitUntil(notify(env, [`⭐ <b>Новый отзыв — ждёт проверки</b>`, `${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)} ${esc(r.pname || 'товар #' + r.pid)}`,
+          `👤 ${esc(r.name)}`, `💬 ${esc(r.text)}`, 'Одобрить или удалить: админ-панель → «Отзывы»'].join('\n')));
+        return json({ ok: true }, 201);
+      }
+      if (path === '/reviews/all' && M === 'GET'){ if (!authed(req, env)) return fail('wrong PIN', 401); return json(await getJSON(env, 'reviews', [])); }
+      m = path.match(/^\/reviews\/([a-z0-9]+)$/);
+      if (m && (M === 'PATCH' || M === 'DELETE')){
+        if (!authed(req, env)) return fail('wrong PIN', 401);
+        const reviews = await getJSON(env, 'reviews', []); const r = reviews.find(x => x.id === m[1]);
+        if (!r) return fail('review not found', 404);
+        if (M === 'DELETE'){ await putJSON(env, 'reviews', reviews.filter(x => x !== r)); return json({ ok: true }); }
+        r.ok = !!(await req.json()).ok; await putJSON(env, 'reviews', reviews);
+        return json(r);
       }
 
       if (path === '/init' && M === 'GET'){
