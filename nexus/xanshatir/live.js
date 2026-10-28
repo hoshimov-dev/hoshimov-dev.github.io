@@ -7,7 +7,7 @@
                   {k:"waiter", id, table}
                   {k:"status", id, s:"accepted"|"onway"|"paid"|"cancel"|"done"} */
 const LIVE = {
-  API: "",
+  API: "https://xan-orders.lamineyamaljan.workers.dev",
   url: "https://ntfy.sh/nexus-xanshatir-afb4baf69d5b",
   id: () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
   pin: (() => { try { return sessionStorage.getItem("xs_pin") || ""; } catch (e) { return ""; } })(),
