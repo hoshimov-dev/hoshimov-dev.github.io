@@ -78,6 +78,7 @@ th.s{text-align:right}
 .lbox h2 b{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:8px;padding:0 6px;border-radius:99px;background:var(--gold);color:#0b0b0b;font:700 12px 'Space Grotesk'}
 .tg{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:10px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
 .tg.on{color:var(--gold-lt);border-color:var(--gold)}
+a.tg{text-decoration:none}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));align-items:start;gap:10px;margin-top:12px}
 .lv{padding:13px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);animation:pop .4s cubic-bezier(.2,.8,.2,1)}
 @keyframes pop{from{transform:scale(.94);opacity:0}}
@@ -94,12 +95,28 @@ th.s{text-align:right}
 .lvf b:empty{display:none}
 .lvf button{white-space:nowrap;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid var(--line)}
 .lvf button.p{flex:1;background:var(--gold);border-color:var(--gold);color:#0b0b0b}
+.lv.dl{border-style:dashed}
+.lvd{margin-top:8px;font-size:13px;color:#d7e2dc;display:grid;gap:3px}
+.lvd i{width:16px;color:var(--gold)}
+.lvd a{color:var(--gold-lt)}
+/* PIN login (server mode) */
+.login{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(2,10,6,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.login[hidden]{display:none}
+.login form{width:min(340px,100%);padding:26px 22px;border-radius:22px;background:var(--panel);border:1px solid var(--line);text-align:center}
+.login h2{font:700 20px 'Cinzel',serif;color:var(--gold-lt)}
+.login p{font-size:13px;color:var(--muted);margin:6px 0 16px}
+.login input{width:100%;padding:14px;border-radius:12px;border:1px solid var(--line);background:rgba(4,20,12,.8);color:#fff;font:700 24px 'Space Grotesk';letter-spacing:.5em;text-align:center}
+.login button{width:100%;margin-top:12px;padding:13px;border-radius:12px;background:var(--gold);color:#0b0b0b;font-weight:700}
+.login .err{color:#ff8a80;font-size:13px;margin-top:10px;min-height:18px}
 .empty{margin-top:12px;padding:16px;border-radius:14px;border:1px dashed var(--line);font-size:13px;color:var(--muted);text-align:center}
 .empty a{color:var(--gold-lt)}
 @media (max-width:860px){.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.kpi b{font-size:22px}}
 </style>
 </head>
 <body>
+<div class="login" id="login" hidden><form id="lform"><h2>XAN SHATIR</h2><p data-i="pinS"></p>
+  <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8" aria-label="PIN">
+  <button data-i="pinBtn"></button><div class="err" id="pinErr"></div></form></div>
 <div class="wrap">
   <div class="head">
     <div class="t"><h1>XAN SHATIR</h1><p data-i="title"></p></div>
@@ -107,11 +124,12 @@ th.s{text-align:right}
     <div class="live" id="live"><i></i><span></span></div>
     <div class="seg" id="lang"><button data-l="uz">UZ</button><button data-l="ru">RU</button></div>
   </div>
-  <div class="demo"><i class="fa-solid fa-flask"></i><span data-i="demo"></span></div>
+  <div class="demo" id="demoBox"><i class="fa-solid fa-flask"></i><span data-i="demo"></span></div>
 
   <div class="lbox">
     <div class="lt"><h2><span data-i="liveT"></span><b id="liveCount">0</b></h2>
       <button class="tg" id="sound"><i class="fa-solid fa-volume-xmark"></i><span data-i="sound"></span></button>
+      <a class="tg" id="tgLink" hidden target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i><span data-i="tgConnect"></span></a>
       <button class="tg on" id="demoTg"><i class="fa-solid fa-flask"></i><span data-i="demoTg"></span></button></div>
     <div class="lgrid" id="liveList"></div>
   </div>
@@ -135,13 +153,19 @@ th.s{text-align:right}
 <script src="live.js"></script>
 <script>
 const T = {
-  uz:{title:"Savdo paneli · egasi uchun",demo:"Statistikada demo tarix ham bor. Stollardan kelgan buyurtmalar yuqorida jonli ko'rinadi; «To'landi» bosilgach statistikaga qo'shiladi.",liveT:"Jonli buyurtmalar",sound:"Ovoz",demoTg:"Demo tarix",on:"Jonli · ulangan",off:"Ulanmoqda…",st_new:"Yangi",st_accepted:"Qabul qilindi",accept:"Qabul qilish",pay:"To'landi",cancel:"Bekor",done:"Bajarildi",callTxt:"Ofitsiantni chaqiryapti",empty:"Hozircha yangi buyurtma yo'q. Telefonda menyuni oching va buyurtma bering:",ago:"daq. oldin",now:"hozir",dishes:"Sotilgan taomlar",
+  uz:{title:"Savdo paneli · egasi uchun",demo:"Statistikada demo tarix ham bor. Stollardan kelgan buyurtmalar yuqorida jonli ko'rinadi; «To'landi» bosilgach statistikaga qo'shiladi.",liveT:"Jonli buyurtmalar",sound:"Ovoz",demoTg:"Demo tarix",on:"Jonli · ulangan",off:"Ulanmoqda…",st_new:"Yangi",st_accepted:"Qabul qilindi",st_onway:"Yo'lda",accept:"Qabul qilish",onway:"Yo'lga chiqdi",delivery:"Yetkazib berish",
+      liveMode:"Ishchi rejim: stollar va yetkazib berish buyurtmalari serverda saqlanadi va Telegramga keladi.",tgConnect:"Telegramni ulash",
+      pinS:"Egasining PIN-kodini kiriting",pinBtn:"Kirish",pinBad:"PIN noto'g'ri",pinNet:"Server javob bermadi. Internetni tekshiring.",
+      pays:{cash:"Kuryerga naqd",card:"Kuryerga karta/o'tkazma",click:"Click",payme:"Payme"},pay:"To'landi",cancel:"Bekor",done:"Bajarildi",callTxt:"Ofitsiantni chaqiryapti",empty:"Hozircha yangi buyurtma yo'q. Telefonda menyuni oching va buyurtma bering:",ago:"daq. oldin",now:"hozir",dishes:"Sotilgan taomlar",
       day:"Bugun",week:"Hafta",month:"Oy",rev:"Tushum",orders:"Buyurtmalar",avg:"O'rtacha chek",guests:"Mehmonlar",vs:"oldingi davrga nisbatan",
       revT:"Tushum dinamikasi",revDay:"Soatlar bo'yicha, bugun",revWeek:"Kunlar bo'yicha, oxirgi 7 kun",revMonth:"Kunlar bo'yicha, oxirgi 30 kun",
       topT:"Eng ko'p sotilgan taomlar",topS:"Soni va tushum",ordT:"Oxirgi buyurtmalar",ordS:"Stol orqali kelgan",tblT:"Stollar bandligi",tblS:"Davr ichidagi tushum, stol bo'yicha",
       thTime:"Vaqt",thTable:"Stol",thItems:"Taomlar",thSum:"Summa",thSt:"Holat",paid:"To'landi",less:"Kam",more:"Ko'p",sum:"so'm",pcs:"ta",tbl:"Stol",
       wd:["Ya","Du","Se","Ch","Pa","Ju","Sh"]},
-  ru:{title:"Панель продаж · для владельца",demo:"В статистике есть демо-история. Заказы со столов видны вверху вживую; после «Оплачен» они попадают в статистику.",liveT:"Заказы вживую",sound:"Звук",demoTg:"Демо-история",on:"Онлайн · подключено",off:"Подключение…",st_new:"Новый",st_accepted:"Принят",accept:"Принять",pay:"Оплачен",cancel:"Отмена",done:"Готово",callTxt:"Зовёт официанта",empty:"Новых заказов пока нет. Откройте меню на телефоне и сделайте заказ:",ago:"мин. назад",now:"сейчас",dishes:"Продано блюд",
+  ru:{title:"Панель продаж · для владельца",demo:"В статистике есть демо-история. Заказы со столов видны вверху вживую; после «Оплачен» они попадают в статистику.",liveT:"Заказы вживую",sound:"Звук",demoTg:"Демо-история",on:"Онлайн · подключено",off:"Подключение…",st_new:"Новый",st_accepted:"Принят",st_onway:"В пути",accept:"Принять",onway:"Курьер выехал",delivery:"Доставка",
+      liveMode:"Рабочий режим: заказы со столов и доставки хранятся на сервере и приходят в Telegram.",tgConnect:"Подключить Telegram",
+      pinS:"Введите PIN-код владельца",pinBtn:"Войти",pinBad:"Неверный PIN",pinNet:"Сервер не ответил. Проверьте интернет.",
+      pays:{cash:"Наличными курьеру",card:"Картой/переводом курьеру",click:"Click",payme:"Payme"},pay:"Оплачен",cancel:"Отмена",done:"Готово",callTxt:"Зовёт официанта",empty:"Новых заказов пока нет. Откройте меню на телефоне и сделайте заказ:",ago:"мин. назад",now:"сейчас",dishes:"Продано блюд",
       day:"Сегодня",week:"Неделя",month:"Месяц",rev:"Выручка",orders:"Заказы",avg:"Средний чек",guests:"Гости",vs:"к прошлому периоду",
       revT:"Динамика выручки",revDay:"По часам, сегодня",revWeek:"По дням, последние 7 дней",revMonth:"По дням, последние 30 дней",
       topT:"Топ блюд",topS:"Количество и выручка",ordT:"Последние заказы",ordS:"Пришли со столов",tblT:"Загрузка столов",tblS:"Выручка за период по столам",
@@ -179,6 +203,7 @@ for (let dayAgo = 59; dayAgo >= 0; dayAgo--){
 /* ========================================================================================== */
 
 const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let lang = (() => { try { return localStorage.getItem('xs_admin_lang') || 'uz'; } catch(e){ return 'uz'; } })();
 let period = 'day';
 const fmt = n => Math.round(n).toLocaleString('ru-RU').replace(/,/g, ' ');
@@ -204,6 +229,7 @@ function render(){
   now = new Date();
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i]').forEach(el => el.textContent = t[el.dataset.i]);
+  if (LIVE.API) $('demoBox').querySelector('span').textContent = t.liveMode;
   document.querySelectorAll('#period button').forEach(b => { b.textContent = t[b.dataset.p]; b.classList.toggle('on', b.dataset.p === period); });
   document.querySelectorAll('#lang button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
 
@@ -242,12 +268,12 @@ function render(){
   // recent orders
   $('orders').innerHTML = [...list].sort((x, y) => y.t - x.t).slice(0, 8).map(o => `<tr>
     <td>${period === 'day' ? '' : o.t.getDate() + '.' + String(o.t.getMonth() + 1).padStart(2, '0') + ' '}${String(o.t.getHours()).padStart(2, '0')}:${String(o.t.getMinutes()).padStart(2, '0')}</td>
-    <td>№${o.table}</td><td class="it">${Object.entries(o.items).map(([nm, q]) => `${dishName(nm)}${q > 1 ? ' ×' + q : ''}`).join(', ')}</td>
+    <td>${o.delivery ? '<i class="fa-solid fa-motorcycle" title="' + t.delivery + '"></i>' : '№' + o.table}</td><td class="it">${Object.entries(o.items).map(([nm, q]) => `${dishName(nm)}${q > 1 ? ' ×' + q : ''}`).join(', ')}</td>
     <td class="s">${fmt(o.sum)}</td><td><span class="st"><i class="fa-solid fa-circle-check"></i>${t.paid}</span></td></tr>`).join('');
 
   // tables: one gold hue, lightness by revenue
   const byT = Array.from({ length:TABLES }, () => 0);
-  list.forEach(o => byT[o.table - 1] += o.sum);
+  list.forEach(o => { if (o.table >= 1 && o.table <= TABLES) byT[o.table - 1] += o.sum; });
   const mx = Math.max(...byT, 1);
   $('tables').innerHTML = byT.map((v, i) => { const k = v / mx;
     const c = `rgb(${Math.round(18 + k * (212 - 18))},${Math.round(59 + k * (175 - 59))},${Math.round(41 + k * (55 - 41))})`;
@@ -285,14 +311,14 @@ function barChart(B){
 /* ===== live orders from the table menu (live.js) ===== */
 const LIVE_ORDERS = new Map(), CALLS = new Map();
 const opened = Date.now();
-let showDemo = true, audio = null;
+let showDemo = !LIVE.API, audio = null;   // the real panel starts with real numbers only
 
 // live orders keep dish names; map them back to menu dishes for the stats
 const dishIdx = nm => DISHES.findIndex(d => d.n.ru + (d.w ? ` (${d.w.ru})` : '') === nm);
 function allOrders(){
   const live = [...LIVE_ORDERS.values()].filter(o => o.s === 'paid').map(o => {
     const items = {}; o.items.forEach(([nm, q]) => { const i = dishIdx(nm); if (i >= 0) items[i] = (items[i] || 0) + q; });
-    return { t:o.t, table:+o.table || 0, items, sum:o.sum };
+    return { t:o.t, table:+o.table || 0, delivery:!!o.delivery, items, sum:o.sum };
   });
   return showDemo ? DEMO.concat(live) : live;
 }
@@ -317,33 +343,51 @@ function onLive(m, time){
 function drawLive(){
   const t = T[lang], ago = d => { const m = Math.floor((Date.now() - d) / 60000); return m < 1 ? t.now : `${m} ${t.ago}`; };
   const hm = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  const open = [...LIVE_ORDERS.values()].filter(o => o.s === 'new' || o.s === 'accepted').sort((a, b) => b.t - a.t);
+  const open = [...LIVE_ORDERS.values()].filter(o => ['new', 'accepted', 'onway'].includes(o.s)).sort((a, b) => b.t - a.t);
   const calls = [...CALLS.values()].sort((a, b) => b.t - a.t);
   $('liveCount').textContent = open.length + calls.length;
   document.title = (open.length + calls.length ? `(${open.length + calls.length}) ` : '') + 'Xan Shatir — Savdo paneli';
   const menuUrl = new URL('./?table=5', location.href).href;
   $('liveList').innerHTML = calls.map(c => `<div class="lv call"><div class="lvh"><b>${t.tbl} №${c.table}</b><span>${hm(c.t)} · ${ago(c.t)}</span><em><i class="fa-solid fa-bell-concierge"></i> ${t.callTxt}</em></div>
       <div class="lvf"><b></b><button class="p" data-act="done" data-id="${c.id}">${t.done}</button></div></div>`).join('')
-    + open.map(o => `<div class="lv ${o.s}"><div class="lvh"><b>${t.tbl} №${o.table}</b><span>${hm(o.t)} · ${ago(o.t)}</span><em>${t['st_' + o.s]}</em></div>
-      <div class="lvi">${o.items.map(([nm, q]) => { const i = dishIdx(nm); return (i >= 0 ? dishName(i) : nm) + (q > 1 ? ' ×' + q : ''); }).join(', ')}</div>
-      <div class="lvf"><b>${fmt(o.sum)} ${t.sum}</b>${o.s === 'new' ? `<button data-act="accepted" data-id="${o.id}">${t.accept}</button>` : ''}
-      <button class="p" data-act="paid" data-id="${o.id}">${t.pay}</button><button data-act="cancel" data-id="${o.id}" aria-label="${t.cancel}"><i class="fa-solid fa-xmark"></i></button></div></div>`).join('')
+    + open.map(o => { const d = o.delivery;
+      return `<div class="lv ${o.s}${d ? ' dl' : ''}"><div class="lvh"><b>${d ? `<i class="fa-solid fa-motorcycle"></i> ${t.delivery}` : `${t.tbl} №${esc(o.table)}`}</b><span>${hm(o.t)} · ${ago(o.t)}</span><em>${t['st_' + o.s]}</em></div>
+      ${d ? `<div class="lvd"><div><i class="fa-solid fa-user"></i>${esc(d.name)} · <a href="tel:${esc(d.phone.replace(/[^\d+]/g, ''))}">${esc(d.phone)}</a></div><div><i class="fa-solid fa-location-dot"></i>${esc(d.address)}</div>
+        ${d.comment ? `<div><i class="fa-solid fa-comment"></i>${esc(d.comment)}</div>` : ''}<div><i class="fa-solid fa-wallet"></i>${esc(t.pays[d.pay] || d.pay)}</div></div>` : ''}
+      <div class="lvi">${o.items.map(([nm, q]) => { const i = dishIdx(nm); return (i >= 0 ? dishName(i) : esc(nm)) + (q > 1 ? ' ×' + q : ''); }).join(', ')}</div>
+      <div class="lvf"><b>${fmt(o.sum)} ${t.sum}</b>${o.s === 'new' ? `<button data-act="accepted" data-id="${o.id}">${t.accept}</button>` : ''}${d && o.s === 'accepted' ? `<button data-act="onway" data-id="${o.id}">${t.onway}</button>` : ''}
+      <button class="p" data-act="paid" data-id="${o.id}">${t.pay}</button><button data-act="cancel" data-id="${o.id}" aria-label="${t.cancel}"><i class="fa-solid fa-xmark"></i></button></div></div>`; }).join('')
     || `<div class="empty">${t.empty} <a href="${menuUrl}" target="_blank" rel="noopener">${menuUrl}</a></div>`;
 }
 
 $('liveList').onclick = async e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   b.disabled = true;
-  try { await LIVE.send({ k:'status', id:b.dataset.id, s:b.dataset.act }); } catch(err){ b.disabled = false; }
+  try { await LIVE.send({ k:'status', id:b.dataset.id, s:b.dataset.act });
+    if (LIVE.API) onLive({ k:'status', id:b.dataset.id, s:b.dataset.act }, Date.now());   // the server is polled, show the change right away
+  } catch(err){ b.disabled = false; }
 };
 $('sound').onclick = () => {
   if (!audio) { audio = new (window.AudioContext || window.webkitAudioContext)(); beep(); } else { audio.close(); audio = null; }
   $('sound').classList.toggle('on', !!audio);
   $('sound').querySelector('i').className = 'fa-solid ' + (audio ? 'fa-volume-high' : 'fa-volume-xmark');
 };
+$('demoTg').classList.toggle('on', showDemo);
 $('demoTg').onclick = () => { showDemo = !showDemo; $('demoTg').classList.toggle('on', showDemo); render(); };
 function setState(on){ $('live').classList.toggle('on', on); $('live').querySelector('span').textContent = T[lang][on ? 'on' : 'off']; }
-LIVE.listen(onLive, setState);
+// server mode: the owner's PIN opens the panel; demo mode: open to everyone
+function start(){
+  LIVE.listen(onLive, setState, () => { try { sessionStorage.removeItem('xs_pin'); } catch(e){} location.reload(); });
+  if (LIVE.API){ $('tgLink').hidden = false; $('tgLink').href = LIVE.API.replace(/\/$/, '') + '/init?pin=' + encodeURIComponent(LIVE.pin); }
+}
+if (!LIVE.API) start();
+else if (LIVE.pin) start();
+else { $('login').hidden = false; $('pin').focus(); }
+$('lform').onsubmit = async e => {
+  e.preventDefault(); LIVE.pin = $('pin').value.trim(); $('pinErr').textContent = '';
+  try { await LIVE.call('/live'); try { sessionStorage.setItem('xs_pin', LIVE.pin); } catch(er){} $('login').hidden = true; start(); }
+  catch(er){ $('pinErr').textContent = T[lang][er.status === 401 ? 'pinBad' : 'pinNet']; $('pin').select(); }
+};
 setInterval(drawLive, 30000);   // keep "N min ago" fresh
 
 document.querySelectorAll('#period button').forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
