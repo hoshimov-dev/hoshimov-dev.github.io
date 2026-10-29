@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Xan Shatir — Yetkazib berish · Доставка, Chirchiq</title>
 <meta name="description" content="Xan Shatir restorani taomlarini uyingizga buyurtma qiling: beshbarmoq, manti, shashlik, salatlar. Chirchiq bo'ylab yetkazib berish.">
-<meta name="robots" content="noindex">
 <meta name="theme-color" content="#062a1a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -139,6 +138,12 @@ footer .made b{font:700 12px 'Space Grotesk';letter-spacing:.2em}
 .btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:15px;border-radius:16px;font-weight:700;color:#0b0b0b;
   background:linear-gradient(110deg,var(--gold-dk),var(--gold) 35%,var(--gold-lt) 50%,var(--gold) 65%,var(--gold-dk));background-size:200% 100%;animation:shine 5s linear infinite}
 .btn:disabled{opacity:.55;animation:none}
+.agree{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);font-size:12.5px;line-height:1.45;color:#d7e2dc;cursor:pointer}
+.agree input{flex:none;width:18px;height:18px;margin-top:1px;accent-color:var(--gold)}
+.agree.bad{border-color:var(--bad)}
+.agree a{color:var(--gold-lt)}
+footer .legal{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12.5px}
+footer .seller{margin-top:8px;font-size:11.5px;line-height:1.5}
 .note{margin-top:10px;text-align:center;font-size:12px;color:var(--muted)}
 .empty{text-align:center;padding:40px 10px;color:var(--muted)}
 .empty i{font-size:34px;color:var(--gold);display:block;margin-bottom:10px}
@@ -184,6 +189,8 @@ body.lock{overflow:hidden}
 
 <footer><div class="wrap">
   <span data-i="foot"></span> · <a href="../" data-i="menuLink"></a>
+  <div class="legal" id="legal"></div>
+  <div class="seller" id="seller"></div>
   <a class="made" href="../../ilhom/"><span data-i="made"></span> <b class="gold">NEXUS CARD</b></a>
 </div></footer>
 
@@ -194,6 +201,7 @@ body.lock{overflow:hidden}
 
 <script src="../menu.js"></script>
 <script src="../live.js"></script>
+<script src="../legal/seller.js"></script>
 <script>
 /* ===== DELIVERY SETTINGS (change here) ===== */
 const R = {
@@ -220,7 +228,10 @@ const T = {
       sendErr:"Yuborilmadi. Internetni tekshiring yoki qo'ng'iroq qiling",okT:"Buyurtma qabul qilindi!",okS:"Operator tez orada qo'ng'iroq qiladi. Taxminiy yetkazish vaqti: {t} daqiqa.",
       okNo:"Buyurtma",okMore:"Menyuga qaytish",i1:"Har kuni 10:00–23:00",i1s:"Buyurtmalar har kuni qabul qilinadi.",i2:"Chirchiq bo'ylab",
       i2s:"Yetkazish {f}, {ff} dan — bepul. Taxminan {t} daqiqa.",i3:"Telefon orqali buyurtma",foot:"Xan Shatir restorani, Chirchiq",menuLink:"Restoran menyusi",
-      made:"Sayt:",deliveryItem:"Доставка"},
+      made:"Sayt:",deliveryItem:"Доставка",
+      agree:"Men <a href=\"{o}\" target=\"_blank\">ommaviy oferta</a> shartlarini qabul qilaman va <a href=\"{p}\" target=\"_blank\">maxfiylik siyosati</a>ga muvofiq shaxsiy ma'lumotlarimni qayta ishlashga rozilik beraman.",
+      needAgree:"Buyurtma uchun oferta va ma'lumotlarni qayta ishlashga rozilik kerak",
+      lOferta:"Ommaviy oferta",lPrivacy:"Maxfiylik siyosati",lDelivery:"Yetkazib berish va qaytarish",sName:"Sotuvchi",sInn:"STIR"},
   ru:{tag:"Доставка",cart:"Корзина",kicker:"Доставка по Чирчику",h1:"Блюда Xan Shatir — к вам домой",
       lead:"Бешбармак, манты, шашлык и салаты привезём горячими. Оформите заказ — оператор перезвонит и подтвердит.",
       sig:"Бешбармак — выбор шефа",chT:"минут",chFee:"Доставка",chFree:"бесплатно от {f}",chMin:"Минимальный заказ",chHours:"Ежедневно",
@@ -234,8 +245,13 @@ const T = {
       sendErr:"Не отправилось. Проверьте интернет или позвоните нам",okT:"Заказ принят!",okS:"Оператор скоро перезвонит. Примерное время доставки: {t} минут.",
       okNo:"Заказ",okMore:"Вернуться в меню",i1:"Ежедневно 10:00–23:00",i1s:"Заказы принимаем каждый день.",i2:"По всему Чирчику",
       i2s:"Доставка {f}, от {ff} — бесплатно. Примерно {t} минут.",i3:"Заказ по телефону",foot:"Ресторан Xan Shatir, Чирчик",menuLink:"Меню ресторана",
-      made:"Сайт:",deliveryItem:"Доставка"}
+      made:"Сайт:",deliveryItem:"Доставка",
+      agree:"Я принимаю условия <a href=\"{o}\" target=\"_blank\">публичной оферты</a> и даю согласие на обработку моих персональных данных в соответствии с <a href=\"{p}\" target=\"_blank\">политикой конфиденциальности</a>.",
+      needAgree:"Чтобы оформить заказ, нужно согласие с офертой и обработкой данных",
+      lOferta:"Публичная оферта",lPrivacy:"Политика конфиденциальности",lDelivery:"Доставка и возврат",sName:"Продавец",sInn:"ИНН"}
 };
+// the legal pages: one page, Uzbek and Russian sections
+const legal = part => `../legal/#${part}${lang === 'ru' ? '-ru' : ''}`;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -275,6 +291,8 @@ function render(){
   $('closed').textContent = t('closed').replace('{h}', R.hours[0]); $('closed').classList.toggle('on', !isOpen());
   $('i1s').textContent = t('i1s');
   $('i2s').textContent = t('i2s').replace('{f}', fmt(R.fee)).replace('{ff}', fmt(R.freeFrom)).replace('{t}', R.time);
+  $('legal').innerHTML = [['oferta', 'lOferta'], ['privacy', 'lPrivacy'], ['delivery', 'lDelivery']].map(([a, k]) => `<a href="${legal(a)}">${t(k)}</a>`).join('');
+  $('seller').textContent = `${t('sName')}: ${blank(SELLER.name)} · ${t('sInn')}: ${blank(SELLER.inn)} · ${blank(SELLER.address)}`;
   $('phone').textContent = R.phone.replace(/(\+998)(\d\d)(\d{3})(\d\d)(\d\d)/, '$1 $2 $3 $4 $5'); $('phone').href = 'tel:' + R.phone;
   $('tabs').innerHTML = MENU.map((c, i) => `<button data-tab="${c.id}" class="${i ? '' : 'on'}"><i class="fa-solid ${c.icon}"></i>${c.n[lang]}</button>`).join('');
   $('menu').innerHTML = MENU.map(c => `<section class="cat" id="c-${c.id}"><h2><i class="fa-solid ${c.icon}"></i>${c.n[lang]}</h2><div class="grid">${c.items.map((d, i) => card(c, d, i)).join('')}</div></section>`).join('');
@@ -317,7 +335,7 @@ function drawDrawer(){
   if (!K.length){ $('dBody').innerHTML = `<div class="empty"><i class="fa-solid fa-bag-shopping"></i><b>${t('empty')}</b><p>${t('emptyS')}</p></div>`; return; }
   const s = subtotal(), fee = feeOf(s), me = store('xs_dme') || {};
   const keep = id => { const el = $(id); return el ? el.value : null; };   // keep what was typed when the drawer redraws
-  const v = { name: keep('fName') ?? me.name ?? '', phone: keep('fPhone') ?? me.phone ?? '+998 ', address: keep('fAddr') ?? me.address ?? '', comment: keep('fCom') ?? '', pay: document.querySelector('[name=pay]:checked')?.value || 'cash' };
+  const v = { name: keep('fName') ?? me.name ?? '', phone: keep('fPhone') ?? me.phone ?? '+998 ', address: keep('fAddr') ?? me.address ?? '', comment: keep('fCom') ?? '', agree: !!($('fAgree') && $('fAgree').checked), pay: document.querySelector('[name=pay]:checked')?.value || 'cash' };
   $('dBody').innerHTML = `${K.map(k => { const d = dish(k);
       return `<div class="ci">${d.img ? `<img src="../img/${d.img}.webp" alt="">` : `<span class="ic"><i class="fa-solid fa-utensils"></i></span>`}<div><b>${esc(dname(d))}</b><small>${fmt(d.p * cart[k])}</small></div>
         <div class="qty"><button data-q="${k}:-1" aria-label="−"><i class="fa-solid fa-minus"></i></button><b>${cart[k]}</b><button data-q="${k}:1" aria-label="+"><i class="fa-solid fa-plus"></i></button></div></div>`; }).join('')}
@@ -337,6 +355,7 @@ function drawDrawer(){
         <label class="off"><input type="radio" disabled><span>Click<small>${t('soon')}</small></span></label>
         <label class="off"><input type="radio" disabled><span>Payme<small>${t('soon')}</small></span></label>
       </div>
+      <label class="agree" id="agreeBox"><input type="checkbox" id="fAgree"${v.agree ? ' checked' : ''}><span>${t('agree').replace('{o}', legal('oferta')).replace('{p}', legal('privacy'))}</span></label>
       ${s < R.minOrder ? `<div class="free">${t('minLeft').replace('{m}', fmt(R.minOrder)).replace('{l}', fmt(R.minOrder - s))}</div>` : ''}
       <button class="btn" id="send"${s < R.minOrder ? ' disabled' : ''}><i class="fa-solid fa-paper-plane"></i>${t('send')} · ${fmt(s + fee)}</button>
       <div class="note">${t('noteSend')}</div>
@@ -351,12 +370,14 @@ async function send(){
   const pay = document.querySelector('[name=pay]:checked')?.value || 'cash';
   [['fName', name.length >= 2], ['fPhone', phone.replace(/\D/g, '').length >= 12], ['fAddr', address.length >= 3]].forEach(([id, ok]) => $(id).parentNode.classList.toggle('bad', !ok));
   if (document.querySelector('.fm .bad')){ toast(t('need')); return; }
+  // explicit consent: the box is never ticked in advance
+  if (!$('fAgree').checked){ $('agreeBox').classList.add('bad'); toast(t('needAgree')); return; }
   const s = subtotal(), fee = feeOf(s);
   const items = keys().map(k => { const d = dish(k); return [d.n.ru + (d.w ? ` (${d.w.ru})` : ''), cart[k], d.p]; });
   if (fee) items.push([t('deliveryItem'), 1, fee]);
   const id = LIVE.id(), btn = $('send'); btn.disabled = true;
   try {
-    await LIVE.send({ k: 'order', id, delivery: { name, phone, address, comment, pay }, items, sum: items.reduce((a, [, q, p]) => a + q * p, 0) });
+    await LIVE.send({ k: 'order', id, delivery: { name, phone, address, comment, pay, agreed: true }, items, sum: items.reduce((a, [, q, p]) => a + q * p, 0) });
     store('xs_dme', { name, phone, address });
     cart = {}; store('xs_dcart', cart); lastNo = id.slice(-5).toUpperCase(); view = 'ok';
     drawDrawer(); render();
@@ -375,6 +396,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const f = e.target.closest('.bad'); if (f) f.classList.remove('bad');
+  if (e.target.id === 'fAgree') $('agreeBox').classList.remove('bad');
   if (e.target.id === 'fPhone'){   // +998 XX XXX XX XX
     let d = e.target.value.replace(/\D/g, ''); if (!d.startsWith('998')) d = '998' + d.replace(/^998/, ''); d = d.slice(0, 12);
     e.target.value = '+' + [d.slice(0, 3), d.slice(3, 5), d.slice(5, 8), d.slice(8, 10), d.slice(10, 12)].filter(Boolean).join(' ');

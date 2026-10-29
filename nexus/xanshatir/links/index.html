@@ -65,6 +65,8 @@ h1{font:700 30px/1.1 'Cinzel',serif;letter-spacing:.06em}
 .hours{margin-top:12px;padding:14px 16px;border-radius:18px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;gap:14px;font-size:14px}
 .hours i{font-size:18px;color:var(--gold)}
 .hours small{display:block;font-size:12px;color:var(--muted)}
+.legal{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:12px}
+.legal a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 .made{display:block;text-align:center;margin-top:28px;font-size:12px;color:var(--muted)}
 .made b{font:700 12px 'Space Grotesk';letter-spacing:.2em;margin-left:4px}
 .in{opacity:0;transform:translateY(12px);animation:up .6s cubic-bezier(.2,.8,.2,1) forwards}
@@ -92,6 +94,7 @@ h1{font:700 30px/1.1 'Cinzel',serif;letter-spacing:.06em}
   <div class="soc" id="soc"></div>
   <div class="hours"><i class="fa-solid fa-clock"></i><div><b data-i="hoursT"></b><small data-i="hoursS"></small></div></div>
 
+  <div class="legal"><a href="../legal/#oferta" data-i="lOferta"></a><a href="../legal/#privacy" data-i="lPrivacy"></a><a href="../legal/#delivery" data-i="lDelivery"></a></div>
   <a class="made" href="../../ilhom/"><span data-i="made"></span><b class="gold">NEXUS CARD</b></a>
 </div>
 
@@ -111,11 +114,11 @@ const T = {
   uz:{sub:"Chirchiqdagi eng mazali beshbarmoq",loc:"Chirchiq shahri",open:"Hozir ochiq · 23:00 gacha",closed:"Hozir yopiq · 10:00 da ochiladi",
       dl:["Yetkazib berish","Uyga buyurtma bering — issiq holda yetkazamiz"],menu:["Menyu","Barcha taomlar va narxlar"],book:["Stol bron qilish","Bir daqiqada, qo'ng'iroqsiz"],
       call:["Qo'ng'iroq qilish","+998 95 837 88 08"],popular:"Mashhur taomlar",contact:"Aloqa",soc:["Telegram","Instagram","Xarita","Qo'ng'iroq"],
-      hoursT:"Har kuni 10:00–23:00",hoursS:"Yetkazib berish ham shu vaqtda",made:"Sayt:",sum:"so'm"},
+      lOferta:"Ommaviy oferta",lPrivacy:"Maxfiylik siyosati",lDelivery:"Yetkazib berish va qaytarish",hoursT:"Har kuni 10:00–23:00",hoursS:"Yetkazib berish ham shu vaqtda",made:"Sayt:",sum:"so'm"},
   ru:{sub:"Самый вкусный бешбармак в Чирчике",loc:"город Чирчик",open:"Сейчас открыто · до 23:00",closed:"Сейчас закрыто · откроемся в 10:00",
       dl:["Доставка","Закажите домой — привезём горячим"],menu:["Меню","Все блюда и цены"],book:["Забронировать стол","За минуту, без звонков"],
       call:["Позвонить","+998 95 837 88 08"],popular:"Популярные блюда",contact:"Контакты",soc:["Telegram","Instagram","Карта","Звонок"],
-      hoursT:"Ежедневно 10:00–23:00",hoursS:"Доставка в это же время",made:"Сайт:",sum:"сум"}
+      lOferta:"Публичная оферта",lPrivacy:"Политика конфиденциальности",lDelivery:"Доставка и возврат",hoursT:"Ежедневно 10:00–23:00",hoursS:"Доставка в это же время",made:"Сайт:",sum:"сум"}
 };
 const $ = id => document.getElementById(id);
 let lang = (() => { try { return localStorage.getItem('xs_lang') || 'uz'; } catch(e){ return 'uz'; } })();

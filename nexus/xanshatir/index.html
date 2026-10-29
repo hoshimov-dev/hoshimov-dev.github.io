@@ -127,6 +127,9 @@ background:linear-gradient(110deg,var(--gold-dk),var(--gold) 35%,var(--gold-lt) 
 .rev h3{font:700 18px 'Playfair Display',serif}
 .rev p{font-size:13px;color:var(--muted)}
 
+.legal{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:12px}
+.legal a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.card[hidden]{display:none}
 .brand{display:block;text-align:center;margin-top:30px;font-size:12px;color:var(--muted)}
 .brand b{font:700 12px 'Space Grotesk';letter-spacing:.2em;margin-left:4px}
 .demo{text-align:center;font-size:11px;color:var(--muted);margin-top:6px;opacity:.7}
@@ -218,7 +221,7 @@ display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radi
   </div>
 
   <a class="brand" href="../ilhom/"><span data-i="made"></span><b class="gold">NEXUS CARD</b></a>
-  <div class="demo" data-i="demo"></div>
+  <div class="legal"><a href="legal/#oferta" data-i="lOferta"></a><a href="legal/#privacy" data-i="lPrivacy"></a><a href="legal/#delivery" data-i="lDelivery"></a></div>
 </div>
 
 <div class="bar" id="bar"><div><small id="barCount"></small><b id="barSum"></b></div><button id="barOpen" data-i="show"></button></div>
@@ -243,7 +246,7 @@ const R = {
   admin: "",                  // admin's Telegram username for bookings; empty = booking goes by phone call
   instagram: "xanshatir.uz",
   map: "https://yandex.uz/maps/?text=Xan%20Shatir%20Chirchiq",
-  wifi: "xanshatir2026",
+  wifi: "",                   // Wi-Fi password for guests; empty = the Wi-Fi card is hidden
   hours: [10, 23]             // open from 10:00 to 23:00
 };
 /* ========================================= */
@@ -252,7 +255,7 @@ const T = {
   uz:{open:"Ochiq",closed:"Yopiq",sub:"Chirchiqdagi eng mazali beshbarmoq",loc:"Chirchiq shahri",
       q:["Qo'ng'iroq","Telegram","Instagram","Xarita"],table:"STOL №",
       sigTag:"Oshpaz tavsiyasi",sigName:"Beshbarmoq",sigDesc:"Restoranimizning faxri. Chirchiqdagi eng mazali beshbarmoq.",
-      dlvT:"Uyga yetkazib berish",dlvS:"Sevimli taomlaringizni uyga buyurtma qiling",wifi:"Wi-Fi paroli",copy:"Nusxalash",copied:"Nusxalandi ✓",
+      lOferta:"Ommaviy oferta",lPrivacy:"Maxfiylik siyosati",lDelivery:"Yetkazib berish va qaytarish",dlvT:"Uyga yetkazib berish",dlvS:"Sevimli taomlaringizni uyga buyurtma qiling",wifi:"Wi-Fi paroli",copy:"Nusxalash",copied:"Nusxalandi ✓",
       bookT:"Stol bron qilish",bookS:"Bir daqiqada, navbatsiz.",name:"Ismingiz",people:"kishi",bookBtn:"Bron qilish",
       bookMsg:"Assalomu alaykum! Stol bron qilmoqchiman.",bookNeed:"Ism va telefonni kiriting",
       revT:"Sizga yoqdimi?",revS:"Baholang, bu bizga juda muhim.",thanks:"Rahmat! ❤️",
@@ -262,7 +265,7 @@ const T = {
   ru:{open:"Открыто",closed:"Закрыто",sub:"Самый вкусный бешбармак в Чирчике",loc:"город Чирчик",
       q:["Позвонить","Telegram","Instagram","Карта"],table:"СТОЛ №",
       sigTag:"Выбор шефа",sigName:"Бешбармак",sigDesc:"Гордость ресторана. Самый вкусный бешбармак в Чирчике.",
-      dlvT:"Доставка на дом",dlvS:"Закажите любимые блюда домой",wifi:"Пароль Wi-Fi",copy:"Скопировать",copied:"Скопировано ✓",
+      lOferta:"Публичная оферта",lPrivacy:"Политика конфиденциальности",lDelivery:"Доставка и возврат",dlvT:"Доставка на дом",dlvS:"Закажите любимые блюда домой",wifi:"Пароль Wi-Fi",copy:"Скопировать",copied:"Скопировано ✓",
       bookT:"Забронировать стол",bookS:"За минуту, без звонков и ожидания.",name:"Ваше имя",people:"чел.",bookBtn:"Забронировать",
       bookMsg:"Здравствуйте! Хочу забронировать стол.",bookNeed:"Введите имя и телефон",
       revT:"Вам понравилось?",revS:"Оцените нас, это очень важно.",thanks:"Спасибо! ❤️",
@@ -272,7 +275,7 @@ const T = {
   en:{open:"Open",closed:"Closed",sub:"The best beshbarmak in Chirchiq",loc:"Chirchiq",
       q:["Call","Telegram","Instagram","Map"],table:"TABLE #",
       sigTag:"Chef's choice",sigName:"Beshbarmak",sigDesc:"Our pride. The best beshbarmak in Chirchiq.",
-      dlvT:"Home delivery",dlvS:"Order your favourite dishes home",wifi:"Wi-Fi password",copy:"Copy",copied:"Copied ✓",
+      lOferta:"Public offer",lPrivacy:"Privacy policy",lDelivery:"Delivery and returns",dlvT:"Home delivery",dlvS:"Order your favourite dishes home",wifi:"Wi-Fi password",copy:"Copy",copied:"Copied ✓",
       bookT:"Book a table",bookS:"In one minute, no calls, no waiting.",name:"Your name",people:"people",bookBtn:"Book now",
       bookMsg:"Hello! I'd like to book a table.",bookNeed:"Enter your name and phone",
       revT:"Did you enjoy it?",revS:"Rate us, it means a lot.",thanks:"Thank you! ❤️",
@@ -318,7 +321,7 @@ function render(){
   $('openBox').querySelector('i').style.background = isOpen() ? '#3ddc84' : '#e5484d';
   if (table){ $('callWaiter').classList.add('on'); $('table').classList.add('on'); $('tableTxt').textContent = t.table + table; $('openBox').style.display = 'none'; }
   $('sigPrice').textContent = fmt(MENU[0].items[0].p);
-  $('wifiPass').textContent = R.wifi;
+  $('wifiPass').textContent = R.wifi; document.querySelector('.card.wifi').hidden = !R.wifi;
 
   const Q = [["fa-phone", `tel:${R.phone}`], ["fa-brands fa-telegram", `https://t.me/${R.telegram}`], ["fa-brands fa-instagram", `https://instagram.com/${R.instagram}`], ["fa-location-dot", R.map]];
   $('quick').innerHTML = Q.map(([ic, href], i) => `<a href="${href}"${href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}><i class="${ic.includes('fa-brands') ? ic : 'fa-solid ' + ic}"></i>${t.q[i]}</a>`).join('');

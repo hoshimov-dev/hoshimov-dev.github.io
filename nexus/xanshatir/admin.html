@@ -102,6 +102,7 @@ a.tg{text-decoration:none}
 /* PIN login (server mode) */
 .login{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(2,10,6,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .login[hidden]{display:none}
+.tg[hidden]{display:none}
 .login form{width:min(340px,100%);padding:26px 22px;border-radius:22px;background:var(--panel);border:1px solid var(--line);text-align:center}
 .login h2{font:700 20px 'Cinzel',serif;color:var(--gold-lt)}
 .login p{font-size:13px;color:var(--muted);margin:6px 0 16px}
@@ -373,6 +374,7 @@ $('sound').onclick = () => {
   $('sound').querySelector('i').className = 'fa-solid ' + (audio ? 'fa-volume-high' : 'fa-volume-xmark');
 };
 $('demoTg').classList.toggle('on', showDemo);
+$('demoTg').hidden = !!LIVE.API;   // the real panel shows real numbers only
 $('demoTg').onclick = () => { showDemo = !showDemo; $('demoTg').classList.toggle('on', showDemo); render(); };
 function setState(on){ $('live').classList.toggle('on', on); $('live').querySelector('span').textContent = T[lang][on ? 'on' : 'off']; }
 // server mode: the owner's PIN opens the panel; demo mode: open to everyone
