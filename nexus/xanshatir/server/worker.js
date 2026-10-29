@@ -8,6 +8,8 @@
 
    Storage: "open"  = orders not yet paid or cancelled, waiter calls, orders closed in the last day (small, read on every poll)
             "sales:YYYY-MM" = paid orders of that month (read when the panel opens)
+   Personal data: a delivery order is taken only with the customer's consent; their name, phone and address are kept
+   only while the order is open (24 hours at most) and are dropped once it is paid or cancelled.
 
    Routes
      GET    /                    health check
@@ -38,6 +40,8 @@ const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&
 const money = n => Math.round(+n || 0).toLocaleString('ru-RU').replace(/ |,/g, ' ') + ' сум';
 const str = (v, max) => String(v ?? '').trim().slice(0, max);
 const okId = id => /^[a-z0-9]{6,24}$/.test(String(id));
+// what stays of a delivery order after it is closed: no name, phone, address or comment
+const anonymous = o => o.delivery ? { ...o, delivery: { pay: o.delivery.pay } } : o;
 const monthOf = t => new Date(t + 5 * 36e5).toISOString().slice(0, 7);   // Tashkent time, UTC+5
 // Telegram only accepts A-Z a-z 0-9 _ - in the webhook secret
 const hookSecret = env => String(env.BOT_TOKEN || '').split(':')[1]?.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64) || 'none';
@@ -89,6 +93,8 @@ function cleanOrder(b){
     const d = b.delivery;
     o.delivery = { name: str(d.name, 60), phone: str(d.phone, 30), address: str(d.address, 200), comment: str(d.comment, 300), pay: str(d.pay, 10) };
     if (!o.delivery.name || o.delivery.phone.replace(/\D/g, '').length < 9 || o.delivery.address.length < 3) throw new Error('name, phone and address are required');
+    if (d.agreed !== true) throw new Error('consent to the offer and to personal data processing is required');
+    o.delivery.agreedAt = Date.now();
   } else {
     o.table = str(b.table, 4).replace(/\D/g, '') || '?';
   }
@@ -158,7 +164,7 @@ export default {
         if (!o) return fail('order not found', 404);
         if (s === 'paid' || s === 'cancel'){
           open.orders = open.orders.filter(x => x !== o); open.closed.push({ id: o.id, s, t: Date.now() });
-          if (s === 'paid'){ const key = 'sales:' + monthOf(o.t), sales = await getJSON(env, key, []); sales.push({ ...o, s: 'paid', paidAt: Date.now() }); await putJSON(env, key, sales); }
+          if (s === 'paid'){ const key = 'sales:' + monthOf(o.t), sales = await getJSON(env, key, []); sales.push({ ...o, s: 'paid', paidAt: Date.now() }); await putJSON(env, key, sales.map(anonymous)); }
         } else o.s = s;
         await putJSON(env, 'open', open);
         return json({ ...o, s });
