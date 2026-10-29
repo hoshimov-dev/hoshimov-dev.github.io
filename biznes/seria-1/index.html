@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>БИЗНЕС — Серия 1</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="../../fa/all.min.css">
+<style>
+/* 1080×1920. render(t) is deterministic: plays live and renders frame by frame.
+   Scene times are in voiceover time (raw take); video time = raw / SPEED + LEAD.
+   Safe zone: key content between y≈250 and y≈1500, nothing important in the right 130 px. */
+:root{--bg:#07090d;--card:#121722;--line:#1f2633;--txt:#f3f5f8;--mut:#8b93a3;--g:#22c55e;--g2:#86efac;--r:#ef4444;--a:#f59e0b;--o:#f97316}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;transform-origin:0 0;font-family:'Inter',sans-serif;color:var(--txt);background:var(--bg)}
+#world{position:absolute;inset:0;transform-origin:50% 45%}
+.abs{position:absolute}
+.scene{position:absolute;inset:0;visibility:hidden}
+.glow{inset:-200px;background:radial-gradient(ellipse 55% 30% at 50% 28%,rgba(34,197,94,.20),transparent 70%),radial-gradient(ellipse 50% 28% at 50% 88%,rgba(249,115,22,.14),transparent 70%)}
+.vig{inset:0;background:radial-gradient(ellipse 85% 70% at 50% 45%,transparent 55%,rgba(0,0,0,.7));pointer-events:none}
+#grain{left:0;top:0;width:1080px;height:1920px;opacity:.06;mix-blend-mode:overlay;pointer-events:none}
+#flash{inset:0;background:#fff;pointer-events:none;opacity:0}
+
+/* header */
+#badge{left:70px;top:250px;display:flex;align-items:center;gap:18px}
+#badge b{padding:12px 26px;border-radius:99px;background:var(--g);color:#04130a;font:900 34px 'Unbounded';letter-spacing:.04em}
+#badge span{font:700 32px 'Inter';color:var(--mut)}
+
+.cap{left:60px;right:130px;text-align:left;font:900 74px/1.06 'Unbounded';letter-spacing:-.02em;text-transform:uppercase}
+.cap em{font-style:normal;color:var(--g)}
+.cap .red{color:var(--r)}
+.sub{left:64px;right:130px;font:600 40px/1.25 'Inter';color:var(--mut)}
+
+/* s1 notifications */
+#count{left:60px;top:360px;font:900 300px/1 'Unbounded';letter-spacing:-.05em;color:var(--txt)}
+#countL{left:66px;top:670px;font:800 54px 'Unbounded';text-transform:uppercase;color:var(--g)}
+.nt{left:60px;width:890px;height:150px;border-radius:34px;background:rgba(30,36,48,.92);border:2px solid #2a3242;display:flex;align-items:center;gap:28px;padding:0 34px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.nt i.ic{width:84px;height:84px;border-radius:22px;background:var(--g);color:#04130a;display:flex;align-items:center;justify-content:center;font-size:42px;flex:none}
+.nt .tx{flex:1}
+.nt .tx b{display:block;font:700 36px 'Inter'}
+.nt .tx s{display:block;text-decoration:none;font:500 28px 'Inter';color:var(--mut);margin-top:4px}
+.nt .am{font:800 46px 'Inter';color:var(--g)}
+
+/* s2 blogger */
+#vid{left:220px;top:590px;width:600px;height:900px;border-radius:48px;overflow:hidden;background:linear-gradient(170deg,#3b1d12,#160b08 60%,#0b0606);border:3px solid #2a2f3a;box-shadow:0 40px 90px rgba(0,0,0,.6)}
+#vid .bk{inset:0;background:radial-gradient(circle at 50% 45%,rgba(249,115,22,.45),transparent 55%)}
+#vid .top{left:30px;top:30px;display:flex;align-items:center;gap:16px}
+#vid .av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#f472b6,#f59e0b);border:4px solid #fff}
+#vid .nm{font:700 32px 'Inter'}
+#vid .nm small{display:block;font:500 24px 'Inter';color:#d1d5db}
+#vid .live{right:30px;top:42px;padding:6px 16px;border-radius:10px;background:var(--r);font:800 24px 'Inter'}
+#bottle{left:150px;top:230px;width:300px;height:450px}
+#vid .side{right:20px;top:500px;display:flex;flex-direction:column;gap:34px;align-items:center;font:700 26px 'Inter'}
+#vid .side i{font-size:56px;display:block;text-align:center;margin-bottom:6px}
+#vid .bt{left:30px;right:120px;bottom:40px;font:700 34px/1.3 'Inter'}
+#vid .bt span{color:#fdba74}
+#views{left:30px;bottom:175px;padding:10px 22px;border-radius:14px;background:rgba(0,0,0,.55);font:800 34px 'Inter'}
+.heart{color:#fb7185;font-size:54px}
+#freeTag{left:270px;top:1430px;padding:20px 40px;border-radius:24px;background:var(--g);color:#04130a;font:900 52px 'Unbounded';white-space:nowrap;box-shadow:0 20px 50px rgba(34,197,94,.35)}
+
+/* s3 stock */
+.bar{left:60px;width:890px}
+.bar .lb{display:flex;justify-content:space-between;font:800 44px 'Inter';margin-bottom:18px}
+.bar .tr{height:96px;border-radius:24px;background:#151b26;overflow:hidden;border:2px solid #232b39}
+.bar .fl{height:100%;border-radius:22px}
+#dead{left:60px;top:1230px;display:flex;align-items:center;gap:26px;padding:28px 44px;border-radius:30px;background:rgba(239,68,68,.12);border:3px solid var(--r);font:900 64px 'Unbounded';color:#fecaca}
+#dead i{color:var(--r)}
+
+/* s4 chat */
+#chat{left:60px;top:450px;width:890px;height:1050px;border-radius:44px;background:#0e131c;border:2px solid #222a38;overflow:hidden}
+#chat .hd{height:140px;display:flex;align-items:center;gap:24px;padding:0 36px;background:#151b26;border-bottom:2px solid #222a38}
+#chat .hd i{width:84px;height:84px;border-radius:50%;background:#334155;display:flex;align-items:center;justify-content:center;font-size:40px}
+#chat .hd b{font:800 40px 'Inter'}
+#chat .hd small{display:block;font:600 26px 'Inter';color:var(--g)}
+.bub{left:30px;width:740px;padding:32px 36px;border-radius:12px 40px 40px 40px;background:#1c2431;border:2px solid #2a3344}
+.bub .h{display:flex;align-items:center;gap:18px;font:800 44px 'Inter';white-space:nowrap}
+.bub .h i{font-size:48px;width:60px;text-align:center}
+.bub .p{margin-top:16px;font:600 36px 'Inter';color:#cbd5e1}
+.bub .p b{color:#fff}
+.verdict{right:16px;width:104px;height:104px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:66px;color:#fff}
+
+/* s5 receipt */
+#rcpt{left:60px;top:470px;width:890px;padding:30px 50px 40px;border-radius:40px;background:#f5f2ea;color:#151515;box-shadow:0 40px 90px rgba(0,0,0,.55)}
+#rcpt .t{font:900 40px 'Unbounded';letter-spacing:.06em;text-align:center;padding:16px 0 26px;border-bottom:4px dashed #c9c3b3}
+.rl{display:flex;justify-content:space-between;align-items:baseline;padding:24px 0;border-bottom:2px solid #e3ddcf;font:600 40px 'Inter'}
+.rl b{font:900 50px 'Inter';white-space:nowrap}
+.rl.tot{border-bottom:none;border-top:4px solid #151515;margin-top:6px}
+.rl.tot b{font-size:62px}
+.rl.have b{color:#dc2626}
+.rl.have{border-bottom:none}
+
+/* s6 loan */
+#loan{left:110px;top:560px;width:790px;padding:60px 50px;border-radius:48px;background:linear-gradient(160deg,#1d2a44,#0f1626);border:3px solid #2c3d61;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+#loan .l1{font:800 40px 'Inter';color:#93a4c7;text-transform:uppercase;letter-spacing:.1em}
+#loan .l2{margin-top:24px;font:900 100px 'Unbounded';letter-spacing:-.03em;white-space:nowrap}
+#loan .btn{margin:50px auto 0;width:560px;padding:34px 0;border-radius:30px;background:#facc15;color:#1a1300;font:900 50px 'Unbounded'}
+#stampOk{left:250px;top:1190px;padding:20px 50px;border:10px solid var(--a);border-radius:26px;color:var(--a);font:900 74px 'Unbounded';transform:rotate(-8deg);white-space:nowrap}
+
+/* s7 rule */
+#rule{left:70px;right:130px;top:640px}
+#rule .n{font:900 64px 'Unbounded';color:#facc15;letter-spacing:.04em}
+#rule .a{margin-top:40px;font:900 96px/1.08 'Unbounded';text-transform:uppercase;letter-spacing:-.03em}
+#rule .b{margin-top:56px;font:900 80px/1.1 'Unbounded';text-transform:uppercase;letter-spacing:-.03em;color:var(--mut)}
+#rule .b em{font-style:normal;color:var(--r)}
+
+/* s8 day 7 */
+#cal{left:300px;top:480px;width:480px;height:520px;border-radius:44px;overflow:hidden;background:#f5f2ea;color:#111;box-shadow:0 40px 90px rgba(0,0,0,.55);text-align:center}
+#cal .tp{height:130px;background:var(--r);color:#fff;font:900 54px/130px 'Unbounded';letter-spacing:.08em}
+#cal .dn{font:900 300px/380px 'Unbounded';letter-spacing:-.06em}
+#push{left:60px;top:1050px;width:890px;padding:30px 34px;border-radius:34px;background:rgba(30,36,48,.96);border:2px solid #3a4254;display:flex;gap:26px;align-items:center;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+#push i.ic{width:84px;height:84px;border-radius:22px;background:var(--a);color:#1a1000;display:flex;align-items:center;justify-content:center;font-size:42px;flex:none}
+#push b{display:block;font:800 36px 'Inter'}
+#push span{display:block;font:600 34px/1.3 'Inter';color:#e5e7eb;margin-top:4px}
+#tl{left:60px;top:1300px;width:890px;height:200px}
+#tl .ax{left:0;right:0;top:90px;height:14px;border-radius:7px;background:#232b39}
+#tl .fl{left:0;top:90px;height:14px;border-radius:7px;background:var(--a)}
+#tl .mk{top:40px;width:6px;height:114px;border-radius:3px}
+#tl .ml{top:0;font:800 30px 'Inter';white-space:nowrap;transform:translateX(-50%)}
+#tl .late{top:140px;font:900 40px 'Unbounded';color:var(--r);white-space:nowrap}
+
+/* s9 angry + competitor */
+.ang{left:60px;padding:24px 34px;border-radius:12px 36px 36px 36px;background:#1c2431;border:2px solid #3a2a2a;font:700 40px 'Inter';display:flex;gap:20px;align-items:center;white-space:nowrap}
+.ang .st{color:var(--a);font-size:30px;letter-spacing:4px}
+.ang .st i{font-style:normal;color:#3a4254}
+#comp{left:60px;top:1000px;width:890px;height:420px;border-radius:40px;background:#121722;border:3px solid #2a3242;display:flex;align-items:center;gap:40px;padding:0 50px;box-shadow:0 40px 90px rgba(0,0,0,.55)}
+#comp .im{width:220px;height:300px;flex:none}
+#comp .nm{font:800 34px 'Inter';color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+#comp .old{margin-top:16px;font:800 64px 'Inter';color:#6b7280;position:relative;display:inline-block}
+#comp .old:after{content:'';position:absolute;left:-6px;right:-6px;top:50%;height:8px;background:var(--r);border-radius:4px;transform-origin:0 50%;transform:scaleX(var(--k,0))}
+#comp .new{font:900 120px 'Unbounded';color:var(--r);letter-spacing:-.03em}
+
+/* s10 choice */
+.opt{left:60px;width:890px;height:200px;border-radius:36px;background:#121722;border:3px solid #2a3242;display:flex;align-items:center;gap:36px;padding:0 40px}
+.opt .k{width:120px;height:120px;border-radius:28px;flex:none;display:flex;align-items:center;justify-content:center;font:900 70px 'Unbounded';color:#04130a}
+.opt .v{font:800 50px/1.15 'Inter'}
+#cta{left:60px;top:1400px;display:flex;align-items:center;gap:22px;font:900 46px 'Unbounded';text-transform:uppercase;color:#fff;white-space:nowrap}
+#cta i{color:var(--g);font-size:64px}
+#ring{left:830px;top:350px;width:120px;height:120px}
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="world">
+  <div class="abs glow" id="glow"></div>
+
+  <!-- S1: orders flood -->
+  <div class="scene" id="s1">
+    <div class="abs" id="count">0</div>
+    <div class="abs" id="countL">заказов, пока ты спал</div>
+    <div id="nts"></div>
+  </div>
+
+  <!-- S2: blogger -->
+  <div class="scene" id="s2">
+    <div class="abs cap" id="c2" style="top:345px;font-size:58px">Блогер, которого<br><em>ты даже не знаешь</em></div>
+    <div class="abs" id="vid">
+      <div class="abs bk"></div>
+      <div class="abs top"><div class="av"></div><div class="nm">@zima.cozy<small>2,4 млн подписчиков</small></div></div>
+      <div class="abs live">REC</div>
+      <svg class="abs" id="bottle" viewBox="0 0 200 300"></svg>
+      <div class="abs side">
+        <div><i class="fa-solid fa-heart heart"></i><span id="likes">0</span></div>
+        <div><i class="fa-solid fa-comment-dots"></i><span id="coms">0</span></div>
+        <div><i class="fa-solid fa-share"></i>48K</div>
+      </div>
+      <div class="abs" id="views"><i class="fa-solid fa-eye"></i> <span id="vw">0</span></div>
+      <div class="abs bt">Нашла лучшую грелку этой зимы <span>ссылка в профиле</span></div>
+      <div id="hearts"></div>
+    </div>
+    <div class="abs" id="freeTag"><i class="fa-solid fa-gift"></i> РЕКЛАМА — 0 ₽</div>
+  </div>
+
+  <!-- S3: stock vs orders -->
+  <div class="scene" id="s3">
+    <div class="abs cap" style="top:330px">На складе —<br><span class="red">всего 50</span></div>
+    <div class="abs bar" style="top:640px"><div class="lb"><span><i class="fa-solid fa-cart-shopping"></i> Заказы</span><span id="b1n">326</span></div><div class="tr"><div class="fl" id="b1" style="background:var(--r)"></div></div></div>
+    <div class="abs bar" style="top:900px"><div class="lb"><span><i class="fa-solid fa-box"></i> На складе</span><span id="b2n">50</span></div><div class="tr"><div class="fl" id="b2" style="background:var(--g)"></div></div></div>
+    <div class="abs" id="dead"><i class="fa-solid fa-clock"></i> Срок: 8 дней</div>
+  </div>
+
+  <!-- S4: supplier chat -->
+  <div class="scene" id="s4">
+    <div class="abs" id="chat">
+      <div class="hd"><i class="fa-solid fa-industry"></i><div><b>Поставщик</b><small>в сети</small></div></div>
+      <div class="abs bub" id="m1" style="top:190px">
+        <div class="h"><i class="fa-solid fa-ship" style="color:#60a5fa"></i>Морем: 800 ₽/шт</div>
+        <div class="p">Доставка: <b>15 дней</b></div>
+      </div>
+      <div class="abs verdict" id="v1" style="top:215px;background:var(--r)"><i class="fa-solid fa-xmark"></i></div>
+      <div class="abs bub" id="m2" style="top:460px">
+        <div class="h"><i class="fa-solid fa-plane" style="color:#facc15"></i>Самолётом: 1 400 ₽/шт</div>
+        <div class="p">Доставка: <b>7 дней</b></div>
+      </div>
+      <div class="abs verdict" id="v2" style="top:485px;background:var(--g)"><i class="fa-solid fa-check"></i></div>
+      <div class="abs sub" id="m3" style="top:760px;left:40px;right:40px;font-size:38px">У клиентов срок — <b style="color:#fff">8 дней</b>. Морем не успеть.</div>
+    </div>
+  </div>
+
+  <!-- S5: receipt -->
+  <div class="scene" id="s5">
+    <div class="abs cap" style="top:350px">Считаем</div>
+    <div class="abs" id="rcpt">
+      <div class="t">РАСЧЁТ</div>
+      <div class="rl" id="r1"><span>326 заказов + запас</span><b id="r1v">350 шт</b></div>
+      <div class="rl" id="r2"><span>350 × 1 400 ₽</span><b id="r2v">490 000 ₽</b></div>
+      <div class="rl" id="r3"><span><i class="fa-solid fa-plane"></i> Самолёт</span><b id="r3v">+110 000 ₽</b></div>
+      <div class="rl tot" id="r4"><span>Нужно</span><b id="r4v">600 000 ₽</b></div>
+      <div class="rl have" id="r5"><span>У тебя</span><b id="r5v">140 000 ₽</b></div>
+    </div>
+  </div>
+
+  <!-- S6: loan -->
+  <div class="scene" id="s6">
+    <div class="abs" id="loan">
+      <div class="l1"><i class="fa-solid fa-building-columns"></i> Кредит</div>
+      <div class="l2">460 000 ₽</div>
+      <div class="btn" id="lbtn">Оформить</div>
+    </div>
+    <div class="abs" id="stampOk">ОДОБРЕНО</div>
+  </div>
+
+  <!-- S7: rule -->
+  <div class="scene" id="s7">
+    <div class="abs" id="rule">
+      <div class="n" id="rn">ПРАВИЛО №1</div>
+      <div class="a" id="ra">Качество — на первом месте</div>
+      <div class="b" id="rb">Хайп — всего <em>на неделю</em></div>
+    </div>
+  </div>
+
+  <!-- S8: day 7 delay -->
+  <div class="scene" id="s8">
+    <div class="abs" id="cal"><div class="tp">ДЕНЬ</div><div class="dn" id="dn">1</div></div>
+    <div class="abs" id="push"><i class="fa-solid fa-triangle-exclamation ic"></i><div><b>Поставщик</b><span>Товар задержится ещё на 2 дня</span></div></div>
+    <div class="abs" id="tl">
+      <div class="abs ax"></div><div class="abs fl" id="tlf"></div>
+      <div class="abs mk" style="left:calc(8/10*100%);background:#fff"></div><div class="abs ml" style="left:80%">Срок: 8</div>
+      <div class="abs mk" id="tlm" style="left:calc(9/10*100%);background:var(--r)"></div><div class="abs ml" id="tll" style="left:90%;color:var(--r)">9</div>
+      <div class="abs late" id="tlx" style="left:0">Товар: день 9 — опоздание</div>
+    </div>
+  </div>
+
+  <!-- S9: angry clients + competitor -->
+  <div class="scene" id="s9">
+    <div class="abs ang" id="a1" style="top:330px"><span class="st">★<i>★★★★</i></span>Где мой заказ?!</div>
+    <div class="abs ang" id="a2" style="top:490px;left:150px"><span class="st">★<i>★★★★</i></span>Обещали 8 дней</div>
+    <div class="abs ang" id="a3" style="top:650px;left:90px"><span class="st">★<i>★★★★</i></span>Верните деньги</div>
+    <div class="abs ang" id="a4" style="top:810px;left:200px"><span class="st">★<i>★★★★</i></span>Отменяю заказ</div>
+    <div class="abs" id="comp">
+      <svg class="im" id="bottle2" viewBox="0 0 200 300"></svg>
+      <div>
+        <div class="nm"><i class="fa-solid fa-store"></i> Конкурент</div>
+        <div class="old" id="old">1 600 ₽</div>
+        <div class="new" id="newp">1 200 ₽</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S10: choice -->
+  <div class="scene" id="s10">
+    <div class="abs cap" style="top:350px">Что будешь<br><em>делать?</em></div>
+    <svg class="abs" id="ring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="#232b39" stroke-width="12"/><circle id="ringc" cx="60" cy="60" r="50" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round" stroke-dasharray="314" transform="rotate(-90 60 60)"/></svg>
+    <div class="abs opt" id="o1" style="top:620px"><div class="k" style="background:#60a5fa">А</div><div class="v">Ничего не делать<br>и ждать</div></div>
+    <div class="abs opt" id="o2" style="top:860px"><div class="k" style="background:#facc15">Б</div><div class="v">Скупить у конкурентов<br>по 1 200 ₽</div></div>
+    <div class="abs opt" id="o3" style="top:1100px"><div class="k" style="background:#22c55e">В</div><div class="v">Написать клиентам,<br>что товар задерживается</div></div>
+    <div class="abs" id="cta"><i class="fa-solid fa-comment"></i> Пиши в комментариях <i class="fa-solid fa-arrow-down" id="arr"></i></div>
+  </div>
+
+  <div class="abs" id="badge"><b>БИЗНЕС</b><span>Серия 1</span></div>
+</div>
+<canvas class="abs" id="grain" width="540" height="960"></canvas>
+<div class="abs vig"></div>
+<div class="abs" id="flash"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const SPEED = 1.15, LEAD = 0.25, RAW_END = 47.3;
+const DURATION = +(RAW_END / SPEED + LEAD + 0.9).toFixed(2);
+const raw = t => (t - LEAD) * SPEED;
+
+/* scene starts in voiceover time (word timestamps of the take) */
+const S = [0, 3.30, 8.82, 12.94, 18.42, 25.77, 27.10, 31.77, 35.38, 40.33, 99];
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (r, a, b) => clamp((r - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eb = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const fmt = n => Math.round(n).toLocaleString('ru-RU').replace(/ /g, ' ');
+function set(el, o, tf, extra){ const s = (typeof el === 'string' ? $(el) : el).style; s.opacity = o; s.visibility = o <= .001 ? 'hidden' : 'visible'; s.transform = tf || 'none'; if (extra) Object.assign(s, extra); }
+/* pop in at a (0.35 s), optional fade out at b */
+function pop(id, r, a, b, dy = 60){
+  const k = seg(r, a, a + .35), o = b === undefined ? 1 : 1 - seg(r, b, b + .2);
+  set(id, Math.min(k * 3, 1) * o, `translateY(${(1 - eo(k)) * dy}px) scale(${.92 + .08 * eb(k)})`);
+}
+
+/* hot water bottle */
+const BOTTLE = `<defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#c2410c"/><stop offset=".45" stop-color="#fb923c"/><stop offset="1" stop-color="#c2410c"/></linearGradient></defs>
+<rect x="72" y="2" width="56" height="26" rx="8" fill="#7c2d12"/><rect x="80" y="24" width="40" height="44" rx="6" fill="#9a3412"/>
+<path d="M60 64 H140 Q190 70 190 130 V250 Q190 296 140 296 H60 Q10 296 10 250 V130 Q10 70 60 64Z" fill="url(#bg1)"/>
+${[110,140,170,200,230,260].map(y => `<path d="M30 ${y} H170" stroke="#9a3412" stroke-width="5" stroke-linecap="round" opacity=".55"/>`).join('')}
+<path d="M100 200 C80 180 62 168 62 150 C62 136 74 128 86 128 C94 128 98 134 100 138 C102 134 106 128 114 128 C126 128 138 136 138 150 C138 168 120 180 100 200Z" fill="#fff7ed" opacity=".95"/>`;
+$('bottle').innerHTML = BOTTLE; $('bottle2').innerHTML = BOTTLE;
+
+/* notification cards */
+const NC = 7;
+for (let i = 0; i < NC; i++){
+  $('nts').insertAdjacentHTML('beforeend', `<div class="abs nt" id="nt${i}"><i class="fa-solid fa-bag-shopping ic"></i><div class="tx"><b id="ntb${i}">Новый заказ</b><s>Грелка · сейчас</s></div><div class="am">+1 600 ₽</div></div>`);
+}
+for (let i = 0; i < 9; i++) $('hearts').insertAdjacentHTML('beforeend', `<i class="abs fa-solid fa-heart heart" id="h${i}"></i>`);
+
+/* grain */
+const g = $('grain').getContext('2d'), gimg = g.createImageData(540, 960);
+function grain(seed){ let x = seed * 9301 + 49297; const d = gimg.data; for (let i = 0; i < d.length; i += 4){ x = (x * 1103515245 + 12345) & 0x7fffffff; const v = x & 255; d[i] = d[i+1] = d[i+2] = v; d[i+3] = 255; } g.putImageData(gimg, 0, 0); }
+
+function scene(i, r){
+  const a = S[i], b = S[i + 1];
+  const k = i === 0 ? 1 : seg(r, a - .12, a + .18), out = 1 - seg(r, b - .1, b + .12);
+  const o = Math.min(k, out);
+  set('s' + (i + 1), o, `translateY(${(1 - eo(k)) * 50}px) scale(${1 + (1 - eo(k)) * .04})`);
+  return o > .001;
+}
+
+/* order count: 1 → 326 between raw 0.15 and 2.45, accelerating */
+const orders = r => Math.round(1 + 325 * Math.pow(seg(r, .1, 2.45), 1.6));
+
+function render(t){
+  const r = raw(t);
+  grain(Math.floor(t * 24));
+
+  /* world punch on every scene start */
+  let punch = 0;
+  for (let i = 1; i < S.length - 1; i++){ const d = r - S[i]; if (d >= 0 && d < .4) punch = Math.max(punch, (1 - d / .4) * .035); }
+  const shake = r < 2.6 ? Math.sin(t * 90) * 4 * seg(r, 0, 2.4) : 0;
+  $('world').style.transform = `translate(${shake}px,${shake * .6}px) scale(${1 + punch})`;
+  $('glow').style.transform = `translateY(${Math.sin(t * .7) * 30}px)`;
+
+  /* flash on the hook and on the loan */
+  const pulse = (a, len) => r >= a && r < a + len ? 1 - (r - a) / len : 0;
+  const fl = Math.max(pulse(S[5] + .5, .25), pulse(S[9], .2)) * .5;
+  $('flash').style.opacity = fl;
+
+  set('badge', 1, 'none');
+
+  /* S1 */
+  if (scene(0, r)){
+    const n = orders(r);
+    $('count').textContent = n;
+    const cs = 1 + (n === 326 ? .06 * (1 - seg(r, 2.45, 2.8)) : 0);
+    $('count').style.transform = `scale(${cs})`;
+    $('count').style.color = n === 326 ? '#22c55e' : '#f3f5f8';
+    pop('countL', r, 2.2);
+    /* stream of cards: one every 0.13 s */
+    const step = .13, q = Math.max(0, r - .05) / step, f = q % 1, idx = Math.floor(q), e = eo(clamp(f * 1.6));
+    for (let i = 0; i < NC; i++){
+      const el = $('nt' + i), j = i;                 // slot j, 0 = newest
+      const y = 790 + (j - 1 + e) * 168;
+      const o = (j === 0 ? clamp(f * 3) : 1) * (idx - j >= 0 ? 1 : 0) * (j === NC - 1 ? 1 - e : 1);
+      set(el, o, `translateY(${y}px) scale(${1 - j * .015})`, { top: '0px', zIndex: 50 - j });
+      $('ntb' + i).textContent = 'Заказ №' + Math.max(1, orders(r) - j);
+    }
+  }
+
+  /* S2 */
+  if (scene(1, r)){
+    const a = S[1];
+    const bob = Math.sin(t * 3) * 10;
+    $('bottle').style.transform = `translateY(${bob}px) rotate(${Math.sin(t * 2) * 3}deg)`;
+    const v = 1.2e6 * Math.pow(seg(r, a, a + 4.8), .7);
+    $('vw').textContent = v >= 1e6 ? (v / 1e6).toFixed(1).replace('.', ',') + ' млн' : fmt(v / 1000) + 'K';
+    $('likes').textContent = fmt(186 * seg(r, a, a + 4.8)) + 'K';
+    $('coms').textContent = fmt(9.4 * seg(r, a, a + 4.8) * 1000);
+    for (let i = 0; i < 9; i++){
+      const p = ((r - a) * .8 + i / 9) % 1;
+      set('h' + i, (r > a + .3 ? 1 : 0) * Math.sin(p * Math.PI), `translate(${480 + Math.sin(i * 2.1 + p * 6) * 40}px,${820 - p * 520}px) scale(${.6 + p * .6})`, { left: '0', top: '0' });
+    }
+    pop('freeTag', r, 6.95);
+    pop('vid', r, a - .1, undefined, 120);
+  }
+
+  /* S3 */
+  if (scene(2, r)){
+    const a = S[2];
+    $('b1').style.width = (eo(seg(r, a + .1, a + .9)) * 100) + '%';
+    $('b2').style.width = (eo(seg(r, a + .5, a + 1.3)) * 15.3) + '%';
+    $('b1n').textContent = Math.round(326 * eo(seg(r, a + .1, a + .9)));
+    $('b2n').textContent = Math.round(50 * eo(seg(r, a + .5, a + 1.3)));
+    pop('dead', r, 11.9);
+    const pulse = r > 12.3 ? 1 + Math.max(0, Math.sin((r - 12.3) * 9)) * .03 : 1;
+    if (r > 12.25) $('dead').style.transform = `scale(${pulse})`;
+  }
+
+  /* S4 */
+  if (scene(3, r)){
+    pop('m1', r, 13.6, undefined, 40);
+    pop('v1', r, 15.3);
+    pop('m2', r, 16.2, undefined, 40);
+    pop('v2', r, 17.5);
+    pop('m3', r, 15.6);
+    $('m1').style.opacity = Math.min(+$('m1').style.opacity, 1 - seg(r, 16.2, 16.6) * .45);
+  }
+
+  /* S5 */
+  if (scene(4, r)){
+    const row = (id, at, vid, val, suf, pre = '') => {
+      pop(id, r, at, undefined, 30);
+      const k = eo(seg(r, at, at + .6));
+      $(vid).textContent = pre + fmt(val * k) + suf;
+    };
+    row('r1', 18.9, 'r1v', 350, ' шт');
+    row('r2', 20.7, 'r2v', 490000, ' ₽');
+    row('r3', 22.45, 'r3v', 110000, ' ₽', '+');
+    row('r4', 23.1, 'r4v', 600000, ' ₽');
+    row('r5', 24.0, 'r5v', 140000, ' ₽');
+    if (r > 25.1){ const d = r - 25.1; $('r5').style.transform = `translateX(${Math.sin(d * 50) * 14 * Math.max(0, 1 - d * 2)}px)`; }
+  }
+
+  /* S6 */
+  if (scene(5, r)){
+    const a = S[5];
+    pop('loan', r, a - .1, undefined, 80);
+    const press = seg(r, a + .25, a + .4) - seg(r, a + .4, a + .6);
+    $('lbtn').style.transform = `scale(${1 - press * .08})`;
+    const k = seg(r, a + .5, a + .75);
+    set('stampOk', k > 0 ? 1 : 0, `rotate(-8deg) scale(${2.2 - 1.2 * eo(k)})`);
+  }
+
+  /* S7 */
+  if (scene(6, r)){
+    pop('rn', r, 27.1);
+    pop('ra', r, 27.9);
+    pop('rb', r, 29.95);
+  }
+
+  /* S8 */
+  if (scene(7, r)){
+    const a = S[7];
+    const d = 1 + Math.floor(6 * seg(r, a, a + .7));
+    $('dn').textContent = d;
+    $('dn').style.transform = `translateY(${(1 - eo(((r - a) * 9) % 1)) * (d < 7 ? 20 : 0)}px)`;
+    pop('cal', r, a - .1);
+    pop('push', r, 32.65, undefined, -120);
+    pop('tl', r, 33.2, undefined, 30);
+    $('tlf').style.width = (eo(seg(r, 33.4, 34.0)) * 70 + eo(seg(r, 34.5, 35.0)) * 20) + '%';
+    const lk = seg(r, 34.6, 34.9);
+    $('tlm').style.opacity = $('tll').style.opacity = lk;
+    $('tlx').style.opacity = seg(r, 34.8, 35.0);
+  }
+
+  /* S9 */
+  if (scene(8, r)){
+    pop('a1', r, 35.4, undefined, 40); pop('a2', r, 35.7, undefined, 40);
+    pop('a3', r, 36.0, undefined, 40); pop('a4', r, 36.3, undefined, 40);
+    pop('comp', r, 36.85, undefined, 120);
+    $('old').style.setProperty('--k', eo(seg(r, 38.9, 39.2)));
+    const k = seg(r, 39.0, 39.35);
+    set('newp', k > 0 ? 1 : 0, `scale(${1.6 - .6 * eb(k)})`, { transformOrigin: '0 50%' });
+  }
+
+  /* S10 */
+  if (scene(9, r)){
+    const on = [[41.55, 42.7], [42.7, 44.3], [44.3, 46.15]];
+    ['o1', 'o2', 'o3'].forEach((id, i) => {
+      pop(id, r, on[i][0] - .1, undefined, 50);
+      const act = r >= on[i][0] && r < on[i][1];
+      const el = $(id);
+      el.style.borderColor = act ? '#fff' : '#2a3242';
+      el.style.background = act ? '#1a2130' : '#121722';
+      if (act) el.style.transform = `scale(1.03)`;
+    });
+    pop('cta', r, 46.1);
+    $('arr').style.transform = `translateY(${Math.abs(Math.sin(t * 6)) * 14}px)`;
+    $('ringc').style.strokeDashoffset = 314 * seg(r, S[9], RAW_END + .8);
+  }
+}
+
+function fit(){ const s = Math.min(innerWidth / 1080, innerHeight / 1920); $('stage').style.transform = `scale(${s})`; }
+if (!params.has('render')){
+  fit(); addEventListener('resize', fit);
+  const start = performance.now();
+  (function loop(){ render(((performance.now() - start) / 1000) % DURATION); requestAnimationFrame(loop); })();
+} else render(0);
+window.render = render; window.DURATION = DURATION;
+</script>
+</body>
+</html>
