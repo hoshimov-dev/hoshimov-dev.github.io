@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>БИЗНЕС — аватар</title>
+<link rel="stylesheet" href="../seria-1/fonts/fonts.css">
+<link rel="stylesheet" href="../../fa/all.min.css">
+<style>
+/* 1080×1080 each; key content stays inside the centre circle (platforms crop to a circle) */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;display:flex;flex-direction:column;gap:40px;padding:40px;width:fit-content}
+.av{position:relative;width:1080px;height:1080px;overflow:hidden;background:#07090d;font-family:'Inter',sans-serif;color:#f3f5f8}
+.abs{position:absolute}
+.glow{inset:0;background:radial-gradient(circle at 50% 42%,rgba(34,197,94,.38),transparent 58%),radial-gradient(circle at 50% 100%,rgba(249,115,22,.18),transparent 55%)}
+.grid{inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.035) 2px,transparent 2px);background-size:90px 90px;-webkit-mask:radial-gradient(circle at 50% 50%,#000 30%,transparent 70%)}
+
+/* 1: monogram Б with growth arrow */
+#a1 .mono{left:0;right:0;top:170px;text-align:center;font:900 640px/1 'Unbounded';letter-spacing:-.06em;background:linear-gradient(180deg,#bbf7d0,#22c55e 55%,#15803d);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 30px 60px rgba(34,197,94,.35))}
+#a1 svg{left:0;top:0;width:1080px;height:1080px}
+
+/* 2: wordmark with chart */
+#a2 .w{left:0;right:0;top:600px;text-align:center;font:900 168px/1 'Unbounded';letter-spacing:-.04em}
+#a2 .s{left:0;right:0;top:800px;text-align:center;font:800 46px 'Unbounded';letter-spacing:.32em;color:#22c55e}
+#a2 svg{left:0;top:0;width:1080px;height:1080px}
+
+/* 3: order notification */
+#a3 .ph{left:250px;top:140px;width:580px;height:600px;border-radius:90px;background:linear-gradient(170deg,#1a2130,#0c1018);border:10px solid #2a3242;box-shadow:0 50px 120px rgba(0,0,0,.6)}
+#a3 .ph .isl{left:200px;top:34px;width:160px;height:44px;border-radius:22px;background:#000}
+#a3 .n{left:40px;width:480px;height:120px;border-radius:32px;background:#232b3a;display:flex;align-items:center;gap:22px;padding:0 26px}
+#a3 .n i{width:68px;height:68px;border-radius:18px;background:#22c55e;color:#04130a;display:flex;align-items:center;justify-content:center;font-size:34px;flex:none}
+#a3 .n b{font:900 50px 'Inter';color:#22c55e}
+#a3 .big{left:0;right:0;top:470px;text-align:center;font:900 132px/1 'Unbounded';letter-spacing:-.04em;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="av" id="a1">
+  <div class="abs glow"></div><div class="abs grid"></div>
+  <div class="abs mono">Б</div>
+  <svg class="abs" viewBox="0 0 1080 1080">
+    <path d="M250 800 L430 640 L560 720 L800 450" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M700 430 L830 420 L820 550" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<div class="av" id="a2">
+  <div class="abs glow"></div><div class="abs grid"></div>
+  <svg class="abs" viewBox="0 0 1080 1080">
+    <defs><linearGradient id="bars" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#15803d"/><stop offset="1" stop-color="#4ade80"/></linearGradient></defs>
+    <rect x="330" y="420" width="90" height="140" rx="18" fill="url(#bars)" opacity=".55"/>
+    <rect x="450" y="340" width="90" height="220" rx="18" fill="url(#bars)" opacity=".75"/>
+    <rect x="570" y="250" width="90" height="310" rx="18" fill="url(#bars)"/>
+    <rect x="690" y="300" width="90" height="260" rx="18" fill="#ef4444"/>
+    <path d="M300 470 L470 380 L600 290 L735 235" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="735" cy="235" r="26" fill="#fff"/>
+  </svg>
+  <div class="abs w">БИЗНЕС</div>
+  <div class="abs s">ИСТОРИИ</div>
+</div>
+
+<div class="av" id="a3">
+  <div class="abs glow"></div><div class="abs grid"></div>
+  <div class="abs ph">
+    <div class="abs isl"></div>
+    <div class="abs n" style="top:120px"><i class="fa-solid fa-bag-shopping"></i><b>+1 600 ₽</b></div>
+    <div class="abs n" style="top:260px;opacity:.7"><i class="fa-solid fa-bag-shopping"></i><b>+1 600 ₽</b></div>
+    <div class="abs n" style="top:400px;opacity:.35"><i class="fa-solid fa-bag-shopping"></i><b>+1 600 ₽</b></div>
+  </div>
+  <div class="abs big" style="top:770px">БИЗНЕС</div>
+</div>
+
+</body>
+</html>
