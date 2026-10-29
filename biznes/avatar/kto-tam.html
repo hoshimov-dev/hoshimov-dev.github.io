@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Кто там? — аватар</title>
+<link rel="stylesheet" href="../seria-1/fonts/fonts.css">
+<style>
+/* 1080×1080 each; key content stays inside the centre circle (platforms crop to a circle) */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;display:flex;flex-direction:column;gap:40px;padding:40px;width:fit-content}
+.av{position:relative;width:1080px;height:1080px;overflow:hidden;background:#07090d;font-family:'Inter',sans-serif;color:#f3f5f8}
+.abs{position:absolute}
+svg.abs{left:0;top:0;width:1080px;height:1080px}
+.word{left:0;right:0;text-align:center;font:900 150px/1 'Unbounded';letter-spacing:-.04em;color:#fff;text-transform:lowercase}
+.word em{font-style:normal;color:#22c55e}
+</style>
+</head>
+<body>
+
+<!-- 1: the avatar is a door peephole; text seen through the fisheye glass -->
+<div class="av" id="k1" style="background:#120d08">
+  <svg class="abs" viewBox="0 0 1080 1080">
+    <defs>
+      <radialGradient id="brass" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#fde68a"/><stop offset=".35" stop-color="#d4a017"/><stop offset=".75" stop-color="#7c5a0b"/><stop offset="1" stop-color="#3b2a05"/></radialGradient>
+      <radialGradient id="glass" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#14532d"/><stop offset=".6" stop-color="#062012"/><stop offset="1" stop-color="#010504"/></radialGradient>
+      <radialGradient id="door" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#3a2614"/><stop offset="1" stop-color="#140c06"/></radialGradient>
+      <linearGradient id="hl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <clipPath id="lens"><circle cx="540" cy="540" r="330"/></clipPath>
+    </defs>
+    <rect width="1080" height="1080" fill="url(#door)"/>
+    <g opacity=".18" stroke="#000" stroke-width="3">
+      <path d="M0 140 Q540 120 1080 150"/><path d="M0 300 Q540 280 1080 320"/><path d="M0 780 Q540 800 1080 760"/><path d="M0 940 Q540 960 1080 930"/>
+    </g>
+    <circle cx="540" cy="540" r="450" fill="url(#brass)"/>
+    <circle cx="540" cy="540" r="450" fill="none" stroke="#2a1e04" stroke-width="6"/>
+    <circle cx="540" cy="540" r="372" fill="#1c1404"/>
+    <circle cx="540" cy="540" r="360" fill="url(#brass)" transform="rotate(180 540 540)"/>
+    <circle cx="540" cy="540" r="332" fill="url(#glass)"/>
+    <g clip-path="url(#lens)">
+      <ellipse cx="540" cy="420" rx="300" ry="160" fill="#22c55e" opacity=".22" filter="blur(40px)"/>
+      <text x="540" y="560" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="104" letter-spacing="-3" fill="#fff">кто там</text>
+      <text x="540" y="790" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="230" fill="#22c55e">?</text>
+      <circle cx="540" cy="540" r="332" fill="none" stroke="#000" stroke-width="90" opacity=".55" filter="blur(26px)"/>
+      <path d="M300 330 A300 300 0 0 1 560 230" fill="none" stroke="url(#hl)" stroke-width="34" stroke-linecap="round" opacity=".7"/>
+    </g>
+  </svg>
+</div>
+
+<!-- 2: wordmark, the question mark's dot is a keyhole -->
+<div class="av" id="k2">
+  <div class="abs" style="inset:0;background:radial-gradient(circle at 50% 46%,rgba(34,197,94,.25),transparent 60%)"></div>
+  <svg class="abs" viewBox="0 0 1080 1080">
+    <path d="M400 330 Q400 180 560 180 Q720 180 720 320 Q720 420 610 470 Q560 495 560 560 L560 600" fill="none" stroke="#fff" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="560" cy="760" r="78" fill="#22c55e"/>
+    <path d="M560 735 m-26 0 a26 26 0 1 1 52 0 l-12 62 h-28z" fill="#07090d"/>
+  </svg>
+  <div class="abs word" style="top:880px;font-size:96px">кто там</div>
+</div>
+
+<!-- 3: light through a half-open door -->
+<div class="av" id="k3" style="background:#050608">
+  <svg class="abs" viewBox="0 0 1080 1080">
+    <defs>
+      <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ade80" stop-opacity=".9"/><stop offset="1" stop-color="#22c55e" stop-opacity="0"/></linearGradient>
+      <linearGradient id="dr" x1="0" x2="1"><stop offset="0" stop-color="#1a1f29"/><stop offset="1" stop-color="#0b0e14"/></linearGradient>
+    </defs>
+    <path d="M520 760 L610 760 L900 1080 L380 1080Z" fill="url(#beam)" opacity=".55"/>
+    <rect x="360" y="170" width="360" height="590" rx="10" fill="#bbf7d0"/>
+    <rect x="360" y="170" width="360" height="590" rx="10" fill="url(#beam)" opacity=".6"/>
+    <path d="M360 170 L560 210 L560 720 L360 760Z" fill="url(#dr)"/>
+    <circle cx="525" cy="470" r="14" fill="#d4a017"/>
+    <rect x="345" y="155" width="390" height="620" rx="16" fill="none" stroke="#2a3242" stroke-width="22"/>
+  </svg>
+  <div class="abs word" style="top:830px;font-size:112px">кто там<em>?</em></div>
+</div>
+
+</body>
+</html>
