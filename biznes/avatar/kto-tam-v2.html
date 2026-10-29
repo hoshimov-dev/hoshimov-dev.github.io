@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Кто там? — аватар v2</title>
+<link rel="stylesheet" href="../seria-1/fonts/fonts.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700;1,900&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+/* 1080×1080 each; key content stays inside the centre circle (platforms crop to a circle) */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;display:flex;flex-direction:column;gap:40px;padding:40px;width:fit-content}
+.av{position:relative;width:1080px;height:1080px;overflow:hidden;font-family:'Inter',sans-serif;color:#fff}
+.abs{position:absolute}
+svg.abs{left:0;top:0;width:1080px;height:1080px}
+
+/* m1: neon sign on a dark brick wall */
+#m1{background:#0d0a10}
+#m1 .bricks{inset:0;opacity:.5;background:
+  linear-gradient(#000 4px,transparent 4px) 0 0/180px 90px,
+  linear-gradient(90deg,#000 4px,transparent 4px) 0 0/180px 180px,
+  linear-gradient(90deg,#000 4px,transparent 4px) 90px 90px/180px 180px,
+  #2a1d24}
+#m1 .shade{inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,45,149,.25),rgba(0,0,0,.85) 65%)}
+#m1 .neon{left:0;right:0;text-align:center;font:italic 900 170px/1 'Playfair Display';color:#ffe6f4;
+  text-shadow:0 0 6px #fff,0 0 18px #ff2d95,0 0 40px #ff2d95,0 0 80px #ff2d95,0 0 140px #ff2d95}
+#m1 .neon2{left:0;right:0;text-align:center;font:italic 900 300px/1 'Playfair Display';color:#e0fff0;
+  text-shadow:0 0 6px #fff,0 0 20px #22c55e,0 0 50px #22c55e,0 0 100px #22c55e,0 0 160px #22c55e}
+
+/* m2: bold sticker type */
+#m2{background:#22c55e}
+#m2 .t{left:0;right:0;text-align:center;font:900 230px/.9 'Unbounded';letter-spacing:-.06em;color:#07090d;text-transform:uppercase}
+#m2 .q{color:#fff;-webkit-text-stroke:14px #07090d;paint-order:stroke fill;margin-left:6px}
+
+/* m3: luxury monogram */
+#m3{background:radial-gradient(circle at 50% 40%,#1b1712,#050403 70%)}
+#m3 .mono{left:0;right:0;text-align:center;font:italic 900 520px/1 'Playfair Display';letter-spacing:-.08em;
+  background:linear-gradient(160deg,#fff4c4,#d4af37 40%,#8a6a12 70%,#f3e5ab);-webkit-background-clip:text;background-clip:text;color:transparent}
+#m3 .sig{left:0;right:0;text-align:center;font:700 92px 'Caveat';color:#e8d9a8;letter-spacing:.02em}
+
+/* m4: eye in a dark gap */
+#m4{background:#030304}
+</style>
+</head>
+<body>
+
+<div class="av" id="m1">
+  <div class="abs bricks"></div><div class="abs shade"></div>
+  <div class="abs neon" style="top:330px">кто там</div>
+  <div class="abs neon2" style="top:500px">?</div>
+</div>
+
+<div class="av" id="m2">
+  <svg class="abs" viewBox="0 0 1080 1080"><circle cx="540" cy="540" r="500" fill="none" stroke="#07090d" stroke-width="16" stroke-dasharray="4 26" stroke-linecap="round" opacity=".35"/></svg>
+  <div class="abs t" style="top:300px">кто<br>там<span class="q">?</span></div>
+</div>
+
+<div class="av" id="m3">
+  <svg class="abs" viewBox="0 0 1080 1080"><circle cx="540" cy="540" r="450" fill="none" stroke="#d4af37" stroke-width="4" opacity=".6"/><circle cx="540" cy="540" r="430" fill="none" stroke="#d4af37" stroke-width="1.5" opacity=".35"/></svg>
+  <div class="abs mono" style="top:200px">Кт</div>
+  <div class="abs sig" style="top:740px">кто там?</div>
+</div>
+
+<div class="av" id="m4">
+  <svg class="abs" viewBox="0 0 1080 1080">
+    <defs>
+      <radialGradient id="iris" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#052e16"/><stop offset=".35" stop-color="#16a34a"/><stop offset=".8" stop-color="#4ade80"/><stop offset="1" stop-color="#14532d"/></radialGradient>
+      <radialGradient id="sclera" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#f5f5f4"/><stop offset="1" stop-color="#78716c"/></radialGradient>
+      <linearGradient id="gap" x1="0" x2="1"><stop offset="0" stop-color="#000"/><stop offset=".25" stop-color="#16a34a" stop-opacity=".25"/><stop offset=".5" stop-color="#4ade80" stop-opacity=".45"/><stop offset=".75" stop-color="#16a34a" stop-opacity=".25"/><stop offset="1" stop-color="#000"/></linearGradient>
+      <clipPath id="eye"><path d="M300 470 Q540 300 780 470 Q540 640 300 470Z"/></clipPath>
+    </defs>
+    <rect x="360" y="0" width="360" height="1080" fill="url(#gap)"/>
+    <path d="M300 470 Q540 300 780 470 Q540 640 300 470Z" fill="url(#sclera)"/>
+    <g clip-path="url(#eye)">
+      <circle cx="560" cy="470" r="120" fill="url(#iris)"/>
+      <circle cx="560" cy="470" r="52" fill="#000"/>
+      <circle cx="595" cy="438" r="20" fill="#fff" opacity=".9"/>
+      <path d="M300 470 Q540 300 780 470" fill="none" stroke="#000" stroke-width="60" opacity=".5"/>
+    </g>
+    <path d="M300 470 Q540 300 780 470" fill="none" stroke="#000" stroke-width="10"/>
+    <rect x="0" y="0" width="380" height="1080" fill="#0b0b0d"/><rect x="700" y="0" width="380" height="1080" fill="#0b0b0d"/>
+    <rect x="372" y="0" width="10" height="1080" fill="#22c55e" opacity=".6"/><rect x="698" y="0" width="10" height="1080" fill="#22c55e" opacity=".6"/>
+    <text x="540" y="820" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="104" letter-spacing="-3" fill="#fff">кто там<tspan fill="#22c55e">?</tspan></text>
+  </svg>
+</div>
+
+</body>
+</html>
